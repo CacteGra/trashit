@@ -1,0 +1,3 @@
+# add @reboot to run the script on container startup
+@reboot /usr/local/bin/python /app/manage.py get-data
+@minute /usr/local/bin/python /app/manage.py get-data

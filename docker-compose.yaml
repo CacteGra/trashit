@@ -1,0 +1,87 @@
+version: "3"
+services:
+  ingress:
+    restart: always
+    image: trashit/backend-ingress
+    build:
+      context: nginx/
+    ports:
+      - "81:81"
+      # - "443:443"
+    networks:
+      - trashit-backend
+    environment:
+      - DOMAIN
+      - DOMAINWWW
+    volumes:
+      - static:/app/static
+      - media:/app/media
+      # - ./certbot/www:/var/www/certbot/:ro
+      # - ./certbot/conf/:/etc/nginx/ssl/:ro
+    depends_on:
+      - backend
+  # certbot:
+  #   restart: always
+  #   image: certbot/certbot:latest
+  #   volumes:
+  #     - ./certbot/www/:/var/www/certbot/:rw
+  #     - ./certbot/conf/:/etc/letsencrypt/:rw
+  #   entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+  getdata:
+    # restart: always
+    build:
+      context: trashit/
+    image: trashit/backend
+    command: ./wait-for-it.sh db:5432 -- ./getdatastart.sh -- cron -f
+    networks:
+      - trashit-backend
+    environment:
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_PASSWORD
+      - SECRET_KEY
+      - ALLOWED_HOSTS
+      - SITE_ID
+      - WAGTAILADMIN_BASE_URL
+    depends_on:
+      - backend
+  backend:
+    restart: always
+    build:
+      context: trashit/
+    image: trashit/backend
+    ports:
+      - "8001:8000"
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+        ./wait-for-it.sh db:5432 -- ./start.sh
+    environment:
+      - POSTGRES_PASSWORD
+      - SECRET_KEY
+      - ALLOWED_HOSTS
+      - SITE_ID
+      - WAGTAILADMIN_BASE_URL
+    networks:
+      - trashit-backend
+    volumes:
+      - static:/app/static
+      - media:/app/media
+    depends_on:
+        - db
+  db:
+    restart: always
+    image: postgis/postgis:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD
+    networks:
+      - trashit-backend
+networks:
+  trashit-backend:
+    driver: bridge
+volumes:
+  static:
+    driver: local
+  media:
+    driver: local

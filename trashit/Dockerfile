@@ -22,7 +22,18 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     libjpeg62-turbo-dev \
     zlib1g-dev \
     libwebp-dev \
+    gdal-bin \
+    libgdal-dev \
+    python3-gdal \
+    binutils \
+    libproj-dev \
+    cron \
  && rm -rf /var/lib/apt/lists/*
+
+RUN touch /var/log/cron.log
+
+# RUN echo "wagtail" >> /etc/cron.allow
+# RUN echo "wagtail" >> /etc/at.allow
 
 # Install the application server.
 RUN pip install "gunicorn==20.0.4"
@@ -37,13 +48,17 @@ WORKDIR /app
 # Set this directory to be owned by the "wagtail" user. This Wagtail project
 # uses SQLite, the folder needs to be owned by the user that
 # will be writing to the database file.
-RUN chown wagtail:wagtail /app
+# RUN chown wagtail:wagtail /app
 
 # Copy the source code of the project into the container.
-COPY --chown=wagtail:wagtail . .
+# COPY --chown=wagtail:wagtail . .
+
+COPY . .
+
+ENTRYPOINT ["./docker-entrypoint.sh"]             # must be JSON-array syntax
 
 # Use user "wagtail" to run the build commands below and the server itself.
-USER wagtail
+# USER wagtail
 
 # Collect static files.
 RUN python manage.py collectstatic --noinput --clear
