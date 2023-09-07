@@ -20,11 +20,12 @@ class Command(BaseCommand):
                 l = json.loads(d)
                 if all_model.has_top_layer:
                     l = l[all_model.top_layer]
-                geolocation = Point(l[all_model.geolocation_x], l[all_model.geolocation_y], srid=4326)
-                location = Location.objects.create(source_id=l[all_model.source_id],geolocation=geolocation,city=l[all_model.source_id])
-                location.save()
-                all_model.locations = location
-                all_model.save()
+                for data in l:
+                    geolocation = Point(data[all_model.geolocation_x], data[all_model.geolocation_y], srid=4326)
+                    location = Location.objects.create(source_id=l[all_model.source_id],geolocation=geolocation,city=l[all_model.source_id])
+                    location.save()
+                    all_model.locations = location
+                    all_model.save()
             # exist_list = []
             # location.objects.filter(modelpage=all_model).exclude(pk__in=[exist_list]).delete()
 

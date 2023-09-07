@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ['SECRET_KEY']
@@ -23,8 +23,11 @@ SITE_ID = int(os.environ['SITE_ID'])
 
 WAGTAILADMIN_BASE_URL = os.environ['WAGTAILADMIN_BASE_URL']
 
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
+
 try:
     from .local import *
 except ImportError:
     pass
+
 
