@@ -1,0 +1,139 @@
+{% extends "wagtailadmin/base.html" %}
+{% load wagtailadmin_tags i18n %}
+{% block titletag %}{% blocktrans trimmed with snippet_type_name=model_opts.verbose_name %}Editing {{ snippet_type_name }} - {{ object }}{% endblocktrans %}{% endblock %}
+{% block bodyclass %}{% if locked_for_user %}content-locked{% endif %}{% endblock %}
+{% block content %}
+    {% include 'wagtailsnippets/snippets/headers/edit_header.html' %}
+
+    {% include "wagtailadmin/shared/header.html" with title=object icon=header_icon merged=1 only %}
+
+    <div class="row row-flush">
+
+        <div class="{% if uc_enabled %}col10 divider-after{% else %}col12{% endif %}">
+            <form action="{{ action_url }}" method="POST" novalidate{% if form.is_multipart %} enctype="multipart/form-data"{% endif %} data-edit-form>
+                {% csrf_token %}
+                <div class="nice-padding this-div">
+                    {{ panel.render_form_content }}
+                    {% block fields %}
+                      {{ block.super }}
+                    {% endblock %}
+                </div>
+                <div></div>
+                <footer class="footer">
+                    <nav aria-label="{% trans 'Actions' %}">
+                        <ul>
+                            <li class="actions actions--primary footer__container">
+                                <div class="dropdown dropup dropdown-button match-width {% if view.view_name == 'revisions_revert' %}warning{% endif %}">
+                                    {{ action_menu.render_html }}
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </footer>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        div .this-div {
+          margin-bottom: 30px;
+        }
+        ul {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        ul ul {
+          margin: 0 0 0 30px;
+        }
+    </style>
+    {{ block.super }}
+    {{ media.css }}
+{% endblock %}
+{% block extra_js %}
+    {{ block.super }}
+    {% include "wagtailadmin/pages/_editor_js.html" %}
+    {{ media.js }}
+
+    <script>
+        // Set wagtailConfig.ACTIVE_CONTENT_LOCALE if this is a translated page
+        // This value may be used by JS widgets on the form
+        {% if locale %}
+            window.wagtailConfig = window.wagtailConfig || {};
+            window.wagtailConfig.ACTIVE_CONTENT_LOCALE = '{{ locale.language_code|escapejs }}';
+        {% endif %}
+    </script>
+
+<script>
+var data = {{ registerapi.api_example | safe }};
+
+function addItem(parentUL, branch) {
+    for (var key in branch.children) {
+        var item = branch.children[key];
+        $item = $('<li>', {
+            id: "item" + item.id
+        });
+        $item.append($('<input>', {
+            type: "checkbox",
+            id: "item" + item.id,
+            name: "chosen_key"
+            value: item.title + "/" + item.id,
+        }));
+        if (typeof (item.value) !== 'undefined') {
+          $item.append($('<label>', {
+              for: "item" + item.id,
+              text: item.title + ": " + item.value
+          }));
+        } else {
+          $item.append($('<label>', {
+            for: "item" + item.id,
+            text: item.title
+          }));
+        };
+        parentUL.append($item);
+        if (item.children) {
+            var $ul = $('<ul>', {
+                style: 'display: none'
+            }).appendTo($item);
+            $item.append();
+            addItem($ul, item);
+        }
+    }
+}
+
+$(function () {
+    addItem($('#root'), data);
+    $(':checkbox').click(function () {
+        $(this).find(':checkbox').trigger('click');
+        var matchingId = $(this).attr('id');
+        if ($(this).attr('checked'))
+        {
+            $('input[id*=' + matchingId +']').each(function() {
+            $(this).removeAttr('checked');
+                $(this).prop('checked', $(this).attr('checked'));
+            });
+        }
+        else {
+             $('input[id*=' + matchingId +']').each(function() {
+            $(this).attr('checked', 'checked');
+                $(this).prop('checked', $(this).attr('checked'));
+
+             });
+        }
+
+    });
+    $('label').click(function(){
+        $(this).closest('li').children('ul').slideToggle();
+
+    });
+});
+</script>
+
+    {% if workflow_enabled %}
+        {% include "wagtailadmin/shared/_workflow_init.html" %}
+    {% endif %}
+{% endblock %}
+
+

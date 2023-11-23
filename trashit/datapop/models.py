@@ -1,10 +1,330 @@
 from django.contrib.gis.db import models
 
-from wagtail.models import Page
+
+from wagtail.snippets.views.snippets import SnippetViewSet, IndexView, EditView
+
+from wagtail.models import Page, Orderable
+from modelcluster.models import ClusterableModel
 from wagtailmetadata.models import MetadataPageMixin
-from wagtail.admin.panels import FieldPanel
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from wagtail.admin.panels import FieldPanel, MultipleChooserPanel
 
 from wagtail.snippets.models import register_snippet
+
+from .widgets import ChosenChooserWidget, OperatedChooserWidget
+
+
+class Booleanfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.BooleanField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Charfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.CharField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Datefield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.DateField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Datetimefield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.DateTimeField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Emailfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.EmailField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Filepathfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.FilePathField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Floatfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.FloatField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Integerfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.IntegerField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Positiveintegerfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.PositiveIntegerField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Textfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.TextField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Timefield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.TimeField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Urlfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.URLField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Filefield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.FileField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Imagefield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.ImageField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Jsonfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.JSONField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Geometrycollectionfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.GeometryCollectionField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Geometryfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.GeometryField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Linestringfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.LineStringField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Multilinestringfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.MultiLineStringField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+
+class Multipointfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.MultiPointField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Multipolygonfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.MultiPolygonField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Pointfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.PointField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
+class Polygonfield(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    data_line = models.ForeignKey('DataLine', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
+    operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
+    title = models.CharField(max_length=250, null=True, blank=True)
+    o_field = models.PolygonField(null=True, blank=True)
+    is_up = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        return "%s" % (self._meta.object_name)
+
 
 class LocationFeature(models.Model):
     feature = models.CharField(max_length=100,blank=True,null=True)
@@ -15,136 +335,130 @@ class Location(models.Model):
     city = models.CharField(max_length=50)
     features = models.ForeignKey(LocationFeature, on_delete=models.SET_NULL, null=True)
 
-@register_snippet
-class FeaturePage(models.Model):
-    feature = models.CharField(max_length=100,blank=True,null=True)
-    panels = [
-        FieldPanel('feature'),
-    ]
+class DataLine(models.Model):
+    register_api = models.ForeignKey('RegisterAPI', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_chosen = models.ManyToManyField('RegisterAPIChosen', blank=True)
+    line_id = models.PositiveIntegerField(null=True, blank=True)
+    line_number = models.PositiveIntegerField(null=True, blank=True)
+    the_time = models.DateTimeField(auto_now_add=True)
+
+class Chosen(models.Model):
+    text_chosen = models.CharField(null=True, blank=True)
+    value_example = models.CharField(null=True, blank=True)
     def __str__(self):
-        return self.feature
+        return "%s" % (self.text_chosen)
 
-class Endpoint(models.Model):
-    api_endpoint = models.URLField()
+class RegisterAPIChosen(Orderable, models.Model):
+    register_api = ParentalKey("RegisterAPI", related_name="the_api", on_delete=models.CASCADE, null=True, blank=True)
+    register_api_foreign = models.ForeignKey('RegisterAPI', on_delete=models.CASCADE, null=True, blank=True)
+    # operated_select = ParentalManyToManyField("OperatedField", related_name="the_operated", blank=True)
+    # operated_select_foreign = models.ForeignKey('OperatedField', on_delete=models.CASCADE, null=True, blank=True)
+    hierarchy = models.PositiveIntegerField(null=True, blank=True)
+    children_of = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    line_id = models.ForeignKey('self', related_name='the_id', on_delete=models.SET_NULL, null=True, blank=True)
+    chosen = models.ForeignKey(
+        "Chosen", related_name="chosen", on_delete=models.CASCADE, null=True, blank=True
+    )
+    ticked = models.BooleanField(default=False)
+    is_list = models.BooleanField(default=False)
 
-class ModelPage(MetadataPageMixin, Page):
-    has_top_layer = models.BooleanField(default=False)
-    top_layer = models.CharField(max_length=100, null=True, blank=True)
-    locations = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
-    date_time = models.DateTimeField(auto_now_add=True)
-    source_id = models.CharField(max_length=250)
-    geolocation_x = models.CharField(max_length=250)
-    geolocation_y = models.CharField(max_length=250)
-    city = models.CharField(max_length=250)
-    features = models.ForeignKey(FeaturePage, on_delete=models.SET_NULL, null=True, blank=True)
-    api_endpoint = models.URLField()
-    email = models.EmailField(null=True, blank=True)
-
-    panels = Page.content_panels + [
-        FieldPanel('api_endpoint'),
-        FieldPanel('has_top_layer'),
-        FieldPanel('top_layer'),
-        FieldPanel('source_id'),
-        FieldPanel('geolocation_x'),
-        FieldPanel('geolocation_y'),
-        FieldPanel('city'),
-        FieldPanel('features'),
-        FieldPanel('email'),
+    FIELD_CHOICES = [
+        ("Booleanfield", "BooleanField"),
+        ("Charfield", "CharField"),
+        ("Datefield", "DateField"),
+        ("Datetimefield", "DateTimeField"),
+        ("Emailfield", "EmailField"),
+        ("Filepathfield", "FilePathField"),
+        ("Floatfield", "FloatField"),
+        ("Integerfield", "IntegerField"),
+        ("Positiveintegerfield", "PositiveIntegerField"),
+        ("Textfield", "TextField"),
+        ("Timefield", "TimeField"),
+        ("Urlfield", "URLField"),
+        ("Filefield", "FileField"),
+        ("Imagefield", "ImageField"),
+        ("Jsonfield", "JSONField"),
+        ("Geometrycollectionfield", "GeometryCollectionField"),
+        ("Geometryfield", "GeometryField"),
+        ("Linestringfield", "LinestringField"),
+        ("Multilinestringfield", "MultiLineStringField"),
+        ("Multipointfield", "MultiPointField"),
+        ("Multipolygonfield", "MultiPolygonField"),
+        ("Pointfield", "PointField"),
+        ("Polygonfield", "PolygonField"),
     ]
 
-    def get_absolute_url(self):
-        return self.get_url()
+    field_type = models.CharField(
+        max_length=23,
+        choices=FIELD_CHOICES,
+        null=True, blank=True
+    )
 
-    def detail_dictionary(dictionary):
-        for i in l.keys():
-            if isinstance(l, dict):
-                return('dict',i)
-            else:
-                return('list',0)
+    panels = [FieldPanel("chosen", widget=ChosenChooserWidget)]
 
-    def get_endpoint_detail:
-        e = Endpoint.objects.all()
-        response = requests.get("{}".format(all_model.api_endpoint))
-        d = json.dumps(response.json(), sort_keys=True, indent=4)
-        l = json.loads(d)
-        h = hierarchy(l)
-        s = sorted(h)
-
-        def hierarchy(struct, path=None):
-            if isinstance(struct, dict):
-                path = path if path else '$'
-                return set(
-                    child_path
-                        for key, obj   in struct.items()
-                        for child_path in hierarchy(obj, f'{path}.{key}')
-                ).union(
-                    [path]
-                )
-            elif isinstance(struct, list):
-                path = f'{path}[]' if path else '$[]'
-                return set(
-                    child_path
-                        for obj        in struct
-                        for child_path in hierarchy(obj, path)
-                ).union(
-                    [path]
-                )
-            else:
-                return [path]
-
-
-def hierarchy(struct, path=None):
-    if isinstance(struct, dict):
-        path = path if path else '$'
-        return set(
-            child_path
-                for key, obj   in struct.items()
-                for child_path in hierarchy(obj, f'{path}.{key}')
-        ).union(
-            [path]
-        )
-    elif isinstance(struct, list):
-        path = f'{path}[]' if path else '$[]'
-        return set(
-            child_path
-                for obj        in struct
-                for child_path in hierarchy(obj, path)
-        ).union(
-            [path]
-        )
-    else:
-        return [path]
-
-response = requests.get("https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Public_Service_WebMercator/MapServer/10/query?where=1%3D1&outFields=*&outSR=4326&f=json")
-d = json.dumps(response.json(), sort_keys=True, indent=4)
-l = json.loads(d)
-h = hierarchy(l)
-s = sorted(h)
-
-def only_one_item(using_dict):
-    one_list_dict = {}
-    using_dict = [root for root in s if root != '$.']
-    using_dict = [root for root in s if root != '$']
-    for i in using_dict:
-        if '[]' in i:
-            i = i.replace('[]','[0]')
-        if i == '$':
-            continue
+    def __str__(self):
+        h = self.hierarchy
+        n = len(list(str(h)))
+        if self.chosen.value_example:
+            return "%s%s: %s" % ('.'*n, self.chosen.text_chosen, self.chosen.value_example)
         else:
-            path_list = i.split('.')
-            dict_level = l
-            add_last_list = None
-            in_list = []
-            k = path_list[-1]
-            if '[0]' in k:
-                dict_level = dict_level[k.replace('[0]', '')]
-                one_list_dict[k.replace('[0]', '') = dict_level
-                add_last_list = k
-                in_list = True
-                only_one_item(sorted(hierarchy(dict_level[0]))
-            else:
-                dict_level = dict_level[k]
-                one_list_dict[k] = dict_level
+            return "%s%s" % ('.'*n, self.chosen.text_chosen)
+
+class OperatedField(ClusterableModel):
+    # register_api_chosen = ParentalManyToManyField("RegisterAPIChosen", related_name='api_chosen', blank=True)
+    register_api_chosen = ParentalManyToManyField("RegisterAPIChosen", blank=True)
+    FIELD_CHOICES = [
+        ("Booleanfield", "BooleanField"),
+        ("Charfield", "CharField"),
+        ("Datefield", "DateField"),
+        ("Datetimefield", "DateTimeField"),
+        ("Emailfield", "EmailField"),
+        ("Filepathfield", "FilePathField"),
+        ("Floatfield", "FloatField"),
+        ("Integerfield", "IntegerField"),
+        ("Positiveintegerfield", "PositiveIntegerField"),
+        ("Textfield", "TextField"),
+        ("Timefield", "TimeField"),
+        ("Urlfield", "URLField"),
+        ("Filefield", "FileField"),
+        ("Imagefield", "ImageField"),
+        ("Jsonfield", "JSONField"),
+        ("Geometrycollectionfield", "GeometryCollectionField"),
+        ("Geometryfield", "GeometryField"),
+        ("Linestringfield", "LinestringField"),
+        ("MultilineStringfield", "MultiLineStringField"),
+        ("Multipointfield", "MultiPointField"),
+        ("Multipolygonfield", "MultiPolygonField"),
+        ("Pointfield", "PointField"),
+        ("Polygonfield", "PolygonField"),
+    ]
+
+    field_type = models.CharField(
+        max_length=23,
+        choices=FIELD_CHOICES,
+        null=True, blank=True
+    )
+
+    OPERATION_CHOICES = [
+        ("ADD", "ADD"),
+        ("SUBSTRAC", "SUBSTRACT"),
+        ("DIVIDE", "DIVIDE"),
+        ("MULTIPLY", "MULTIPLY"),
+        ("PERCENTAGE", "PERCENTAGE"),
+    ]
+
+    operation = models.CharField(
+        max_length=10,
+        choices=OPERATION_CHOICES,
+        null=True, blank=True
+    )
 
 
-print(one_list_dict)
+class RegisterAPI(ClusterableModel):
+    id = models.AutoField(primary_key=True, editable=False)
+    api_title = models.TextField(max_length=100, null=True, blank=True)
+    api_endpoint = models.URLField()
+    pagination = models.CharField(max_length=100)
+    pagintation_number = models.PositiveIntegerField(null=True, blank=True)
+    once_every = models.PositiveIntegerField(null=True, blank=True)
+    sleep = models.PositiveIntegerField(null=True, blank=True)
