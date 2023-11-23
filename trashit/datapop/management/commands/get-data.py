@@ -117,20 +117,20 @@ class Command(BaseCommand):
                             if not has_field:
                                 continue
                             print(has_field)
-                    other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
-                    if other_children.count() > 0:
-                        children_id_list[0].remove(other_chosen.id)
-                        if not children_id_list[0]:
-                            children_id_list.remove(children_id_list[0])
-                    children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
-                    if children.count() > 0:
-                        print('children count')
-                        iterate_child(chosen_id, children_id_list)
-                        print(children_id_list)
+                        other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
+                        if other_children.count() > 0:
+                            children_id_list[0].remove(other_chosen.id)
+                            if not children_id_list[0]:
+                                children_id_list.remove(children_id_list[0])
+                        children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
+                        if children.count() > 0:
+                            print('children count')
+                            self.iterate_child(chosen_id, children_id_list)
+                            print(children_id_list)
                     other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list,line_id__isnull=False)
                     if other_chosens:
                         for same_level_list in children_id_list:
-                            path_list = get_path(same_level_list[0], [same_level_list], True)
+                            path_list = self.get_path(same_level_list[0], [same_level_list], True)
                             page_number = 0
                             while True:
                                 print('page {}'.format(page_number))
@@ -144,7 +144,7 @@ class Command(BaseCommand):
                                 if all_api.api_title == 'Washington D.C.' and not l['features']:
                                     break
                                 l_copy = l
-                                iterate_data_lines(path_list, -1, l_copy, page_number)
+                                self.iterate_data_lines(path_list, -1, l_copy, page_number)
                                 if not all_api.pagination:
                                     break
                                 page_number += all_api.once_every
@@ -170,4 +170,4 @@ class Command(BaseCommand):
                             print(g)
                             the_data.o_field = Point(g.all()[0].o_field,g.all()[1].o_field)
                             the_data.save()
-                    sleep(3600)
+            sleep(3600)
