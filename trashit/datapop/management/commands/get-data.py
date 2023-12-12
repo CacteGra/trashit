@@ -70,22 +70,30 @@ class Command(BaseCommand):
             else:
                 r = RegisterAPIChosen.objects.get(id=path_id)
                 if r.is_list:
+                    i = False
                     for upper_data_line in l_copy[(r.chosen.text_chosen).replace('[0]', '')]:
                         i = self.iterate_data_lines(path_list, n-1, upper_data_line, line_number)
                         line_number += 1
                     if i:
                         print("Returning True")
                         return True
+                    else:
+                        return False
                 else:
                     l_copy_line_id = l_copy
                     l_copy = l_copy[(r.chosen.text_chosen).replace('[0]', '')]
-                    if isinstance(l_copy, str):
-                        l_copy = ast.literal_eval(l_copy)
 
     def handle(self, *args, **options):
         while True:
+            sleep(1)
             all_apis = RegisterAPI.objects.all()
             for all_api in all_apis:
+                continuing = False
+                if all_api.the_time > timezone.now() - timedelta(hours=24) and not all_api.first:
+                    continue
+                elif all_api.first:
+                    all_api.first = False
+                    all_api.save()
                 c = all_api.copy_cluster()
                 cluster_id_list = []
                 children_id_list = []
@@ -96,6 +104,8 @@ class Command(BaseCommand):
                     o = c[1][j]
                     chosen_id = o.chosen_id
                     r = RegisterAPIChosen.objects.get(id=chosen_id)
+                    if not r.line_id:
+                        continue
                     other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
                     other_chosens = other_chosens.filter(line_id__isnull=False)
                     print(other_chosens)
@@ -129,37 +139,59 @@ class Command(BaseCommand):
                             print(children_id_list)
                     other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list,line_id__isnull=False)
                     if other_chosens:
+                        waiting = False
                         for same_level_list in children_id_list:
+                            if waiting:
+                                break
                             path_list = self.get_path(same_level_list[0], [same_level_list], True)
                             page_number = 0
                             while True:
                                 print('page {}'.format(page_number))
-                                if all_api.pagination:
-                                    params = {all_api.pagination: page_number}
-                                    response = requests.get("{}".format(all_api.api_endpoint), params=params)
-                                else:
-                                    response = requests.get("{}".format(all_api.api_endpoint))
+                                try:
+                                    if all_api.is_dumb:
+                                        response = requests.get("{}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number))
+                                        print(response.url)
+                                    else:
+                                        if all_api.pagination:
+                                            params = {all_api.pagination: page_number}
+                                            response = requests.get("{}".format(all_api.api_endpoint), params=params)
+                                        else:
+                                            response = requests.get("{}".format(all_api.api_endpoint))
+                                except requests.exceptions.ConnectionError:
+                                    waiting = True
+                                    all_api.the_time = timezone.now()
+                                    all_api.save()
+                                    break
+                                if response.status_code == '404':
+                                    break
                                 d = json.dumps(response.json(), sort_keys=True, indent=4)
                                 l = json.loads(d)
                                 if all_api.api_title == 'Washington D.C.' and not l['features']:
                                     break
                                 l_copy = l
-                                self.iterate_data_lines(path_list, -1, l_copy, page_number)
-                                if not all_api.pagination:
-                                    break
-                                page_number += all_api.once_every
+                                iterated = self.iterate_data_lines(path_list, -1, l_copy, page_number)
                                 if all_api.sleep:
                                     sleep(all_api.sleep)
                                 else:
                                     sleep(4)
+                                if not iterated:
+                                    break
+                                if not all_api.pagination:
+                                    break
+                                if not all_api.pagination:
+                                    break
+                                else:
+                                    page_number += all_api.once_every
+                        all_api.the_time = timezone.now()
+                        all_api.save()
             all_operated = OperatedField.objects.all()
+            print('operated')
             for operated in all_operated:
                 api_chosen_set = operated.register_api_chosen.all()
                 api_chosen_set = RegisterAPIChosen.objects.filter(chosen__text_chosen=api_chosen_set[0].chosen.text_chosen,chosen__value_example=api_chosen_set[0].chosen.value_example,children_of__isnull=False)
                 data_lines = api_chosen_set[0].dataline_set.all()
                 for data_line in data_lines:
-                    if data_line.the_time < timezone.now() - timedelta(hours=24):
-                        print('updated')
+                    if data_line.the_time > timezone.now() - timedelta(hours=24):
                         if operated.field_type == 'Pointfield':
                             field_name = operated.field_type
                             field_name = field_name[0].upper() + field_name[1:]
@@ -167,7 +199,12 @@ class Command(BaseCommand):
                             the_data, created = m.objects.get_or_create(data_line=data_line,is_up=True,operated_field=operated)
                             field_type = operated.register_api_chosen.all()[0].field_type
                             g = getattr(data_line, "{}_set".format(field_type.lower()))
-                            print(g)
-                            the_data.o_field = Point(g.all()[0].o_field,g.all()[1].o_field)
+                            if field_type == 'Textfield':
+                                s = ast.literal_eval(g.all()[0].o_field)
+                                lat = s['coordinates'][0]
+                                long = s['coordinates'][1]
+                            else:
+                                lat = g.all()[0].o_field
+                                long = g.all()[1].o_field
+                            the_data.o_field = Point(lat,long)
                             the_data.save()
-            sleep(3600)

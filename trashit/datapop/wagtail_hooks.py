@@ -77,6 +77,7 @@ class RegisterAPITemplate(SnippetViewSet):
     panels = [
         FieldPanel('api_title'),
         FieldPanel('api_endpoint'),
+        FieldPanel('is_dumb'),
         FieldPanel('pagination'),
         FieldPanel('once_every'),
         FieldPanel('sleep'),
@@ -142,8 +143,6 @@ class NoSameField(FieldPanel):
 
         @property
         def choice_list(self):
-            print(self)
-            print(pprint(vars(self)))
             self.form.fields[self.field_name].queryset = self.form.fields[self.field_name].queryset.exclude(pk=self.instance.id)
             choices = ModelChoiceIterator(self.form.fields[self.field_name])
             return choices

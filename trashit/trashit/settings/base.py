@@ -47,8 +47,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.gis",
     "datapop",
+    "mapping",
+    "trash",
     "wagtailmetadata",
-    "django_crontab"
+    "django_crontab",
+    "leaflet",
 ]
 
 MIDDLEWARE = [

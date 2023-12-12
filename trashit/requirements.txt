@@ -3,3 +3,4 @@ wagtail>=5.1,<5.2
 psycopg2
 wagtail-metadata==4.0.3
 django-crontab==0.7.1 
+django-leaflet==0.29.0

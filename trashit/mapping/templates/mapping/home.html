@@ -1,0 +1,325 @@
+{% block before_header %}
+
+{% load leaflet_tags %}
+
+{% load static %}
+
+{% endblock %}
+
+{% block header %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style media="screen">
+      html, body, #container /*, and all other map parent selectors*/ {
+        height: 100%;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      #map {
+        width: auto;
+        height: 100%;
+      }
+
+      .more-padding {
+        right: 49.5 !important;
+        bottom: 150 !important;
+      }
+
+      #map{ z-index:2; }
+      #modal{ z-index:3; }
+      .index {
+        z-index:1;
+      }
+
+      #add-menu {
+        position: absolute;
+        bottom: 30px;
+        right: 31.5px;
+        padding: 30px;
+        z-index: 1001;
+      }
+
+
+    </style>
+  {% leaflet_js %}
+  {% leaflet_css %}
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.1.0/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.1.0/dist/MarkerCluster.Default.css"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'quaggaJS/css/styles.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap/dist/css/bootstrap.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.css' %}" />
+  <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
+    function mapInit(map, options) {
+        //L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
+        //L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiY2FjdGVncmEiLCJhIjoiY2xwY256MHZ2MHJ3ajJrczludnJjaG96bSJ9.Of5KxdOT9Czr5u3hVpbduw', {
+        //maxZoom: 19,
+        //attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        //attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+        //}).addTo(map);
+        options = {
+          layers: L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' }),
+          zoomControl: false,
+        };
+        map.removeControl(map.zoomControl);
+        var checking = false;
+        var markers = [];
+        var circles = [];
+        var markersLayer = new L.LayerGroup();
+        var circlesLayer = new L.LayerGroup();
+        var polygonsLayer = new L.LayerGroup();
+        polygonsLayer.addTo(map);
+        markersLayer.addTo(map);
+        circlesLayer.addTo(map);
+        var old_latlng = null;
+        var trash_percentage = null;
+        var user_marker = null;
+        var found = false;
+        var userIcon = L.icon({
+          iconUrl: "{% static 'icons/dot-circle.png' %}",
+          //shadowUrl: "{% static 'user-tag-shadow.png' %}",
+
+          iconSize:     [40, 40], // size of the icon
+          shadowSize:   [50, 64], // size of the shadow
+          iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
+          shadowAnchor: [0, 65],  // the same for the shadow
+          popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
+        var defaultIcon = L.icon({
+          iconUrl: "{% static 'leaflet/images/marker-icon.png' %}",
+          shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
+
+          iconSize:     [25, 41], // size of the icon
+          shadowSize:   [50, 64], // size of the shadow
+          iconAnchor:   [12, 41], // point of the icon which will correspond to marker's location
+          shadowAnchor: [14, 65],  // the same for the shadow
+          popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
+        var selectedIcon = L.icon({
+          iconUrl: "{% static 'icons/trash-icon.svg' %}",
+          //shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
+
+          iconSize:     [25, 41], // size of the icon
+          shadowSize:   [50, 64], // size of the shadow
+          iconAnchor:   [12, 41], // point of the icon which will correspond to marker's location
+          shadowAnchor: [14, 65],  // the same for the shadow
+          popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+        });
+        containers = document.querySelectorAll(".leaflet-control-container:not(.leaflet-control-container.custom)")
+        $(containers).remove()
+        function onLocationFound(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+            if (user_marker == null) {
+              user_marker = L.marker(e.latlng, {icon: userIcon})
+              user_marker.addTo(map)
+            } else {
+              if (old_latlng != null) {
+                user_marker.setLatLng(old_latlng)
+              }
+            }
+            //map.eachLayer(function (layer) {
+            //    if (layer.options.name === 'XXXXX') {
+            //        layer.setLatLng([newLat,newLon])
+            //    }
+            //});
+            trash = document.getElementById('trashList');
+            if (old_latlng == null || old_latlng.lat != e.latlng.lat || old_latlng.lng != e.latlng.lng ) {
+              if (markers.length == 0 && checking == false) {
+                checking = true;
+                $.when($.ajax({
+                    url: "{% url 'get_first_load' %}",
+                    data: { 'lat': lat, 'lng': lng, 'same_session': false},
+                    type:'GET',
+                })).then(function(all_data) {
+                  for (data0 of all_data) {
+                    if (data0.reload) {
+                      $('.reload').html(data0.reload);
+                    }
+                    if (data0.lat) {
+                      var latlng = L.latLng(data0.lat, data0.lng);
+                    }
+
+                    the_trash = L.marker(latlng, {title: data0.trash_id, icon: selectedIcon, marker_name:'trash'}).on('click', highlightTrash);
+                    if (data0.trash_id == all_data[0].trash_id) {
+                      $('.trashList').html('');
+                    }
+                    document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                    circle = L.circle(latlng, data0.radius);
+                    markersLayer.addLayer(the_trash);
+                    circlesLayer.addLayer(circle);
+                    markers.push(the_trash);
+                    circles.push(circle);
+                    }
+                   })
+                  } else if (markers.length > 0 && checking == false) {
+                    checking = true;
+                    $.when($.ajax({
+                        url: "{% url 'get_first_load' %}",
+                        data: { 'lat': lat, 'lng': lng, 'same_session': true},
+                        type:'GET',
+                    })).then(function(all_data) {
+                      for (data0 of all_data) {
+                        if (data0.reload) {
+                          $('.reload').html(data0.reload);
+                        }
+                        if (data0.lat) {
+                          var latlng = L.latLng(data0.lat, data0.lng);
+                        }
+                      }
+                checking = false;
+              })
+              }
+            }
+             old_latlng = e.latlng;
+          }
+         map.on('locationfound', onLocationFound);
+         function onLocationError(e) {
+             if (found == false) {
+              found = true;
+              map.locate({setView: true, maxZoom: 19})
+             }
+         }
+         map.on('locationerror', onLocationError);
+         function dyn_locate() {
+             if (found == false) {
+              found = true;
+              map.locate({setView: true, maxZoom: 19})
+             }
+         }
+         setInterval(dyn_locate, 3000);
+         // zoom in function
+         document.getElementById("in").onclick = function() {
+           map.setZoom(map.getZoom() + 1)
+         };
+         // zoom out function
+         document.getElementById("out").onclick = function() {
+           map.setZoom(map.getZoom() - 1)
+         };
+         document.getElementById("recenter").onclick = function() {
+           map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
+         };
+          function highlightTrash(e) {
+           var id = this.options.title;
+           var targetTrash = document.getElementById(id+" modal");
+           $(targetTrash).modal('toggle');
+           for (marker of markers) {
+             if (marker.options.title == id) {
+               marker.setIcon(defaultIcon);
+              } else {
+               marker.setIcon(selectedIcon);
+              }
+           }
+           elements = document.getElementsByClassName('trashSelect');
+           for (element of elements) {
+             if (element.id == id) {
+               element.style.background = "#e0dfdf";
+               $('.trashList').prepend(element);
+             } else {
+               element.style.background = "#fff";
+             }
+           }
+         };
+         $(document).on( 'click', '.trashSelect', function () {
+           var id = this.options.title;
+           var targetTrash = document.getElementById(id+" modal");
+           $(targetTrash).modal('toggle');
+           for (marker of markers) {
+             if (marker.options.title == id) {
+               marker.setIcon(selectedIcon);
+               map.panTo(marker.getLatLng());
+             }
+             else {
+               marker.setIcon(defaultIcon);
+             }
+           }
+           elements = document.getElementsByClassName('trashSelect');
+           for (element of elements) {
+             if (element.id == id) {
+               element.style.background = "#e0dfdf";
+               $('.trashList').prepend(element);
+             } else {
+               element.style.background = "#fff";
+             }
+           }
+         })
+       document.getElementById("add-menu").onclick = function() {
+         var dumpNotif = document.getElementById("dumping-notif");
+         theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
+         theHref = theHref.replace(/lat/g, old_latlng.lat);
+         theHref = theHref.replace(/lng/g, old_latlng.lng);
+         dumpNotif.setAttribute('href',theHref);
+         var addModal = document.getElementById("add-trash-modal");
+         $(addModal).modal('toggle');
+       };
+    };
+  </script>
+{% endblock %}
+
+{% block content %}
+{% leaflet_map "map" callback="mapInit" %}
+  <div class="trashList">
+    <div class="reload">
+    </div>
+  </div>
+<div class="leaflet-control-container custom">
+  <div class="leaflet-bottom leaflet-right more-padding">
+    <div class="leaflet-control-zoom leaflet-bar leaflet-control">
+      <!-- Trigger Modal -->
+      <a class="u-link text-center d-block" data-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static 'profileFilled.png' %});' href='#callProfile'>
+      </a>
+      <!-- End Trigger Modal -->
+    </div>
+    <div class="leaflet-control-zoom leaflet-bar leaflet-control">
+      <a class="leaflet-control-zoom-in" id='in' href="#" title="Zoom in" role="button" aria-label="Zoom in">+</a>
+      <a class="leaflet-control-zoom-out" id='out' href="#" title="Zoom out" role="button" aria-label="Zoom out">−</a>
+    </div>
+    <div class="leaflet-control-zoom leaflet-bar leaflet-control">
+      <a class="leaflet-control-zoom leaflet-bar-part" id='recenter' href="#" title="Recenter view" style="background-image: url(&quot;/static/leaflet/images/reset-view.png&quot;);">
+      </a>
+    </div>
+  </div>
+</div>
+<div>
+  <button type="button" class="btn btn-secondary shadow rounded-circle btn-lg" id="add-menu"><i class="bi bi-plus-lg style="font-size: 35px;"></i></button>
+</div>
+<hr class="my-4">
+<div class="modal fade" id="callProfile" tabindex="-1" role="dialog" aria-labelledby="callProfileTitle" style="display: none;" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="callProfileLongTitle">Information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <button type="button" class="btn btn-primary" onclick="window.location.href = #settings;">Go to Profile Settings</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="getModal">
+</div>
+
+<div class="modal fade" id="add-trash-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">Unauthorized waste dumping notification</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p><a id="dumping-notif" href="">Write an email to notify of an unauthorized dumping.</a></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
