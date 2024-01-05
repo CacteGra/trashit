@@ -58,8 +58,6 @@ services:
       - EMAIL_PORT
       - EMAIL_HOST_USER
       - EMAIL_HOST_PASSWORD
-      - COMMENTS_XTD_FROM_EMAIL
-      - COMMENTS_XTD_CONTACT_EMAIL
       - CSRF_TRUSTED_ORIGINS
     networks:
       - trashit-backend
