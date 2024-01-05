@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "datapop",
     "mapping",
     "trash",
+    "management",
     "wagtailmetadata",
     "django_crontab",
     "leaflet",

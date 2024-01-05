@@ -5,6 +5,8 @@ certbot/ 
 
 etc/
 
+#OSM cache
+cache/
 
 # Byte-compiled / optimized / DLL files
 

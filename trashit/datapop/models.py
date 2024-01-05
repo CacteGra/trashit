@@ -457,7 +457,19 @@ class OperatedField(ClusterableModel):
 class RegisterAPI(ClusterableModel):
     id = models.AutoField(primary_key=True, editable=False)
     api_title = models.TextField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=250, null=True, blank=True)
+    country = models.CharField(max_length=250, null=True, blank=True)
     api_endpoint = models.URLField()
+    TYPE_CHOICES = [
+        ("NONE", "NONE"),
+        ("OSM", "OSM"),
+    ]
+
+    api_type = models.CharField(
+        max_length=10,
+        choices=TYPE_CHOICES,
+        null=True, blank=True
+    )
     is_dumb = models.BooleanField(default=False)
     first = models.BooleanField(default=True)
     the_time = models.DateTimeField(auto_now_add=True)

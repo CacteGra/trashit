@@ -10,6 +10,10 @@ from django.utils.module_loading import import_string
 from django.utils import timezone
 from datetime import timedelta
 
+from trash.models import TrashSpecificities
+
+from . import osm_call
+
 class Command(BaseCommand):
 
     def iterate_child(self, parent_pk, children_id_list):
@@ -208,3 +212,7 @@ class Command(BaseCommand):
                                 long = g.all()[1].o_field
                             the_data.o_field = Point(lat,long)
                             the_data.save()
+                            TrashSpecificities.objects.get_or_create(pointfield__o_field=the_data)
+
+            osm_call.main()
+
