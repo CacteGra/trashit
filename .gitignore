@@ -252,3 +252,5 @@ dmypy.json
 # Syncthing
 
 *.sync-conflict-*
+
+.env
