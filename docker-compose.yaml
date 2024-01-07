@@ -49,6 +49,8 @@ services:
     - |
        ./wait-for-it.sh db:5432 -- ./start.sh 
     environment:
+      - POSTGRES_DBNAME
+      - POSTGRES_USER
       - POSTGRES_PASSWORD
       - SECRET_KEY
       - ALLOWED_HOSTS
