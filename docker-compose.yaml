@@ -68,10 +68,12 @@ services:
       - db 
   db:
     restart: always
-    image: postgres:latest
+    image: postgis:latest
     ports:
       - "5432:5432"
     environment:
+      - POSTGRES_DBNAME
+      - POSTGRES_USER
       - POSTGRES_PASSWORD
     networks:
       - trashit-backend 

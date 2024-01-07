@@ -11,8 +11,8 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'postgres',
-        'USER': 'postgres',
+        'NAME': os.environ['POSTGRES_DBNAME'],
+        'USER': os.environ['POSTGRES_USER'],
         'PASSWORD': os.environ['POSTGRES_PASSWORD'],
         'HOST': 'db',
         'PORT': '5432',
