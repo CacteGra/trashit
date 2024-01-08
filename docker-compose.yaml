@@ -39,6 +39,22 @@ services:
       - shared:/shared/
     depends_on:
       - backend
+  getdata:
+    build:
+      context: trashit/
+    image: trashit/backend
+    command: ./wait-for-it.sh db:5432 -- ./getdatastart.sh -- cron -f
+    networks:
+      - trashit-backend
+    environment:
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_PASSWORD
+      - SECRET_KEY
+      - ALLOWED_HOSTS
+      - SITE_ID
+      - WAGTAILADMIN_BASE_URL
+    depends_on:
+      - backend
   backend:
     restart: always
     image: trashit/backend
