@@ -77,6 +77,7 @@ class RegisterAPITemplate(SnippetViewSet):
     panels = [
         FieldPanel('api_title'),
         FieldPanel('api_endpoint'),
+        FieldPanel('city'),
         FieldPanel('is_dumb'),
         FieldPanel('pagination'),
         FieldPanel('once_every'),
