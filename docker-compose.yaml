@@ -48,6 +48,8 @@ services:
       - trashit-backend
     environment:
       - PYTHONUNBUFFERED=1
+      - POSTGRES_DB
+      - POSTGRES_USER
       - POSTGRES_PASSWORD
       - SECRET_KEY
       - ALLOWED_HOSTS
