@@ -459,7 +459,7 @@ class RegisterAPI(ClusterableModel):
     api_title = models.TextField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True, blank=True)
-    api_endpoint = models.URLField()
+    api_endpoint = models.URLField(null=True, blank=True)
     TYPE_CHOICES = [
         ("NONE", "NONE"),
         ("OSM", "OSM"),
