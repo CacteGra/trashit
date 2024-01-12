@@ -80,6 +80,7 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('api_endpoint'),
         FieldPanel('city'),
         FieldPanel('country'),
+        FieldPanel('api_type'),
         FieldPanel('is_dumb'),
         FieldPanel('pagination'),
         FieldPanel('once_every'),
