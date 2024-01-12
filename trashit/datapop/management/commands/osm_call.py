@@ -7,6 +7,7 @@ from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
 def main():
     register_apis = RegisterAPI.objects.filter(api_type='OSM')
+    nominatim = Nominatim()
     for register_api in register_apis:
         areaId = nominatim.query(''.format(register_api.city, register_api.country)).areaId()
         nominatim = Nominatim()
