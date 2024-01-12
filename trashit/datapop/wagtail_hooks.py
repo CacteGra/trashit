@@ -26,7 +26,7 @@ def register_viewsets():
 
 @hooks.register('after_create_snippet')
 def first_connection(request, register_api):
-    r = RegisterAPI.objects.get(pk=register_api.pk)
+    r = RegisterAPI.objects.get(pk=register_api.pk, api_endpoint__isnull=False)
     l = unique_get_data.main(r.api_endpoint)
     one_list_item.main(l, r.pk)
     return True
