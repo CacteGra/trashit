@@ -459,7 +459,7 @@ class RegisterAPI(ClusterableModel):
     api_title = models.TextField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True, blank=True)
-    api_endpoint = models.URLField(default=None,null=True, blank=True)
+    api_endpoint = models.URLField(default=None, null=True, blank=True)
     TYPE_CHOICES = [
         ("NONE", "NONE"),
         ("OSM", "OSM"),
@@ -473,7 +473,7 @@ class RegisterAPI(ClusterableModel):
     is_dumb = models.BooleanField(default=False)
     first = models.BooleanField(default=True)
     the_time = models.DateTimeField(auto_now_add=True)
-    pagination = models.CharField(max_length=100)
+    pagination = models.CharField(max_length=100, default=1)
     pagintation_number = models.PositiveIntegerField(null=True, blank=True)
     once_every = models.PositiveIntegerField(null=True, blank=True)
     sleep = models.PositiveIntegerField(null=True, blank=True)
