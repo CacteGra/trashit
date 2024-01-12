@@ -456,7 +456,7 @@ class OperatedField(ClusterableModel):
 
 class RegisterAPI(ClusterableModel):
     id = models.AutoField(primary_key=True, editable=False)
-    api_title = models.TextField(max_length=100, null=True, blank=True)
+    api_title = models.TextField(max_length=100)
     city = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True, blank=True)
     api_endpoint = models.URLField(null=True, blank=True)
