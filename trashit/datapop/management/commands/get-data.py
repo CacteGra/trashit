@@ -90,7 +90,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         while True:
             sleep(1)
-            all_apis = RegisterAPI.objects.all()
+            all_apis = RegisterAPI.objects.filter(api_endpoint__isnull=False)
             for all_api in all_apis:
                 continuing = False
                 if all_api.the_time > timezone.now() - timedelta(hours=24) and not all_api.first:
