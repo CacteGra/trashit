@@ -17,7 +17,7 @@ def main():
         r = result.elements()
         for i in r:
             point = Point(i.lat(), i.lon(), srid=4326)
-            PointField.objects.get_or_create(o_field=point)
+            Pointfield.objects.get_or_create(o_field=point)
             TrashSpecificities.objects.get_or_create(point_field=point_field)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="recycling"', out='body')
         result = overpass.query(query)
@@ -29,6 +29,6 @@ def main():
                 if "recycling:" in key and value == 'yes':
                     waste_type = key.replace("recycling:", '')
             point = Point(i.lat(), i.lon(), srid=4326)
-            point_field = PointField.objects.get_or_create(o_field=point)
+            point_field = Pointfield.objects.get_or_create(o_field=point)
             TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=waste_type)
                     
