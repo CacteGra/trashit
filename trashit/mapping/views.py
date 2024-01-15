@@ -40,8 +40,9 @@ class FirstLoad(LoginRequiredMixin, ListView):
         operated = OperatedField.objects.filter(field_type='Pointfield')
         p = Pointfield.objects.all()
         print(p[0].o_field)
-        closest_trashes = Pointfield.objects.filter(operated_field=operated[0],o_field__distance_lte=(point,D(m=100)))
-        if not closest_trashes:
+        if not operated:
+            closest_trashes = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=100)))
+        else:
             closest_trashes = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=100)))
         closest_trashes.count()
         if closest_trashes:
