@@ -96,8 +96,9 @@
   <link rel="stylesheet" type="text/css" href="{% static 'quaggaJS/css/styles.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap/dist/css/bootstrap.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.css' %}" />
+  <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+  <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script>
     function mapInit(map, options) {
         //L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
@@ -251,7 +252,7 @@
           function highlightTrash(e) {
            var id = this.options.title;
            var targetTrash = document.getElementById(id+" modal");
-           $(targetTrash).modal('toggle');
+           targetTrash.modal('toggle');
             // The width and height of the captured photo. We will set the
             // width to the value defined here, but the height will be
             // calculated based on the aspect ratio of the input stream.
