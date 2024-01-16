@@ -96,9 +96,9 @@
   <link rel="stylesheet" type="text/css" href="{% static 'quaggaJS/css/styles.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap/dist/css/bootstrap.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.css' %}" />
-  <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
-  <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.min.js' %}"></script>
-  <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}">
+  <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script>
     function mapInit(map, options) {
         //L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
         //L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiY2FjdGVncmEiLCJhIjoiY2xwY256MHZ2MHJ3ajJrczludnJjaG96bSJ9.Of5KxdOT9Czr5u3hVpbduw', {
@@ -320,7 +320,7 @@
             // drawing that to the screen, we can change its size and/or apply
             // other changes before drawing it.
           
-            f unction takepicture() {
+            function takepicture() {
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
