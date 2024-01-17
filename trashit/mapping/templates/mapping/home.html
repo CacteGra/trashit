@@ -58,12 +58,12 @@
       }
       
       .camera {
-        width: 340px;
+        width: 280px;
         display: inline-block;
       }
       
       .output {
-        width: 340px;
+        width: 280px;
         display: inline-block;
         vertical-align: top;
       }
@@ -267,9 +267,9 @@
             // The various HTML elements we need to configure or control. These
             // will be set by the startup() function.
           
-            var video = document.querySelector("video#video");
-            var canvas = document.getElementById("canvas");
-            var photo = document.getElementById("photo");
+            var video = document.querySelector("video#"+id+" video");
+            var canvas = document.getElementById(id+" canvas");
+            var photo = document.getElementById(id+" photo");
             var startbutton = document.getElementById("startbutton");
         
             navigator.mediaDevices
@@ -291,14 +291,10 @@
             canvas.setAttribute("height", height);
             streaming = true;
                         
-            startbutton.addEventListener(
-              "click",
-              (ev) => {
-                takepicture();
-                ev.preventDefault();
-              },
-              false,
-            );
+            document.getElementById("startbutton").onclick = function(ev) {
+              takepicture();
+              ev.preventDefault();
+            };
         
             clearphoto();
           
@@ -350,7 +346,7 @@
              }
            }
          };
-         $(document).on( 'click', '.trashSelect', function () {
+         $(document).on('click', '.trashSelect', function () {
            var id = this.options.title;
            var targetTrash = document.getElementById(id+" modal");
            $(targetTrash).modal('toggle');
@@ -372,7 +368,7 @@
                element.style.background = "#fff";
              }
            }
-         })
+         });
        document.getElementById("add-menu").onclick = function() {
          var dumpNotif = document.getElementById("dumping-notif");
          theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
