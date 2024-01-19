@@ -42,8 +42,6 @@
       #video {
         border: 1px solid black;
         box-shadow: 2px 2px 3px black;
-        width: 320px;
-        height: 240px;
       }
       
       #photo {
@@ -93,7 +91,6 @@
   {% leaflet_css %}
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.1.0/dist/MarkerCluster.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.1.0/dist/MarkerCluster.Default.css"/>
-  <link rel="stylesheet" type="text/css" href="{% static 'quaggaJS/css/styles.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap/dist/css/bootstrap.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.css' %}" />
   <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
@@ -270,8 +267,8 @@
             var video = document.getElementById(id+"video");
             var canvas = document.getElementById(id+" canvas");
             var photo = document.getElementById(id+" photo");
-            var startbutton = document.getElementById("startbutton");
-        
+            var startbutton = document.getElementById(id+" startbutton");
+            clearphoto();
             navigator.mediaDevices
               .getUserMedia({ video: true, audio: false })
               .then(function (stream) {
@@ -308,7 +305,7 @@
                 false,
               );
                         
-            document.getElementById("startbutton").onclick = function(ev) {
+            document.getElementById(id+" startbutton").onclick = function(ev) {
               takepicture();
               ev.preventDefault();
             };
