@@ -1,7 +1,7 @@
 {% load static %}
 <div class="modal fade" id="{{ trash.id }} modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen-sm-down">
-    <div class="modal-content">
+    <div class="modal-content {{ trash.id }}">
       <div class="modal-header">
         <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">Trash</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -9,15 +9,12 @@
       <div class="modal-body">
         <div class="camera">
           <video autoplay="true" id="{{ trash.id }}video">Video stream not available.</video>
-          <button id="{{ trash.id }} startbutton">Take photo</button>
+          <button class="btn btn-success send-issue" id="{{ trash.id }} startbutton">Take photo</button>
         </div>
         <canvas id="{{ trash.id }} canvas"> </canvas>
         <div class="output">
           <img id="{{ trash.id }} photo" alt="The screen capture will appear in this box." />
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger send-issue" id="{{ trash.id }}" data-bs-dismiss="modal">Report Trash</button>
       </div>
     </div>
   </div>

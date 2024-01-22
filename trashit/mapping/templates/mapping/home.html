@@ -43,7 +43,11 @@
         border: 1px solid black;
         box-shadow: 2px 2px 3px black;
       }
-      
+ 
+      #canvas {
+        display: none;
+      }
+
       #photo {
         border: 1px solid black;
         box-shadow: 2px 2px 3px black;
@@ -264,6 +268,7 @@
             // The various HTML elements we need to configure or control. These
             // will be set by the startup() function.
           
+            var modalContent = document.getElementById("modal-content "+id);
             var video = document.getElementById(id+"video");
             var canvas = document.getElementById(id+" canvas");
             var photo = document.getElementById(id+" photo");
@@ -329,6 +334,25 @@
             // other changes before drawing it.
           
             function takepicture() {
+              html = `
+              <div class="modal-dialog modal-fullscreen-sm-down">
+                <div class="modal-content `+id+`">
+                  <div class="modal-header">
+                    <h1 class="trashSelect modal-title fs-5" id="`+id+`">Trash</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <canvas id="`+id+` canvas"> </canvas>
+                    <div class="output">
+                      <img id="`+id+` photo" alt="The screen capture will appear in this box." />
+                      <button type="button" class="btn btn-success send-info" id="`+id+`" data-bs-dismiss="modal">Retake Photo</button>
+                      <button type="button" class="btn btn-success send-issue" id="`+id+`" data-bs-dismiss="modal">Report Trash</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              `;
+              modalContent.replaceWith(html);
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
@@ -341,6 +365,50 @@
                 clearphoto();
               }
             }
+
+            function retakepicture() {
+              html = `
+              <div class="modal-dialog modal-fullscreen-sm-down">
+                <div class="modal-content `+id+`">
+                  <div class="modal-header">
+                    <h1 class="trashSelect modal-title fs-5" id="`+id+`">Trash</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="camera">
+                      <video autoplay="true" id="`+id+`video">Video stream not available.</video>
+                      <button class="btn btn-success send-issue" id="`+id+` startbutton">Take Photo</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              `;
+              modalContent.replaceWith(html);
+            }
+
+            function sendpicture() {
+              var base64ImageContent = photo.replace(/^data:image\/(png|jpg);base64,/, "");
+              var blob = base64ToBlob(base64ImageContent, 'image/png'); 
+              var formData = new FormData();
+              formData.append('picture', blob);
+              formData.append('id', id);
+              $.ajax({
+                url: "{% url 'report_trash' %}",
+                type: "POST",
+                data: formData,
+                headers: {
+                  "X-Requested-With": "XMLHttpRequest",
+                  "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
+                },
+                success: (data) => {
+                  console.log(data);
+                },
+                error: (error) => {
+                  console.log(error);
+                }
+                });
+            }
+
            for (marker of markers) {
              if (marker.options.title == id) {
                marker.setIcon(defaultIcon);
