@@ -319,16 +319,6 @@
               takepicture();
               ev.preventDefault();
             };
-
-            document.getElementById(id+"  retake picture").onclick = function(ev) {
-              retakepicture();
-              ev.preventDefault();
-            };
-
-            document.getElementById(id+"  report trash").onclick = function(ev) {
-              sendpicture();
-              ev.preventDefault();
-            };
                   
             // Fill the photo with an indication that none has been
             // captured.
@@ -351,10 +341,10 @@
             function takepicture() {                 
               $(camera).html("");
               html = `
-              <button type="button" class="btn btn-success send-info" id="`+id+` retake picture" data-bs-dismiss="modal">Retake Photo</button>
-              <button type="button" class="btn btn-success send-issue" id="`+id+` report trash" data-bs-dismiss="modal">Report Trash</button>
+              <button type="button" class="btn btn-success send-info" id="`+id+` retake picture" data-bs-dismiss="modal" onclick="retakepicture()">Retake Photo</button>
+              <button type="button" class="btn btn-success send-issue" id="`+id+` report trash" data-bs-dismiss="modal" onclick="sendpicture()">Report Trash</button>
               `
-              $(output).innerHTML = html;
+              $(output).innerHTML = html);
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
