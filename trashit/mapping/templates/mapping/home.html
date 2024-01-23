@@ -44,7 +44,7 @@
         box-shadow: 2px 2px 3px black;
       }
  
-      #canvas {
+      .canvas {
         display: none;
       }
 
@@ -320,8 +320,13 @@
               ev.preventDefault();
             };
 
-            document.getElementById(id+" startbutton").onclick = function(ev) {
-              takepicture();
+            document.getElementById(id+"  retake picture").onclick = function(ev) {
+              retakepicture();
+              ev.preventDefault();
+            };
+
+            document.getElementById(id+"  report trash").onclick = function(ev) {
+              sendpicture();
               ev.preventDefault();
             };
                   
@@ -346,10 +351,10 @@
             function takepicture() {                 
               $(camera).html("");
               html = `
-              <button type="button" class="btn btn-success send-info" id="`+id+` " data-bs-dismiss="modal">Retake Photo</button>
-              <button type="button" class="btn btn-success send-issue" id="`+id+`" data-bs-dismiss="modal">Report Trash</button>
+              <button type="button" class="btn btn-success send-info" id="`+id+` retake picture" data-bs-dismiss="modal">Retake Photo</button>
+              <button type="button" class="btn btn-success send-issue" id="`+id+` report trash" data-bs-dismiss="modal">Report Trash</button>
               `
-              $(output).innerHTML(html);
+              $(output).innerHTML = html;
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
