@@ -268,48 +268,58 @@
             // The various HTML elements we need to configure or control. These
             // will be set by the startup() function.
           
-            var modalContent = document.getElementById("modal-content "+id);
+            var modalContent = document.getElementById("modal content "+id);
             var video = document.getElementById(id+"video");
             var canvas = document.getElementById(id+" canvas");
             var photo = document.getElementById(id+" photo");
+            var camera = document.getElementById("camera "+id);
+            var output = document.getElementById("output "+id);
             var startbutton = document.getElementById(id+" startbutton");
             clearphoto();
-            navigator.mediaDevices
-              .getUserMedia({ video: true, audio: false })
-              .then(function (stream) {
-                let genders = Object.keys(stream);
-                console.log(genders);
-                window.stream = stream;
-                video.srcObject = stream;
-                video.play();
-              })
-              .catch(function (err) {
-                console.error(`An error occurred: ${err}`);
-              });
-        
-              video.addEventListener(
-                "canplay",
-                (ev) => {
-                  if (!streaming) {
-                    height = video.videoHeight / (video.videoWidth / width);
+            function gettingMedia() {
+              navigator.mediaDevices
+                .getUserMedia({ video: true, audio: false })
+                .then(function (stream) {
+                  let genders = Object.keys(stream);
+                  console.log(genders);
+                  window.stream = stream;
+                  video.srcObject = stream;
+                  video.play();
+                })
+                .catch(function (err) {
+                  console.error(`An error occurred: ${err}`);
+                });
           
-                    // Firefox currently has a bug where the height can't be read from
-                    // the video, so we will make assumptions if this happens.
-          
-                    if (isNaN(height)) {
-                      height = width / (4 / 3);
+                video.addEventListener(
+                  "canplay",
+                  (ev) => {
+                    if (!streaming) {
+                      height = video.videoHeight / (video.videoWidth / width);
+            
+                      // Firefox currently has a bug where the height can't be read from
+                      // the video, so we will make assumptions if this happens.
+            
+                      if (isNaN(height)) {
+                        height = width / (4 / 3);
+                      }
+            
+                      video.setAttribute("width", width);
+                      video.setAttribute("height", height);
+                      canvas.setAttribute("width", width);
+                      canvas.setAttribute("height", height);
+                      streaming = true;
                     }
-          
-                    video.setAttribute("width", width);
-                    video.setAttribute("height", height);
-                    canvas.setAttribute("width", width);
-                    canvas.setAttribute("height", height);
-                    streaming = true;
-                  }
-                },
-                false,
-              );
-                        
+                  },
+                  false,
+                );
+            }
+            gettingMedia();
+
+            document.getElementById(id+" startbutton").onclick = function(ev) {
+              takepicture();
+              ev.preventDefault();
+            };
+
             document.getElementById(id+" startbutton").onclick = function(ev) {
               takepicture();
               ev.preventDefault();
@@ -333,26 +343,13 @@
             // drawing that to the screen, we can change its size and/or apply
             // other changes before drawing it.
           
-            function takepicture() {
+            function takepicture() {                 
+              $(camera).html("");
               html = `
-              <div class="modal-dialog modal-fullscreen-sm-down">
-                <div class="modal-content `+id+`">
-                  <div class="modal-header">
-                    <h1 class="trashSelect modal-title fs-5" id="`+id+`">Trash</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <canvas id="`+id+` canvas"> </canvas>
-                    <div class="output">
-                      <img id="`+id+` photo" alt="The screen capture will appear in this box." />
-                      <button type="button" class="btn btn-success send-info" id="`+id+`" data-bs-dismiss="modal">Retake Photo</button>
-                      <button type="button" class="btn btn-success send-issue" id="`+id+`" data-bs-dismiss="modal">Report Trash</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              `;
-              modalContent.replaceWith(html);
+              <button type="button" class="btn btn-success send-info" id="`+id+` " data-bs-dismiss="modal">Retake Photo</button>
+              <button type="button" class="btn btn-success send-issue" id="`+id+`" data-bs-dismiss="modal">Report Trash</button>
+              `
+              $(output).innerHTML(html);
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
@@ -368,22 +365,14 @@
 
             function retakepicture() {
               html = `
-              <div class="modal-dialog modal-fullscreen-sm-down">
-                <div class="modal-content `+id+`">
-                  <div class="modal-header">
-                    <h1 class="trashSelect modal-title fs-5" id="`+id+`">Trash</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="camera">
-                      <video autoplay="true" id="`+id+`video">Video stream not available.</video>
-                      <button class="btn btn-success send-issue" id="`+id+` startbutton">Take Photo</button>
-                    </div>
-                  </div>
-                </div>
+              <div class="camera" id="camera `+id+`">
+                <video autoplay="true" id="`+id+`video">Video stream not available.</video>
+                <button class="btn btn-success send-issue" id="`+id+` startbutton">Take photo</button>
               </div>
-              `;
-              modalContent.replaceWith(html);
+              `
+              $(camera).html(html);
+              clearphoto();
+              gettingMedia();
             }
 
             function sendpicture() {
