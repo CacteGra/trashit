@@ -284,12 +284,11 @@
                   console.log(genders);
                   window.stream = stream;
                   video.srcObject = stream;
-                  video.stop();
+                  video.play();
                 })
                 .catch(function (err) {
                   console.error(`An error occurred: ${err}`);
                 });
-              }
           
                 video.addEventListener(
                   "canplay",
@@ -323,8 +322,9 @@
                   console.log(genders);
                   window.stream = stream;
                   video.srcObject = stream;
-                  video.play();
+                  video.stop();
                 })
+              }
 
             gettingMedia();
 
@@ -352,7 +352,7 @@
             // other changes before drawing it.
           
             function takepicture() {
-              stoppingMedia();               
+              stoppingMedia();             
               html = `
               <button type="button" class="btn btn-success send-info" id="`+id+` retake picture" data-bs-dismiss="modal" onclick="retakepicture()">Retake Photo</button>
               <button type="button" class="btn btn-success send-issue" id="`+id+` report trash" data-bs-dismiss="modal" onclick="sendpicture()">Report Trash</button>
