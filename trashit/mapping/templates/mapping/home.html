@@ -284,11 +284,12 @@
                   console.log(genders);
                   window.stream = stream;
                   video.srcObject = stream;
-                  video.play();
+                  video.stop();
                 })
                 .catch(function (err) {
                   console.error(`An error occurred: ${err}`);
                 });
+              }
           
                 video.addEventListener(
                   "canplay",
@@ -313,6 +314,18 @@
                   false,
                 );
             }
+
+            function stoppingMedia() {
+              navigator.mediaDevices
+                .getUserMedia({ video: true, audio: false })
+                .then(function (stream) {
+                  let genders = Object.keys(stream);
+                  console.log(genders);
+                  window.stream = stream;
+                  video.srcObject = stream;
+                  video.play();
+                })
+
             gettingMedia();
 
             document.getElementById(id+" startbutton").onclick = function(ev) {
@@ -338,13 +351,13 @@
             // drawing that to the screen, we can change its size and/or apply
             // other changes before drawing it.
           
-            function takepicture() {                 
-              $(camera).html("");
+            function takepicture() {
+              stoppingMedia();               
               html = `
               <button type="button" class="btn btn-success send-info" id="`+id+` retake picture" data-bs-dismiss="modal" onclick="retakepicture()">Retake Photo</button>
               <button type="button" class="btn btn-success send-issue" id="`+id+` report trash" data-bs-dismiss="modal" onclick="sendpicture()">Report Trash</button>
               `
-              $(output).innerHTML = html);
+              $(output).innerHTML = html;
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
@@ -359,13 +372,6 @@
             }
 
             function retakepicture() {
-              html = `
-              <div class="camera" id="camera `+id+`">
-                <video autoplay="true" id="`+id+`video">Video stream not available.</video>
-                <button class="btn btn-success send-issue" id="`+id+` startbutton">Take photo</button>
-              </div>
-              `
-              $(camera).html(html);
               clearphoto();
               gettingMedia();
             }
