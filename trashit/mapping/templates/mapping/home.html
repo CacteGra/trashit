@@ -275,6 +275,8 @@
             var camera = document.getElementById("camera "+id);
             var output = document.getElementById("output "+id);
             var startbutton = document.getElementById(id+" startbutton");
+            var retakebutton = document.getElementById(id+" retake picture");
+            var reportbutton = document.getElementById(id+" report trash");
             clearphoto();
             function gettingMedia() {
               navigator.mediaDevices
@@ -321,8 +323,10 @@
                   let genders = Object.keys(stream);
                   console.log(genders);
                   window.stream = stream;
-                  video.srcObject = stream;
-                  video.stop();
+                  stream.getTracks().forEach(track => {
+                    if (track.readyState == 'live' && track.kind === 'video') {
+                      track.stop();
+                    }
                 })
               }
 
@@ -353,11 +357,8 @@
           
             function takepicture() {
               stoppingMedia();             
-              html = `
-              <button type="button" class="btn btn-success send-info" id="`+id+` retake picture" data-bs-dismiss="modal" onclick="retakepicture()">Retake Photo</button>
-              <button type="button" class="btn btn-success send-issue" id="`+id+` report trash" data-bs-dismiss="modal" onclick="sendpicture()">Report Trash</button>
-              `
-              $(output).innerHTML = html;
+              $(retakebutton).toggle();
+              $(reportbutton).toggle();
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
@@ -372,6 +373,8 @@
             }
 
             function retakepicture() {
+              $(retakebutton).toggle();
+              $(reportbutton).toggle();
               clearphoto();
               gettingMedia();
             }
@@ -462,26 +465,7 @@
           }
         }
         return cookieValue;
-      }
-      $(document).on( 'click', '.send-issue', function () {
-      var cosa = this.id;
-      alert(cosa);
-      $.ajax({
-        url: "{% url 'report_trash' %}",
-        type: "POST",
-        data: {'cosa': cosa},
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
-        },
-        success: (data) => {
-          console.log(data);
-        },
-        error: (error) => {
-          console.log(error);
-        }
-        });
-      });
+      };
     };
 
   </script>
