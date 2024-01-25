@@ -4,12 +4,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">Trash</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="{{ trash.id }} close"></button>
       </div>
-      <div class="modal-body">
-        <div class="camera" id="camera {{ trash.id }}">
+      <div class="modal-body position-absolute top-50 start-50 translate-middle">
+        <div class="camera" id="camera {{ trash.id }}" style="display: block;">
           <video autoplay="true" id="{{ trash.id }}video">Video stream not available.</video>
-          <button class="btn btn-success send-issue" id="{{ trash.id }} startbutton">Take photo</button>
+          <div class="video-content">
+            <button class="btn btn-success send-issue" id="{{ trash.id }} startbutton">Take photo</button>*
+          </div>
         </div>
         <canvas class="canvas" id="{{ trash.id }} canvas"> </canvas>
         <div class="output" id="output {{ trash.id }}" style="display: none;">

@@ -61,9 +61,22 @@
       
       .camera {
         width: 280px;
-        display: inline-block;
+        position: relative;
       }
       
+      .camera .video {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background-color: #ccc;
+      }
+      
+      .camera .video-content {
+        position: absolute;
+        bottom: 0px;
+      }
+
       .output {
         width: 280px;
         display: inline-block;
@@ -277,8 +290,9 @@
             var startbutton = document.getElementById(id+" startbutton");
             var retakebutton = document.getElementById(id+" retake picture");
             var reportbutton = document.getElementById(id+" report trash");
-            $(camera).style.display = "block";
-            $(output).style.display = "none";
+            var closebutton = document.getElementById(id+" close");
+            camera.style.display = "block";
+            output.style.display = "none";
             clearphoto();
             function gettingMedia() {
               navigator.mediaDevices
@@ -343,6 +357,11 @@
               ev.preventDefault();
             };
 
+            document.getElementById(id+" report trash").onclick = function(ev) {
+              stoppingMedia();
+              ev.preventDefault();
+            };
+
             // Fill the photo with an indication that none has been
             // captured.
           
@@ -363,8 +382,8 @@
           
             function takepicture() {
               stoppingMedia();    
-              $(camera).style.display = "none";       
-              $(output).style.display = "block";
+              camera.style.display = "none";    
+              output.style.display = "block";
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
@@ -379,8 +398,8 @@
             }
 
             function retakepicture() {
-              $(camera).style.display = "block";
-              $(output).style.display = "none";
+              camera.style.display = "block";
+              output.style.display = "none";
               clearphoto();
               gettingMedia();
             }
