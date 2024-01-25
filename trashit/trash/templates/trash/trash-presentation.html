@@ -6,7 +6,7 @@
         <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">Trash</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="{{ trash.id }} close"></button>
       </div>
-      <div class="modal-body position-absolute top-50 start-50 translate-middle">
+      <div class="modal-body">
         <div class="camera" id="camera {{ trash.id }}" style="display: block;">
           <video autoplay="true" id="{{ trash.id }}video">Video stream not available.</video>
           <div class="video-content">
@@ -16,8 +16,8 @@
         <canvas class="canvas" id="{{ trash.id }} canvas"> </canvas>
         <div class="output" id="output {{ trash.id }}" style="display: none;">
           <img id="{{ trash.id }} photo" alt="The screen capture will appear in this box." />
-          <button type="button" class="btn btn-success send-info" id="{{ trash.id }} retake picture" data-bs-dismiss="modal" onclick="retakepicture()">Retake Photo</button>
-          <button type="button" class="btn btn-success send-issue" id="{{ trash.id }} report trash" data-bs-dismiss="modal" onclick="sendpicture()">Report Trash</button>
+          <button type="button" class="btn btn-success send-info" id="{{ trash.id }} retake picture" data-bs-dismiss="modal">Retake Photo</button>
+          <button type="button" class="btn btn-success send-issue" id="{{ trash.id }} report trash" data-bs-dismiss="modal">Report Trash</button>
         </div>
       </div>
     </div>
