@@ -277,6 +277,8 @@
             var startbutton = document.getElementById(id+" startbutton");
             var retakebutton = document.getElementById(id+" retake picture");
             var reportbutton = document.getElementById(id+" report trash");
+            $(camera).style.display = "block";
+            $(output).style.display = "none";
             clearphoto();
             function gettingMedia() {
               navigator.mediaDevices
@@ -317,18 +319,12 @@
             }
 
             function stoppingMedia() {
-              navigator.mediaDevices
-                .getUserMedia({ video: true, audio: false })
-                .then(function (stream) {
-                  let genders = Object.keys(stream);
-                  console.log(genders);
-                  window.stream = stream;
-                  stream.getTracks().forEach(track => {
-                    if (track.readyState == 'live' && track.kind === 'video') {
-                      track.stop();
-                    }
-                })
-              }
+                  const stream = video.srcObject;
+                  const tracks = stream.getTracks();
+                  tracks.forEach((track) => {
+                    track.stop();
+                  });
+            }
 
             gettingMedia();
 
@@ -336,7 +332,17 @@
               takepicture();
               ev.preventDefault();
             };
-                  
+              
+            document.getElementById(id+" retake picture").onclick = function(ev) {
+              retakepicture();
+              ev.preventDefault();
+            };
+
+            document.getElementById(id+" report trash").onclick = function(ev) {
+              sendpicture();
+              ev.preventDefault();
+            };
+
             // Fill the photo with an indication that none has been
             // captured.
           
@@ -356,9 +362,9 @@
             // other changes before drawing it.
           
             function takepicture() {
-              stoppingMedia();             
-              $(retakebutton).toggle();
-              $(reportbutton).toggle();
+              stoppingMedia();    
+              $(camera).style.display = "none";       
+              $(output).style.display = "block";
               const context = canvas.getContext("2d");
               if (width && height) {
                 canvas.width = width;
@@ -373,8 +379,8 @@
             }
 
             function retakepicture() {
-              $(retakebutton).toggle();
-              $(reportbutton).toggle();
+              $(camera).style.display = "block";
+              $(output).style.display = "none";
               clearphoto();
               gettingMedia();
             }
