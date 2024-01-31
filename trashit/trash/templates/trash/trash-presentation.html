@@ -8,16 +8,18 @@
       </div>
       <div class="modal-body">
         <div class="camera" id="camera {{ trash.id }}" style="display: block;">
-          <video autoplay="true" id="{{ trash.id }}video">Video stream not available.</video>
-          <div class="video-content">
+          <video autoplay="true" class="video" id="{{ trash.id }}video">Video stream not available.</video>
+          <div class="video-content start-50 translate-middle">
             <button class="btn btn-success send-issue" id="{{ trash.id }} startbutton">Take photo</button>
           </div>
         </div>
         <canvas class="canvas" id="{{ trash.id }} canvas"> </canvas>
         <div class="output" id="output {{ trash.id }}">
           <img class="photo" id="{{ trash.id }} photo" alt="The screen capture will appear in this box." />
-          <button type="button" class="btn btn-success send-info" id="{{ trash.id }} retake picture">Retake Photo</button>
-          <button type="button" class="btn btn-success send-issue" id="{{ trash.id }} report trash">Report Trash</button>
+          <div class="video-content">
+	      <button type="button" class="btn btn-success send-info retake" id="{{ trash.id }} retake picture">Retake Photo</button>
+              <button type="button" class="btn btn-success send-issue report" id="{{ trash.id }} report trash">Report Trash</button>
+	  </div>
         </div>
       </div>
     </div>
