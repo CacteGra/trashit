@@ -63,11 +63,11 @@
       }
 
       .retake {
-	transform: translate(75, -50%) !important;
+	transform: translate(75%, -50%) !important;
       }
 
       .report {
-        transform: translate(100, -50%) !important;
+        transform: translate(100%, -50%) !important;
       }
 
       .output {
@@ -335,7 +335,8 @@
               ev.preventDefault();
             };
 
-            document.getElementById(id+" report trash").onclick = function(ev) {
+            var closeTrash = document.getElementsByClassName("close-trash")
+	      closeTrash[0].onclick = function(ev) {
               stoppingMedia();
               ev.preventDefault();
             };
@@ -382,28 +383,29 @@
               gettingMedia();
             }
 
-            function sendpicture() {
-              var base64ImageContent = photo.replace(/^data:image\/(png|jpg);base64,/, "");
-              var blob = base64ToBlob(base64ImageContent, 'image/png'); 
-              var formData = new FormData();
-              formData.append('picture', blob);
-              formData.append('id', id);
-              $.ajax({
-                url: "{% url 'report_trash' %}",
-                type: "POST",
-                data: formData,
+function sendpicture() {
+var patch = '{% url "report_trash" %}';
+var post_data = {
+  'csrfmiddlewaretoken':"{{ csrf_token }}",
+ 'imageBase64':photo,
+ g: 'jjj',
+};
+
+$.ajax({
+  type: "POST",
+  url: patch,
+  data:post_data,
+  dataType: 'json',
+  processData: false,
                 headers: {
                   "X-Requested-With": "XMLHttpRequest",
                   "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
                 },
-                success: (data) => {
-                  console.log(data);
-                },
-                error: (error) => {
-                  console.log(error);
-                }
-                });
-            }
+success: function(data){
+
+}
+});
+}
 
            for (marker of markers) {
              if (marker.options.title == id) {

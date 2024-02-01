@@ -18,12 +18,15 @@ class ReportTrash(LoginRequiredMixin, generic.DetailView):
     model = User
     context_object_name = 'user'
     def post(self, request, *arg, **kwargs):
-        trash_id = request.POST['id']
-        t = TrashSpecificities.objects.get(id=trash_id)
-        t.photo = request.POST['picture']
-        t.save()
+        if request.method == 'POST':
+            response_json = request.POST
+            response_json = json.dumps(response_json)
+            data = json.loads(response_json)
 
-        return JsonResponse({"status": "ok"})
+            print(data['imageBase64'])
+
+
+        return JsonResponse(data, safe=False)
 
 
 class ReportDump(LoginRequiredMixin, generic.DetailView):
