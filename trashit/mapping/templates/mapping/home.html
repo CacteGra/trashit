@@ -385,18 +385,12 @@
 
 function sendpicture() {
 var patch = '{% url "report_trash" %}';
-var post_data = {
-  'csrfmiddlewaretoken':"{{ csrf_token }}",
- 'imageBase64':photo,
- g: 'jjj',
-};
-
+var post_data = canvas.toDataURL("image/png");
+console.log(post_data);
 $.ajax({
-  type: "POST",
+  method: "POST",
   url: patch,
-  data:post_data,
-  dataType: 'json',
-  processData: false,
+  data: {'imageBase64': post_data, 'id': id},
                 headers: {
                   "X-Requested-With": "XMLHttpRequest",
                   "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
