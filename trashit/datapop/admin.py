@@ -1,6 +1,6 @@
 from django.contrib.gis.admin import OSMGeoAdmin
-from .models import TrashSpecificities
+from .models import Pointfield
 
 @admin.register(Shop)
-class ShopAdmin(OSMGeoAdmin):
+class IssueAdmin(OSMGeoAdmin):
     list_display = ('trashpecificities', 'o_field')
