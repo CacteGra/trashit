@@ -206,6 +206,23 @@ class TypedOnlyPanel(FieldPanel):
             choices = ModelChoiceIterator(self.form.fields[self.field_name])
             return choices
 
+class OperatedTemplate(SnippetViewSet):
+    model = OperatedField
+
+    panels = [
+        # MultipleChooserPanel("the_operated",
+        #     chooser_field_name="chosen",
+        #     label="API Key(s)", min_num=0),
+        # InlinePanel("chosen_select"),
+        # FieldPanel("register_api_chosen", widget=CustomCheckboxSelectMultiple),
+        # FieldPanel("register_api_chosen", widget=CustomMultipleChoiceField),
+        # FieldPanel("register_api_chosen", widget=OperatedChooserWidget),
+        # FieldPanel("register_api_chosen", widget=forms.CheckboxSelectMultiple(choices=[RegisterAPIChosen.objects.filter(field_type__isnull=False)])),
+        TypedOnlyPanel("register_api_chosen", widget_class=CheckboxSelectMultiple),
+        FieldPanel('field_type'),
+        FieldPanel('operation'),
+    ]
+
 class IssueTemplate(SnippetViewSet):
     model = RegisterAPIChosen
     index_view_class = RegisterAPIChosenIndex
