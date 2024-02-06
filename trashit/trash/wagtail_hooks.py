@@ -16,7 +16,7 @@ from .models import TrashSpecificities
 
 from .views import issue_chooser_viewset
 
-from .widgets import OperatedChooserWidget
+from .widgets import IssueChooserWidget
 
 @hooks.register("register_admin_viewset")
 def register_viewsets():
