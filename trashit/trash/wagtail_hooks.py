@@ -12,9 +12,7 @@ from wagtail.admin.filters import WagtailFilterSet
 from django.utils.module_loading import import_string
 from django import forms
 
-from .all_functions import unique_get_data, one_list_item
-
-from .models import RegisterAPI, RegisterAPIChosen, OperatedField
+from .models import TrashSpecificities
 
 from .views import issue_chooser_viewset
 
@@ -25,8 +23,8 @@ def register_viewsets():
     return [issue_chooser_viewset]
 
 class IssueTemplate(SnippetViewSet):
-    model = RegisterAPIChosen
-    index_view_class = RegisterAPIChosenIndex
+    model = TrashSpecificities
+    index_view_class = TrashSpecificitiesIndex
 
     panels = [
         FieldPanel("point_field"),
