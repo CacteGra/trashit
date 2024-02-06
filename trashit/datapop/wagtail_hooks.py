@@ -16,13 +16,13 @@ from .all_functions import unique_get_data, one_list_item
 
 from .models import RegisterAPI, RegisterAPIChosen, OperatedField
 
-from .views import chosen_chooser_viewset, operated_chooser_viewset, issue_chooser_viewset
+from .views import chosen_chooser_viewset, operated_chooser_viewset
 
 from .widgets import OperatedChooserWidget
 
 @hooks.register("register_admin_viewset")
 def register_viewsets():
-    return [chosen_chooser_viewset, operated_chooser_viewset, issue_chooser_viewset]
+    return [chosen_chooser_viewset, operated_chooser_viewset]
 
 @hooks.register('after_create_snippet')
 def first_connection(request, register_api):
@@ -206,35 +206,8 @@ class TypedOnlyPanel(FieldPanel):
             choices = ModelChoiceIterator(self.form.fields[self.field_name])
             return choices
 
-class OperatedTemplate(SnippetViewSet):
-    model = OperatedField
-
-    panels = [
-        # MultipleChooserPanel("the_operated",
-        #     chooser_field_name="chosen",
-        #     label="API Key(s)", min_num=0),
-        # InlinePanel("chosen_select"),
-        # FieldPanel("register_api_chosen", widget=CustomCheckboxSelectMultiple),
-        # FieldPanel("register_api_chosen", widget=CustomMultipleChoiceField),
-        # FieldPanel("register_api_chosen", widget=OperatedChooserWidget),
-        # FieldPanel("register_api_chosen", widget=forms.CheckboxSelectMultiple(choices=[RegisterAPIChosen.objects.filter(field_type__isnull=False)])),
-        TypedOnlyPanel("register_api_chosen", widget_class=CheckboxSelectMultiple),
-        FieldPanel('field_type'),
-        FieldPanel('operation'),
-    ]
-
-class IssueTemplate(SnippetViewSet):
-    model = RegisterAPIChosen
-    index_view_class = RegisterAPIChosenIndex
-
-    panels = [
-        FieldPanel("point_field"),
-    ]
-
 register_snippet(RegisterAPITemplate)
 
 register_snippet(RegisterAPIChosenTemplate)
 
 register_snippet(OperatedTemplate)
-
-register_snippet(IssueTemplate)
