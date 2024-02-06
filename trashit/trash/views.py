@@ -99,11 +99,11 @@ class IssueChooseView(ChooseView):
             for hook in hooks.get_hooks(self.construct_queryset_hook_name):
                 objects = hook(objects, self.request)
                 print(objects.count())
-                objects = objects.filter(reported__isnull=False)
+                objects = objects.filter(reported=True)
         if self.filter_form.is_valid():
             objects = self.filter_form.filter(objects)
             print(objects.count())
-            objects = objects.filter(reported__isnull=False)
+            objects = objects.filter(reported=True)
             print(objects.count())
         return objects
 
@@ -125,12 +125,12 @@ class IssueResultsView(ChooseResultsViewMixin, CreationFormMixin, BaseChooseView
             for hook in hooks.get_hooks(self.construct_queryset_hook_name):
                 objects = hook(objects, self.request)
                 print(objects.count())
-                objects = objects.filter(reported__isnull=False)
+                objects = objects.filter(reported=True)
                 print(objects.count())
         if self.filter_form.is_valid():
             objects = self.filter_form.filter(objects)
             print(objects.count())
-            objects = objects.filter(reported__isnull=False)
+            objects = objects.filter(reported=True)
             print(objects.count())
         return objects
 
@@ -151,8 +151,8 @@ class IssueChooserViewSet(ChooserViewSet):
     # The model can be specified as either the model class or an "app_label.model_name" string;
     # using a string avoids circular imports when accessing the StreamField block class (see below)
     model = "trash.TrashSpecificities"
-    # choose_view_class = OperatedChooseView
-    # choose_results_view_class = OperatedResultsView
+    choose_view_class = IssueChooseView
+    choose_results_view_class = IssueResultsView
 
     per_page = 50
 

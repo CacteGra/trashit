@@ -24,7 +24,6 @@ def register_viewsets():
 
 class IssueTemplate(SnippetViewSet):
     model = TrashSpecificities
-    index_view_class = TrashSpecificitiesIndex
 
     panels = [
         FieldPanel("point_field"),
