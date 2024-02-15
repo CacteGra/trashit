@@ -8,13 +8,16 @@ from django.forms.widgets import (CheckboxSelectMultiple, RadioSelect, Select,
                                   SelectMultiple)
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel, MultipleChooserPanel, InlinePanel
+
 from wagtail.admin.filters import WagtailFilterSet
 from django.utils.module_loading import import_string
 from django import forms
 
+from wagtailgeowidget.panels import LeafletPanel
+
 from .all_functions import unique_get_data, one_list_item
 
-from .models import RegisterAPI, RegisterAPIChosen, OperatedField
+from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield
 
 from .views import chosen_chooser_viewset, operated_chooser_viewset
 
@@ -224,8 +227,17 @@ class OperatedTemplate(SnippetViewSet):
         FieldPanel('operation'),
     ]
 
+class PointfieldTemplate(SnippetViewSet):
+    model = Pointfield
+
+    panels = [
+        LeafletPanel("o_field"),
+    ]
+
 register_snippet(RegisterAPITemplate)
 
 register_snippet(RegisterAPIChosenTemplate)
 
 register_snippet(OperatedTemplate)
+
+register_snippet(PointfieldTemplate)

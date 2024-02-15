@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "wagtailmetadata",
     "django_crontab",
     "leaflet",
+    "wagtailgeowidget",
 ]
 
 MIDDLEWARE = [

@@ -4,7 +4,7 @@ from .models import Pointfield
 
 @admin.register(Pointfield)
 class PointfieldAdmin(OSMGeoAdmin):
-    list_display = ('o_field', 'trash_type', 'trashspecificities__reported')
+    list_display = ('o_field', 'trash_type')
 
     def trash_type(self, obj):
         return obj.trashspecificities.trash_type

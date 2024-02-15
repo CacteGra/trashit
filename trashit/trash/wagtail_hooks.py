@@ -8,9 +8,12 @@ from django.forms.widgets import (CheckboxSelectMultiple, RadioSelect, Select,
                                   SelectMultiple)
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel, MultipleChooserPanel, InlinePanel
+from wagtail.fields import StreamField
 from wagtail.admin.filters import WagtailFilterSet
 from django.utils.module_loading import import_string
 from django import forms
+
+from wagtailgeowidget.blocks import LeafletBlock
 
 from .models import TrashSpecificities
 
@@ -24,9 +27,17 @@ def register_viewsets():
 
 class IssueTemplate(SnippetViewSet):
     model = TrashSpecificities
+#    the_map = StreamField([
+#        ('pointfield__o_field', LeafletBlock()),
+#    ], use_json_field=True)
+
+    def getting_map(self, obj):
+        return obj.point_field.o_field
 
     panels = [
-        FieldPanel("point_field"),
+        #FieldPanel("getting_map"),
+        #FieldPanel("point_field"),
+        #FieldPanel("point_field", widget=the_map),
     ]
 
 register_snippet(IssueTemplate)
