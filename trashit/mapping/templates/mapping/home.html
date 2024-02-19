@@ -104,14 +104,14 @@
         };
         map.removeControl(map.zoomControl);
         var checking = false;
-        var markers = [];
-        var circles = [];
-        var markersLayer = new L.LayerGroup();
-        var circlesLayer = new L.LayerGroup();
-        var polygonsLayer = new L.LayerGroup();
-        polygonsLayer.addTo(map);
-        markersLayer.addTo(map);
-        circlesLayer.addTo(map);
+        layerGroups = {};
+        circleGroups = {};
+        {% for trash_type in trash_types %}
+        layerGroups[trash_type] = L.layerGroup().addTo(map);
+        circleGroups[trash_type] = L.layerGroup().addTo(map);
+        layerGroups[trash_type].addTo(map);
+        circleGroups[trash_type].addTo(map);
+        {% endfor %}
         var old_latlng = null;
         var trash_percentage = null;
         var user_marker = null;
@@ -181,35 +181,36 @@
                       var latlng = L.latLng(data0.lat, data0.lng);
                     }
 
-                    the_trash = L.marker(latlng, {title: data0.trash_id, icon: selectedIcon, marker_name:'trash'}).on('click', highlightTrash);
+                    the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id, icon: selectedIcon}).on('click', highlightTrash);
                     if (data0.trash_id == all_data[0].trash_id) {
                       $('.trashList').html('');
                     }
                     document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                    theLayer = layerGroups[data0.trash_type];
+                    if(map.hasLayer(theLayer)) {
+                    layerGroups[data0.trash_type].addLayer(the_trash);
                     circle = L.circle(latlng, data0.radius);
-                    markersLayer.addLayer(the_trash);
-                    circlesLayer.addLayer(circle);
-                    markers.push(the_trash);
-                    circles.push(circle);
+                    circleGroups[data0.trash_type].addLayer(circle);
+                    }
                     }
                    })
-                  } else if (markers.length > 0 && checking == false) {
-                    checking = true;
-                    $.when($.ajax({
-                        url: "{% url 'get_first_load' %}",
-                        data: { 'lat': lat, 'lng': lng, 'same_session': true},
-                        type:'GET',
-                    })).then(function(all_data) {
-                      for (data0 of all_data) {
-                        if (data0.reload) {
-                          $('.reload').html(data0.reload);
-                        }
-                        if (data0.lat) {
-                          var latlng = L.latLng(data0.lat, data0.lng);
-                        }
+                } else if (markers.length > 0 && checking == false) {
+                  checking = true;
+                  $.when($.ajax({
+                      url: "{% url 'get_first_load' %}",
+                      data: { 'lat': lat, 'lng': lng, 'same_session': true},
+                      type:'GET',
+                  })).then(function(all_data) {
+                    for (data0 of all_data) {
+                      if (data0.reload) {
+                        $('.reload').html(data0.reload);
                       }
+                      if (data0.lat) {
+                        var latlng = L.latLng(data0.lat, data0.lng);
+                      }
+                    }
                 checking = false;
-              })
+                })
               }
             }
              old_latlng = e.latlng;
@@ -241,7 +242,7 @@
            map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
          };
           function highlightTrash(e) {
-           var id = this.options.title;
+           var id = this.options.alt;
            var targetTrash = document.getElementById(id+" modal");
            $(targetTrash).modal('toggle');
             // The width and height of the captured photo. We will set the
@@ -383,26 +384,26 @@
               gettingMedia();
             }
 
-function sendpicture() {
-var patch = '{% url "report_trash" %}';
-var post_data = canvas.toDataURL("image/png");
-console.log(post_data);
-$.ajax({
-  method: "POST",
-  url: patch,
-  data: {'imageBase64': post_data, 'id': id},
-                headers: {
-                  "X-Requested-With": "XMLHttpRequest",
-                  "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
-                },
-success: function(data){
+            function sendpicture() {
+              var patch = '{% url "report_trash" %}';
+              var post_data = canvas.toDataURL("image/png");
+              console.log(post_data);
+              $.ajax({
+                method: "POST",
+                url: patch,
+                data: {'imageBase64': post_data, 'id': id},
+                              headers: {
+                                "X-Requested-With": "XMLHttpRequest",
+                                "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
+                              },
+              success: function(data){
 
-}
-});
-}
+              }
+              });
+            }
 
            for (marker of markers) {
-             if (marker.options.title == id) {
+             if (marker.options.alt == id) {
                marker.setIcon(defaultIcon);
               } else {
                marker.setIcon(selectedIcon);
@@ -419,11 +420,11 @@ success: function(data){
            }
          };
          $(document).on('click', '.trashSelect', function () {
-           var id = this.options.title;
+           var id = this.options.alt;
            var targetTrash = document.getElementById(id+" modal");
            $(targetTrash).modal('toggle');
            for (marker of markers) {
-             if (marker.options.title == id) {
+             if (marker.options.alt == id) {
                marker.setIcon(selectedIcon);
                map.panTo(marker.getLatLng());
              }
@@ -441,6 +442,37 @@ success: function(data){
              }
            }
          });
+         function filterTrash(trash_type) {
+          map.eachLayer(function(layer){
+            map.remove(layer);
+          }
+          $.when($.ajax({
+            url: "{% url 'filter_type' %}",
+            data: { 'lat': lat, 'lng': lng, 'type': trash_type},
+            type:'GET',
+          })).then(function(all_data) {
+          for (data0 of all_data) {
+            if (data0.reload) {
+              $('.reload').html(data0.reload);
+            }
+            if (data0.lat) {
+              var latlng = L.latLng(data0.lat, data0.lng);
+            }
+
+            the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id, icon: selectedIcon}).on('click', highlightTrash);
+            if (data0.trash_id == all_data[0].trash_id) {
+              $('.trashList').html('');
+            }
+            document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+            theLayer = layerGroups[data0.trash_type];
+            if(map.hasLayer(theLayer)) {
+            layerGroups[data0.trash_type].addLayer(the_trash);
+            circle = L.circle(latlng, data0.radius);
+            circleGroups[data0.trash_type].addLayer(circle);
+            }
+            }
+           })
+         };
        document.getElementById("add-menu").onclick = function() {
          var dumpNotif = document.getElementById("dumping-notif");
          theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
@@ -493,6 +525,16 @@ success: function(data){
       </a>
     </div>
   </div>
+</div>
+<div class="btn-group dropup">
+  <button type="button" class="btn btn-secondary dropdown-toggle bi bi-funnel-lg" data-bs-toggle="dropdown" aria-expanded="false">
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item filter" onclick="filterTrash('all')" href="#">Menu item</a></li>
+    {% for op in operated %}
+    <li><a class="dropdown-item filter" onclick="filterTrash('{{ op }}')" href="#">Menu item</a></li>
+    {% endfor %}
+  </ul>
 </div>
 <div>
   <button type="button" class="btn btn-secondary shadow rounded-circle btn-lg" id="add-menu"><i class="bi bi-plus-lg style="font-size: 35px;"></i></button>

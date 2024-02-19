@@ -9,11 +9,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'mapping/home.html'
+    def get(self, request):
+        from .models import TrashSpecificities
+
+        trash_types = Pointfield.objects.values_list('trash_type', flat=True).distinct()
+
+        return trash_types
+
 
 class FirstLoad(LoginRequiredMixin, ListView):
     from datapop.models import Pointfield
     model = Pointfield
-    login_url = '/accounts/login/'
+    login_url = '/admin/'
     redirect_field_name = 'redirect_to'
     def get(self, request, *arg, **kwargs):
         from django.contrib.gis.geos import Point
@@ -27,6 +34,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         from pytz import utc
 
         from datapop.models import OperatedField, Pointfield
+        from .models import TrashSpecificities
 
         #from .views_scripts import get_missions
 
@@ -40,10 +48,20 @@ class FirstLoad(LoginRequiredMixin, ListView):
         operated = OperatedField.objects.filter(field_type='Pointfield')
         p = Pointfield.objects.all()
         print(p[0].o_field)
-        if not operated:
-            closest_trashes = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=100)))
-        else:
-            closest_trashes = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=100)))
+        farther = True
+        m = 500
+        trash_types = TrashSpecificities.objects.values_list('trash_type', flat=True).distinct()
+        operated = []
+        while farther:
+            for trash_type in trash_types:
+                if not operated:
+                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).order_by('o_field__distance').first()
+                    operated.union(closest_trash)
+                    if closest_trash:
+                        trash_types.remove(trash_type)
+            m += 500
+            if m == 5000:
+                break
         closest_trashes.count()
         if closest_trashes:
             print(closest_trashes[0].o_field)
@@ -51,5 +69,72 @@ class FirstLoad(LoginRequiredMixin, ListView):
         data_list = []
         for closest_trash in closest_trashes:
             html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash}, request=request)
-            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id})
+            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': closest_trash.trashspecificities.trash_type})
+        return JsonResponse(data_list, safe=False)
+
+class FilterType(LoginRequiredMixin, ListView):
+    from datapop.models import Pointfield
+    model = Pointfield
+    login_url = '/admin/'
+    redirect_field_name = 'redirect_to'
+    def get(self, request, *arg, **kwargs):
+        from django.contrib.gis.geos import Point
+        from django.contrib.gis.measure import D
+        from django.contrib.gis.db.models.functions import Distance
+        from django.core.exceptions import ObjectDoesNotExist
+        from django.db.models import Q
+
+        from datetime import datetime, timedelta
+        import random
+        from pytz import utc
+
+        from datapop.models import OperatedField, Pointfield
+        from .models import TrashSpecificities
+
+        #from .views_scripts import get_missions
+
+        #usr_pk = self.request.user.pk
+        #user = User.objects.get(pk=usr_pk)
+        lat = float(request.GET['lat'])
+        lng = float(request.GET['lng'])
+        trash_type = request.GET['type']
+        print(lat)
+        print(lng)
+        point = Point(lng, lat, srid=4326)
+        operated = OperatedField.objects.filter(field_type='Pointfield')
+        p = Pointfield.objects.all()
+        print(p[0].o_field)
+        farther = True
+        m = 500
+        trash_types = TrashSpecificities.objects.values_list('trash_type', flat=True).distinct()
+        operated = []
+        if trash_type == 'all':
+            while farther:
+                for trash_type in trash_types:
+                    if not operated:
+                        closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).order_by('o_field__distance').first()
+                        operated.union(closest_trash)
+                        if closest_trash:
+                            trash_types.remove(trash_type)
+                m += 500
+                if m == 5000:
+                    break
+        else:
+            while farther:
+                if not operated:
+                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).order_by('o_field__distance').first()
+                    operated.union(closest_trash)
+                    if closest_trash:
+                        break
+                m += 500
+                if m == 5000:
+                    break
+        closest_trashes.count()
+        if closest_trashes:
+            print(closest_trashes[0].o_field)
+        # check pending/ongoing mission radius
+        data_list = []
+        for closest_trash in closest_trashes:
+            html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash}, request=request)
+            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': closest_trash.trashspecificities.trash_type})
         return JsonResponse(data_list, safe=False)

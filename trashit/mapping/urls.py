@@ -23,4 +23,5 @@ from . import views
 urlpatterns = [
     re_path(r'^$', views.MainPageView.as_view(), name='home'),
     path('get_first_load/', views.FirstLoad.as_view(), name='get_first_load'),
+    path('filter_type/', views.FilterType.as_view(), name='filter_type'),
 ]
