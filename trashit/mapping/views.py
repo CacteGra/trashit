@@ -56,9 +56,9 @@ class FirstLoad(LoginRequiredMixin, ListView):
                 closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
                 if closest_trash:
                     trash_types.remove(trash_type)
-                    closest_trashes = Pointfield.objects.filter(pk=closest_trash.pk)
+                    closest = Pointfield.objects.filter(pk=closest_trash.pk)
                     if not operated:
-                        closest_trashes = closest_trashes
+                        closest_trashes = closest
                     else:
                         closest_trashes.union(closest_trashes)
             m += 500
@@ -116,9 +116,9 @@ class FilterType(LoginRequiredMixin, ListView):
                     closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
                     if closest_trash:
                         trash_types.remove(trash_type)
-                        closest_trashes = Pointfield.objects.filter(pk=closest_trash.pk)
+                        closest = Pointfield.objects.filter(pk=closest_trash.pk)
                         if not operated:
-                            closest_trashes = closest_trashes
+                            closest_trashes = closest
                         else:
                             closest_trashes.union(closest_trashes)
                 m += 500
