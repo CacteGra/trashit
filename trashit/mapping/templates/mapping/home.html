@@ -107,10 +107,10 @@
         layerGroups = {};
         circleGroups = {};
         {% for trash_type in trash_types %}
-        layerGroups[{{ trash_type }}] = L.layerGroup().addTo(map);
-        circleGroups[{{ trash_type }}] = L.layerGroup().addTo(map);
-        layerGroups[{{ trash_type }}].addTo(map);
-        circleGroups[{{ trash_type }}].addTo(map);
+        layerGroups['{{ trash_type }}'] = L.layerGroup().addTo(map);
+        circleGroups['{{ trash_type }}'] = L.layerGroup().addTo(map);
+        layerGroups['{{ trash_type }}'].addTo(map);
+        circleGroups['{{ trash_type }}'].addTo(map);
         {% endfor %}
         var old_latlng = null;
         var trash_percentage = null;
