@@ -62,12 +62,14 @@ class FirstLoad(LoginRequiredMixin, ListView):
                     if not closest_trashes:
                         closest_trashes = closest
                     else:
+                        print("unioning")
                         closest_trashes.union(closest)
+                closest_trash = None
                 print(closest_trashes)
             m += 500
             if m == 5000:
                 break
-        print(closest_trashes.count())
+        print("clostests: " + str(closest_trashes.count()))
         if closest_trashes:
             print(closest_trashes[0].o_field)
         # check pending/ongoing mission radius
