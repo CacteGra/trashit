@@ -50,13 +50,17 @@ class FirstLoad(LoginRequiredMixin, ListView):
         farther = True
         m = 500
         trash_types = TrashSpecificities.objects.values_list('trash_type', flat=True).distinct()
-        operated = []
+        operated = None
         while farther:
             for trash_type in trash_types:
                 closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
-                operated.union(closest_trash)
                 if closest_trash:
                     trash_types.remove(trash_type)
+                    closest_trashes = Pointfield.objects.filter(pk=closest_trash.pk)
+                    if not operated:
+                        operated = closest_trashes
+                    else:
+                        operated.union(closest_trashes)
             m += 500
             if m == 5000:
                 break
@@ -105,25 +109,27 @@ class FilterType(LoginRequiredMixin, ListView):
         farther = True
         m = 500
         trash_types = TrashSpecificities.objects.values_list('trash_type', flat=True).distinct()
-        operated = []
+        operated = None
         if trash_type == 'all':
             while farther:
                 for trash_type in trash_types:
-                    if not operated:
-                        closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
-                        operated.union(closest_trash)
-                        if closest_trash:
-                            trash_types.remove(trash_type)
+                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
+                    if closest_trash:
+                        trash_types.remove(trash_type)
+                        closest_trashes = Pointfield.objects.filter(pk=closest_trash.pk)
+                        if not operated:
+                            operated = closest_trashes
+                        else:
+                            operated.union(closest_trashes)
                 m += 500
                 if m == 5000:
                     break
         else:
             while farther:
-                if not operated:
-                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
-                    operated.union(closest_trash)
-                    if closest_trash:
-                        break
+                closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
+                if closest_trash:
+                    closest_trashes = Pointfield.objects.filter(pk=closest_trash.pk)
+                    break
                 m += 500
                 if m == 5000:
                     break
