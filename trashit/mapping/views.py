@@ -53,7 +53,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         operated = []
         while farther:
             for trash_type in trash_types:
-                closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).order_by('o_field__distance').first()
+                closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field__distance", point)).order_by("distance").first()
                 operated.union(closest_trash)
                 if closest_trash:
                     trash_types.remove(trash_type)
@@ -110,7 +110,7 @@ class FilterType(LoginRequiredMixin, ListView):
             while farther:
                 for trash_type in trash_types:
                     if not operated:
-                        closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).order_by('o_field__distance').first()
+                        closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field__distance", point)).order_by("distance").first()
                         operated.union(closest_trash)
                         if closest_trash:
                             trash_types.remove(trash_type)
@@ -120,7 +120,7 @@ class FilterType(LoginRequiredMixin, ListView):
         else:
             while farther:
                 if not operated:
-                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).order_by('o_field__distance').first()
+                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field__distance", point)).order_by("distance").first()
                     operated.union(closest_trash)
                     if closest_trash:
                         break
