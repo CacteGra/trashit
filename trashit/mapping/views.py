@@ -59,7 +59,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
                 if closest_trash:
                     trash_types.remove(trash_type)
                     closest = Pointfield.objects.filter(pk=closest_trash.pk)
-                    if not operated:
+                    if not closest_trashes:
                         closest_trashes = closest
                     else:
                         closest_trashes.union(closest_trashes)
@@ -120,7 +120,7 @@ class FilterType(LoginRequiredMixin, ListView):
                     if closest_trash:
                         trash_types.remove(trash_type)
                         closest = Pointfield.objects.filter(pk=closest_trash.pk)
-                        if not operated:
+                        if not closest_trashes:
                             closest_trashes = closest
                         else:
                             closest_trashes.union(closest_trashes)
