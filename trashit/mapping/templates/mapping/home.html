@@ -445,7 +445,7 @@
          function filterTrash(trash_type) {
           map.eachLayer(function(layer){
             map.remove(layer);
-          }
+          })
           $.when($.ajax({
             url: "{% url 'filter_type' %}",
             data: { 'lat': lat, 'lng': lng, 'type': trash_type},
@@ -472,8 +472,7 @@
             }
             }
            })
-         });
-        }
+         };
        document.getElementById("add-menu").onclick = function() {
          var dumpNotif = document.getElementById("dumping-notif");
          theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
