@@ -12,7 +12,6 @@ class MainPageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         from datapop.models import Pointfield
         context = super(MainPageView, self).get_context_data(**kwargs)
-        # here's the difference:
         context['trash_types'] = Pointfield.objects.values_list('trashspecificities__trash_type', flat=True).distinct()
         return context
 
