@@ -104,7 +104,8 @@
         };
         map.removeControl(map.zoomControl);
         var checking = false;
-        var markers;
+        var markers = [];
+        var circles = [];
         layerGroups = {};
         circleGroups = {};
         {% for trash_type in trash_types %}
