@@ -54,11 +54,10 @@ class FirstLoad(LoginRequiredMixin, ListView):
         operated = []
         while farther:
             for trash_type in trash_types:
-                if not operated:
-                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).order_by('o_field__distance').first()
-                    operated.union(closest_trash)
-                    if closest_trash:
-                        trash_types.remove(trash_type)
+                closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).order_by('o_field__distance').first()
+                operated.union(closest_trash)
+                if closest_trash:
+                    trash_types.remove(trash_type)
             m += 500
             if m == 5000:
                 break
