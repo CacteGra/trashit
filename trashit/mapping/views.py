@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'mapping/home.html'
     def get(self, request):
-        from .models import TrashSpecificities
+        from datapop.models import Pointfield
 
         trash_types = Pointfield.objects.values_list('trash_type', flat=True).distinct()
 
@@ -34,7 +34,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         from pytz import utc
 
         from datapop.models import OperatedField, Pointfield
-        from .models import TrashSpecificities
+        from trash.models import TrashSpecificities
 
         #from .views_scripts import get_missions
 
