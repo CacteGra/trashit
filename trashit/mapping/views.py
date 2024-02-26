@@ -50,7 +50,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         farther = True
         m = 500
         trash_types = list(TrashSpecificities.objects.values_list('trash_type', flat=True).distinct())
-        operated = None
+        closest_trashes = None
         while farther:
             for trash_type in trash_types:
                 closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
@@ -58,9 +58,9 @@ class FirstLoad(LoginRequiredMixin, ListView):
                     trash_types.remove(trash_type)
                     closest_trashes = Pointfield.objects.filter(pk=closest_trash.pk)
                     if not operated:
-                        operated = closest_trashes
+                        closest_trashes = closest_trashes
                     else:
-                        operated.union(closest_trashes)
+                        closest_trashes.union(closest_trashes)
             m += 500
             if m == 5000:
                 break
@@ -109,7 +109,7 @@ class FilterType(LoginRequiredMixin, ListView):
         farther = True
         m = 500
         trash_types = TrashSpecificities.objects.values_list('trash_type', flat=True).distinct()
-        operated = None
+        closest_trashes = None
         if trash_type == 'all':
             while farther:
                 for trash_type in trash_types:
@@ -118,9 +118,9 @@ class FilterType(LoginRequiredMixin, ListView):
                         trash_types.remove(trash_type)
                         closest_trashes = Pointfield.objects.filter(pk=closest_trash.pk)
                         if not operated:
-                            operated = closest_trashes
+                            closest_trashes = closest_trashes
                         else:
-                            operated.union(closest_trashes)
+                            closest_trashes.union(closest_trashes)
                 m += 500
                 if m == 5000:
                     break
