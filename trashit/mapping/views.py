@@ -49,7 +49,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         print(p[0].o_field)
         farther = True
         m = 500
-        trash_types = TrashSpecificities.objects.values_list('trash_type', flat=True).distinct()
+        trash_types = list(TrashSpecificities.objects.values_list('trash_type', flat=True).distinct())
         operated = None
         while farther:
             for trash_type in trash_types:
