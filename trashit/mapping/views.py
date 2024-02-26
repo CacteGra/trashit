@@ -63,8 +63,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
                         closest_trashes = closest
                     else:
                         print("unioning")
-                        closest_trashes.union(closest)
-                closest_trash = None
+                        closest_trashes = closest_trashes.union(closest)
                 print(closest_trashes)
             m += 500
             if m == 5000:
@@ -125,7 +124,7 @@ class FilterType(LoginRequiredMixin, ListView):
                         if not closest_trashes:
                             closest_trashes = closest
                         else:
-                            closest_trashes.union(closest)
+                            closest_trashes = closest_trashes.union(closest)
                 m += 500
                 if m == 5000:
                     break
