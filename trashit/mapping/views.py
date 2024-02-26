@@ -9,12 +9,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'mapping/home.html'
-    def get(self, request):
+    def get_context_data(self, **kwargs):
         from datapop.models import Pointfield
-
-        trash_types = Pointfield.objects.values_list('trashspecificities__trash_type', flat=True).distinct()
-
-        return trash_types
+        context = super(MainPageView, self).get_context_data(**kwargs)
+        # here's the difference:
+        context['trash_types'] = Pointfield.objects.values_list('trashspecificities__trash_type', flat=True).distinct()
+        return context
 
 
 class FirstLoad(LoginRequiredMixin, ListView):
