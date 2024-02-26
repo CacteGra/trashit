@@ -106,6 +106,12 @@
         var checking = false;
         var markers = [];
         var circles = [];
+        var markersLayer = new L.LayerGroup();
+        var circlesLayer = new L.LayerGroup();
+        var polygonsLayer = new L.LayerGroup();
+        polygonsLayer.addTo(map);
+        markersLayer.addTo(map);
+        circlesLayer.addTo(map);
         layerGroups = {};
         circleGroups = {};
         {% for trash_type in trash_types %}
