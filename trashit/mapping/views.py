@@ -12,7 +12,7 @@ class MainPageView(LoginRequiredMixin, TemplateView):
     def get(self, request):
         from datapop.models import Pointfield
 
-        trash_types = Pointfield.objects.values_list('trash_type', flat=True).distinct()
+        trash_types = Pointfield.objects.values_list('trashspecificities__trash_type', flat=True).distinct()
 
         return trash_types
 
