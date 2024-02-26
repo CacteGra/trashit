@@ -188,11 +188,11 @@
                       $('.trashList').html('');
                     }
                     document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
-                    theLayer = layerGroups[data0.trash_type];
-                    if(map.hasLayer(theLayer)) {
-                    layerGroups[data0.trash_type].addLayer(the_trash);
                     circle = L.circle(latlng, data0.radius);
-                    circleGroups[data0.trash_type].addLayer(circle);
+                    markersLayer.addLayer(the_trash);
+                    circlesLayer.addLayer(circle);
+                    markers.push(the_trash);
+                    circles.push(circle);
                     }
                     }
                    })
@@ -466,12 +466,11 @@
               $('.trashList').html('');
             }
             document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
-            theLayer = layerGroups[data0.trash_type];
-            if(map.hasLayer(theLayer)) {
-            layerGroups[data0.trash_type].addLayer(the_trash);
             circle = L.circle(latlng, data0.radius);
-            circleGroups[data0.trash_type].addLayer(circle);
-            }
+            markersLayer.addLayer(the_trash);
+            circlesLayer.addLayer(circle);
+            markers.push(the_trash);
+            circles.push(circle);
             }
            })
          };

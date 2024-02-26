@@ -64,7 +64,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
             m += 500
             if m == 5000:
                 break
-        closest_trashes.count()
+        print(closest_trashes.count())
         if closest_trashes:
             print(closest_trashes[0].o_field)
         # check pending/ongoing mission radius
