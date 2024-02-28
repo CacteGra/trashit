@@ -95,7 +95,7 @@ class FilterType(LoginRequiredMixin, ListView):
         from pytz import utc
 
         from datapop.models import OperatedField, Pointfield
-        from .models import TrashSpecificities
+        from trash.models import TrashSpecificities
 
         #from .views_scripts import get_missions
 
@@ -112,7 +112,7 @@ class FilterType(LoginRequiredMixin, ListView):
         print(p[0].o_field)
         farther = True
         m = 500
-        trash_types = TrashSpecificities.objects.values_list('trash_type', flat=True).distinct()
+        trash_types = list(TrashSpecificities.objects.values_list('trash_type', flat=True).distinct())
         closest_trashes = None
         if trash_type == 'all':
             while farther:

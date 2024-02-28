@@ -39,6 +39,18 @@
         z-index: 1001;
       }
 
+      #add-filter {
+        position: absolute;
+        bottom: 160px;
+        right: 35px;
+        padding: 30px;
+        z-index: 1001;
+      }
+
+      .dropdown-toggle::after {
+        display: none;
+      }
+
       .canvas {
         display: none;
       }
@@ -88,6 +100,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.1.0/dist/MarkerCluster.Default.css"/>
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap/dist/css/bootstrap.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.min.css' %}" />
   <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script>
@@ -449,10 +462,14 @@
              }
            }
          });
-         function filterTrash(trash_type) {
-          map.eachLayer(function(layer){
-            map.remove(layer);
-          })
+         function filterTrash() {
+          var lat = old_latlng.lat;
+          var lng = old_latlng.lng;
+          trash_type = this.name;
+          //markers.clearLayers();
+          //circles.clearLayers();
+          markersLayer.clearLayers();
+          circlesLayer.clearLayers();
           $.when($.ajax({
             url: "{% url 'filter_type' %}",
             data: { 'lat': lat, 'lng': lng, 'type': trash_type},
@@ -478,7 +495,11 @@
             circles.push(circle);
             }
            })
-         };
+          };
+          document.getElementById('filter all').onclick = filterTrash;
+          {% for trash_type in trash_types %}
+          document.getElementById('filter {{ trash_type }}').onclick = filterTrash;
+          {% endfor %}
        document.getElementById("add-menu").onclick = function() {
          var dumpNotif = document.getElementById("dumping-notif");
          theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
@@ -515,7 +536,7 @@
     </div>
   </div>
 <div class="leaflet-control-container custom">
-  <div class="leaflet-bottom leaflet-right more-padding">
+  <div class="leaflet-top leaflet-right">
     <div class="leaflet-control-zoom leaflet-bar leaflet-control">
       <!-- Trigger Modal -->
       <a class="u-link text-center d-block" data-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static 'profileFilled.png' %});' href='#callProfile'>
@@ -532,18 +553,21 @@
     </div>
   </div>
 </div>
-<div class="btn-group dropup">
-  <button type="button" class="btn btn-secondary dropdown-toggle bi bi-funnel-lg" data-bs-toggle="dropdown" aria-expanded="false">
+<div class="dropup">
+  <button type="button" class="btn btn-secondary shadow rounded-circle btn-lg" id="add-filter" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="bi bi-funnel" style="font-size: 35px;"></i>
   </button>
   <ul class="dropdown-menu">
-    <li><a class="dropdown-item filter" onclick="filterTrash('all')" href="#">Menu item</a></li>
-    {% for op in operated %}
-    <li><a class="dropdown-item filter" onclick="filterTrash('{{ op }}')" href="#">Menu item</a></li>
+    <li><button class="dropdown-item filter" id="filter all" name="all">All</button></li>
+    <li><hr class="dropdown-divider"></li>
+    {% for trash_type in trash_types %}
+    <li><button class="dropdown-item filter" id="filter {{ trash_type }}" name="{{ trash_type }}">{{ trash_type }}</button></li>
     {% endfor %}
   </ul>
 </div>
 <div>
-  <button type="button" class="btn btn-secondary shadow rounded-circle btn-lg" id="add-menu"><i class="bi bi-plus-lg style="font-size: 35px;"></i></button>
+  <button type="button" class="btn btn-secondary shadow rounded-circle btn-lg" id="add-menu">
+    <i class="bi bi-plus-lg" style="font-size: 35px;"></i></button>
 </div>
 <hr class="my-4">
 <div class="modal fade" id="callProfile" tabindex="-1" role="dialog" aria-labelledby="callProfileTitle" style="display: none;" aria-hidden="true">
