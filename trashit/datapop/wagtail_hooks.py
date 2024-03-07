@@ -264,4 +264,8 @@ register_snippet(RegisterAPIChosenTemplate)
 
 register_snippet(OperatedTemplate)
 
+register_snippet(CollectAreaTemplate)
+
+register_snippet(TrashTypeTemplate)
+
 register_snippet(PointfieldTemplate)
