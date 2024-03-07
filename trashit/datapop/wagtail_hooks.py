@@ -31,7 +31,7 @@ def register_viewsets():
 
 @hooks.register('after_create_snippet')
 def first_connection(request, instance):
-    if isinstance(instance, RegisterAPI)
+    if isinstance(instance, RegisterAPI):
         r = RegisterAPI.objects.get(pk=instance.pk)
         if r.api_endpoint:
             l = unique_get_data.main(r.api_endpoint)

@@ -10,7 +10,7 @@ class TrashSpecificities(models.Model):
     photo = models.ImageField(upload_to="media", null=True, blank=True)
     reported = models.BooleanField(default=False)
 
-class TrashType(models.model):
+class TrashType(models.Model):
     collect_area = models.ForeignKey('CollectArea', on_delete=models.CASCADE, null=True, blank=True)
     trash_type = models.CharField(max_length=1000, null=True, blank=True)
     container_type = models.CharField(max_length=1000, null=True, blank=True)
