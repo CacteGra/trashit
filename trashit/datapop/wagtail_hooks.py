@@ -19,7 +19,7 @@ from .all_functions import unique_get_data, one_list_item, str_to_coords
 
 from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield
 
-from trash.models import CollectArea
+from trash.models import CollectArea, TrashType
 
 from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset
 
