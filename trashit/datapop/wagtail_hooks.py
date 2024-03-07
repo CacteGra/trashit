@@ -15,24 +15,30 @@ from django import forms
 
 from wagtailgeowidget.panels import LeafletPanel
 
-from .all_functions import unique_get_data, one_list_item
+from .all_functions import unique_get_data, one_list_item, str_to_coords
 
 from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield
 
-from .views import chosen_chooser_viewset, operated_chooser_viewset
+from trash.models import CollectArea
 
-from .widgets import OperatedChooserWidget
+from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset
+
+from .widgets import OperatedChooserWidget, TrashTypeChooserWidget
 
 @hooks.register("register_admin_viewset")
 def register_viewsets():
-    return [chosen_chooser_viewset, operated_chooser_viewset]
+    return [chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset]
 
 @hooks.register('after_create_snippet')
-def first_connection(request, register_api):
-    r = RegisterAPI.objects.get(pk=register_api.pk)
-    if r.api_endpoint:
-        l = unique_get_data.main(r.api_endpoint)
-        one_list_item.main(l, r.pk)
+def first_connection(request, instance):
+    if isinstance(instance, RegisterAPI)
+        r = RegisterAPI.objects.get(pk=instance.pk)
+        if r.api_endpoint:
+            l = unique_get_data.main(r.api_endpoint)
+            one_list_item.main(l, r.pk)
+    elif isinstance(instance, CollectArea):
+        c = CollectArea.objects.get(pk=instance.pk)
+        str_to_coords.main(pk)
     return True
 
 # @hooks.register('before_create_snippet')
@@ -225,6 +231,24 @@ class OperatedTemplate(SnippetViewSet):
         TypedOnlyPanel("register_api_chosen", widget_class=CheckboxSelectMultiple),
         FieldPanel('field_type'),
         FieldPanel('operation'),
+    ]
+
+class CollectAreaTemplate(SnippetViewSet):
+    model = CollectArea
+
+    panels = [
+        FieldPanel('raw_data'),
+        FieldPanel('quarter'),
+        FieldPanel('polygon_field'),
+    ]
+
+class TrashTypeTemplate(SnippetViewSet):
+    model = TrashType
+
+    panels = [
+        FieldPanel('collectarea'),
+        FieldPanel('trash_type'),
+        FieldPanel('quarter'),
     ]
 
 class PointfieldTemplate(SnippetViewSet):
