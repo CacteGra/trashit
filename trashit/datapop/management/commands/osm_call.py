@@ -20,11 +20,11 @@ def main():
             d = i.tags()
             try:
                 waste_type = d['waste']
-            except KeyError:
+            except KeyError:    
                 waste_type = "waste"
                 continue
-                trash_type = TrashType.objects.get_or_create(trash_type=waste_type)
-            TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=trash_type, container_type='waste_basket')
+            trash_type, created = TrashType.objects.get_or_create(the_type=waste_type, container_type='waste_basket')
+            TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=trash_type)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_disposal"', out='body')
         result = overpass.query(query)
         r = result.elements()
@@ -37,8 +37,8 @@ def main():
             except KeyError:
                 waste_type = "waste"
                 continue
-                trash_type = TrashType.objects.get_or_create(trash_type=waste_type)
-            TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=trash_type, container_type='waste_disposal')
+            trash_type, created = TrashType.objects.get_or_create(the_type=waste_type, container_type='waste_disposal')
+            TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=trash_type)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="recycling"', out='body')
         result = overpass.query(query)
         r = result.elements()
@@ -61,6 +61,8 @@ def main():
                         waste_type = d['operator']
                     except:
                         waste_type = None
-            trash_type = TrashType.objects.get_or_create(trash_type=waste_type, container_type=d['recycling_type'])
+                trash_type, created = TrashType.objects.get_or_create(the_type=waste_type)
+            else:
+                trash_type, created = TrashType.objects.get_or_create(the_type=waste_type, container_type=d['recycling_type'])
             TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=trash_type)
                     

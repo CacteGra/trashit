@@ -17,7 +17,7 @@ from wagtailgeowidget.panels import LeafletPanel
 
 from .all_functions import unique_get_data, one_list_item, str_to_coords
 
-from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield
+from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield, Polygonfield
 
 from trash.models import CollectArea, TrashType
 
@@ -38,7 +38,7 @@ def first_connection(request, instance):
             one_list_item.main(l, r.pk)
     elif isinstance(instance, CollectArea):
         c = CollectArea.objects.get(pk=instance.pk)
-        str_to_coords.main(pk)
+        str_to_coords.main(instance.pk)
     return True
 
 # @hooks.register('before_create_snippet')
@@ -246,9 +246,15 @@ class TrashTypeTemplate(SnippetViewSet):
     model = TrashType
 
     panels = [
-        FieldPanel('collectarea'),
-        FieldPanel('trash_type'),
-        FieldPanel('quarter'),
+        FieldPanel('collect_area'),
+        FieldPanel('the_type'),
+    ]
+
+class PolygonfieldTemplate(SnippetViewSet):
+    model = Polygonfield
+
+    panels = [
+        LeafletPanel("o_field"),
     ]
 
 class PointfieldTemplate(SnippetViewSet):
@@ -267,5 +273,7 @@ register_snippet(OperatedTemplate)
 register_snippet(CollectAreaTemplate)
 
 register_snippet(TrashTypeTemplate)
+
+register_snippet(PolygonfieldTemplate)
 
 register_snippet(PointfieldTemplate)

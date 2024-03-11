@@ -177,3 +177,5 @@ WAGTAILADMIN_BASE_URL = "http://example.com"
 CRONJOBS = [
     ('*/1 * * * *', 'datapop.cron.get_data')
 ]
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000

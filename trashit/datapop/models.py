@@ -318,7 +318,7 @@ class Polygonfield(models.Model):
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
-    o_field = models.PolygonField(null=True, blank=True)
+    o_field = models.PolygonField(srid=4326, null=True, blank=True)
     is_up = models.BooleanField(default=False)
 
 

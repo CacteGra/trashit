@@ -1,5 +1,5 @@
 from django.db import models
-from datapop.models import Pointfield
+from datapop.models import Pointfield, Polygonfield
 
 # Create your models here.
 
@@ -11,8 +11,9 @@ class TrashSpecificities(models.Model):
     reported = models.BooleanField(default=False)
 
 class TrashType(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
     collect_area = models.ForeignKey('CollectArea', on_delete=models.CASCADE, null=True, blank=True)
-    trash_type = models.CharField(max_length=1000, null=True, blank=True)
+    the_type = models.CharField(max_length=1000, null=True, blank=True)
     container_type = models.CharField(max_length=1000, null=True, blank=True)
     underground = models.BooleanField(default=False)
     area = models.BooleanField(default=False)
@@ -36,5 +37,6 @@ class TrashType(models.Model):
 
 class CollectArea(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
-    raw_data = models.CharField(max_length=1000, null=True, blank=True)
-    polygon_field = models.OneToOneField(Pointfield, on_delete=models.CASCADE)
+    raw_data = models.CharField(max_length=10000, null=True, blank=True)
+    quarter = models.CharField(max_length=50, null=True, blank=True)
+    polygon_field = models.OneToOneField(Polygonfield, on_delete=models.CASCADE, null=True, blank=True)
