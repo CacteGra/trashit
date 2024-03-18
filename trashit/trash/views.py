@@ -2,7 +2,10 @@ import json
 import re
 import base64
 from django.shortcuts import render
+from django.template.loader import render_to_string
+
 from django.views import generic
+from django.views.generic import TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
@@ -15,6 +18,7 @@ from wagtail.admin.viewsets.chooser import ChooserViewSet
 from django.core.paginator import Paginator
 from django.utils.translation import gettext_lazy as _
 from django.template.response import TemplateResponse
+
 
 from datapop.models import Pointfield
 from .models import TrashSpecificities
@@ -60,6 +64,27 @@ class ReportDump(LoginRequiredMixin, generic.DetailView):
         TrashSpecificities.objects.get_or_create(pointfield=trash_point)
         return True
 
+class GarbageCollection(LoginRequiredMixin, ListView):
+    login_url = '/admin/'
+    redirect_field_name = 'redirect_to'
+    def get(self, request, *arg, **kwargs):
+        from django.contrib.gis.geos import Point
+        from trash.models import CollectArea
+        lat = float(request.GET['lat'])
+        lng = float(request.GET['lng'])
+        print(lat)
+        print(lng)
+        point = Point(lng, lat, srid=4326)
+        collection_area = CollectArea.objects.get(polygon_field__o_field__contains=point)
+        print(collection_area)
+        html = ""
+        print(collection_area.trashtype_set.all().count())
+        if collection_area:
+            html = render_to_string('trash/collection-days.html', {'collections': collection_area.trashtype_set.all()}, request=request)
+        else:
+            html = render_to_string('trash/zero-collection-days.html', {'collections': collection_area.trashtype_set.all()}, request=request)
+        print(html)
+        return JsonResponse(html, safe=False)
 
 class IssueChooseView(ChooseView):
     model = "trash.TrashSpecificities"

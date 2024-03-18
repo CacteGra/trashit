@@ -31,6 +31,13 @@
         z-index:1;
       }
 
+      .garbade-collection {
+        position: absolute;
+        right: 75px;
+        top: 10px !important;
+        z-index: 1001;
+      }
+
       #add-menu {
         position: absolute;
         bottom: 30px;
@@ -42,7 +49,7 @@
       #add-filter {
         position: absolute;
         bottom: 160px;
-        right: 35px;
+        right: 31.5px;
         padding: 30px;
         z-index: 1001;
       }
@@ -58,24 +65,24 @@
       .camera {
         width: 100%;
         display: inline-block;
-	vertical-align: top;
-	position: relative;
+	      vertical-align: top;
+	      position: relative;
       }
       
       .camera .video {
-	width: 100%;
+	      width: 100%;
         object-fit: cover;
         background-color: #ccc;
-	max-width: 475px;
+	      max-width: 475px;
       }
       
       .video-content {
-	position: absolute;
+	      position: absolute;
         bottom: 0px;
       }
 
       .retake {
-	transform: translate(75%, -50%) !important;
+	      transform: translate(75%, -50%) !important;
       }
 
       .report {
@@ -83,7 +90,7 @@
       }
 
       .output {
-	position: relative;
+	      position: relative;
         width: 100%;
         display: inline-block;
         vertical-align: top;
@@ -462,6 +469,20 @@
              }
            }
          });
+         document.getElementById("garbage-collection").onclick = function() {
+            var lat = old_latlng.lat;
+            var lng = old_latlng.lng;
+            var collectionModal = document.getElementById("collectionModal");
+            $.when($.ajax({
+              url: "{% url 'garbage_collection' %}",
+              data: { 'lat': lat, 'lng': lng},
+              type:'GET',
+            })).then(function(all_data) {
+              collectionModal.html(all_data);
+             })
+            var collectionModal = document.getElementById("collectionModal");
+            $(collectionModal).modal('toggle');
+          };
          function filterTrash() {
           var lat = old_latlng.lat;
           var lng = old_latlng.lng;
@@ -535,6 +556,15 @@
     <div class="reload">
     </div>
   </div>
+<div class="garbade-collection">
+  <button class="btn btn-light shadow fw-bold" id="garbage-collection">
+Garbage collection
+  </button>
+  <div class="modal fade" id="collectionModal" tabindex="-1" role="dialog" aria-labelledby="collectionModal" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+    </div>
+  </div>
+</div>
 <div class="leaflet-control-container custom">
   <div class="leaflet-top leaflet-right">
     <div class="leaflet-control-zoom leaflet-bar leaflet-control">

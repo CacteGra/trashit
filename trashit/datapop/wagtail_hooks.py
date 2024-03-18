@@ -19,7 +19,7 @@ from .all_functions import unique_get_data, one_list_item, str_to_coords
 
 from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield, Polygonfield
 
-from trash.models import CollectArea, TrashType
+from trash.models import CollectArea, TrashType, TheType
 
 from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset
 
@@ -39,6 +39,10 @@ def first_connection(request, instance):
     elif isinstance(instance, CollectArea):
         c = CollectArea.objects.get(pk=instance.pk)
         str_to_coords.main(instance.pk)
+    elif isinstance(instance, TrashType):
+        t = TrashType.objects.get(pk=instance.pk)
+        t.area = True
+        t.save()
     return True
 
 # @hooks.register('before_create_snippet')
@@ -242,12 +246,28 @@ class CollectAreaTemplate(SnippetViewSet):
         FieldPanel('polygon_field'),
     ]
 
+class TrashTypeIndex(IndexView):
+    def get_base_queryset(self):
+        # Allow the queryset to be a callable that takes a request
+        # so that it can be evaluated in the context of the request
+        if callable(self.queryset):
+            self.queryset = TrashType.objects.filter(area=True)
+        return super().get_base_queryset()
+
+class TheTypeTemplate(SnippetViewSet):
+    model = TheType
+    panels = [
+        FieldPanel('the_type'),
+    ]
+
 class TrashTypeTemplate(SnippetViewSet):
     model = TrashType
-
+    index_view_class = TrashTypeIndex
     panels = [
         FieldPanel('collect_area'),
-        FieldPanel('the_type'),
+        FieldPanel('the_type', widget=RadioSelect),
+        FieldPanel('day', widget=CheckboxSelectMultiple),
+        FieldPanel('hour'),
     ]
 
 class PolygonfieldTemplate(SnippetViewSet):
@@ -271,6 +291,8 @@ register_snippet(RegisterAPIChosenTemplate)
 register_snippet(OperatedTemplate)
 
 register_snippet(CollectAreaTemplate)
+
+register_snippet(TheTypeTemplate)
 
 register_snippet(TrashTypeTemplate)
 

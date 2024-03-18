@@ -1,5 +1,5 @@
 from datapop.models import RegisterAPI, Pointfield
-from trash.models import TrashSpecificities, TrashType
+from trash.models import TrashSpecificities, TrashType, TheType, ContainerType
 from django.contrib.gis.geos import Point
 
 from OSMPythonTools.nominatim import Nominatim
@@ -23,7 +23,9 @@ def main():
             except KeyError:    
                 waste_type = "waste"
                 continue
-            trash_type, created = TrashType.objects.get_or_create(the_type=waste_type, container_type='waste_basket')
+            the_type, created = TheType.objects.get_or_create(the_type=waste_type)
+            container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
+            trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
             TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=trash_type)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_disposal"', out='body')
         result = overpass.query(query)
@@ -37,7 +39,9 @@ def main():
             except KeyError:
                 waste_type = "waste"
                 continue
-            trash_type, created = TrashType.objects.get_or_create(the_type=waste_type, container_type='waste_disposal')
+            the_type, created = TheType.objects.get_or_create(the_type=waste_type)
+            container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
+            trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
             TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=trash_type)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="recycling"', out='body')
         result = overpass.query(query)
@@ -61,8 +65,12 @@ def main():
                         waste_type = d['operator']
                     except:
                         waste_type = None
-                trash_type, created = TrashType.objects.get_or_create(the_type=waste_type)
+                the_type, created = TheType.objects.get_or_create(the_type=waste_type)
+                container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
+                trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
             else:
-                trash_type, created = TrashType.objects.get_or_create(the_type=waste_type, container_type=d['recycling_type'])
+                the_type, created = TheType.objects.get_or_create(the_type=waste_type)
+                container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
+                trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
             TrashSpecificities.objects.get_or_create(point_field=point_field, trash_type=trash_type)
                     

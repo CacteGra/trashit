@@ -10,9 +10,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'mapping/home.html'
     def get_context_data(self, **kwargs):
-        from datapop.models import Pointfield
+        from trash.models import TheType
         context = super(MainPageView, self).get_context_data(**kwargs)
-        context['trash_types'] = Pointfield.objects.values_list('trashspecificities__trash_type__the_type', flat=True).distinct()
+        context['trash_types'] = TheType.objects.values_list('the_type', flat=True).distinct()
         return context
 
 
@@ -49,18 +49,13 @@ class FirstLoad(LoginRequiredMixin, ListView):
         print(p[0].o_field)
         farther = True
         m = 1000
-        #trash_types = list(TrashType.objects.values_list('the_type', flat=True).distinct())
         trash_types = TrashType.objects.all()
         closest_trashes = None
         while farther:
             for trash_type in trash_types:
-                #closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type__the_trash=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
                 closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
-                #closest_trash = TrashType.objects.filter(the_type=trash_type,trashspecificities__point_field__o_field__distance_lte=(point,D(m=m))).annotate(distance=Distance("trashspecificities__point_field__o_field", point)).order_by("distance").first()
                 if closest_trash:
-                    #trash_types.remove(trash_type)
                     trash_types.exclude(pk=trash_type.pk)
-                    #closest = Pointfield.objects.filter(pk=closest_trash.trashspecificities.point_field.pk)
                     closest = Pointfield.objects.filter(pk=closest_trash.pk)
                     if not closest_trashes:
                         closest_trashes = closest
@@ -75,7 +70,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         data_list = []
         for closest_trash in closest_trashes:
             html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash}, request=request)
-            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': closest_trash.trashspecificities.trash_type.the_type})
+            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': closest_trash.trashspecificities.trash_type.the_type.the_type})
         return JsonResponse(data_list, safe=False)
 
 class FilterType(LoginRequiredMixin, ListView):
@@ -144,5 +139,5 @@ class FilterType(LoginRequiredMixin, ListView):
         data_list = []
         for closest_trash in closest_trashes:
             html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash}, request=request)
-            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': closest_trash.trashspecificities.trash_type.the_type})
+            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': closest_trash.trashspecificities.trash_type.the_type.the_type})
         return JsonResponse(data_list, safe=False)

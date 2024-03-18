@@ -1,0 +1,51 @@
+[
+  {
+    "model": "trash.weekday",
+    "pk": 1,
+    "fields": {
+      "day": "Monday"
+    }
+  },
+  {
+    "model": "trash.weekday",
+    "pk": 2,
+    "fields": {
+      "day": "Tuesday"
+    }
+  },
+  {
+    "model": "trash.weekday",
+    "pk": 3,
+    "fields": {
+      "day": "Wednesday"
+    }
+  },
+  {
+    "model": "trash.weekday",
+    "pk": 4,
+    "fields": {
+      "day": "Thursday"
+    }
+  },
+  {
+    "model": "trash.weekday",
+    "pk": 5,
+    "fields": {
+      "day": "Friday"
+    }
+  },
+  {
+    "model": "trash.weekday",
+    "pk": 6,
+    "fields": {
+      "day": "Saturday"
+    }
+  },
+  {
+    "model": "trash.weekday",
+    "pk": 7,
+    "fields": {
+      "day": "Sunday"
+    }
+  }
+]
