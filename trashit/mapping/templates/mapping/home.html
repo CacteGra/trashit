@@ -469,19 +469,24 @@
              }
            }
          });
-         document.getElementById("garbage-collection").onclick = function() {
+         function garbageCollect() {
             var lat = old_latlng.lat;
             var lng = old_latlng.lng;
-            var collectionModal = document.getElementById("collectionModal");
-            $.when($.ajax({
+            $.ajax({
               url: "{% url 'garbage_collection' %}",
               data: { 'lat': lat, 'lng': lng},
               type:'GET',
-            })).then(function(all_data) {
-              collectionModal.html(all_data);
-             })
-            var collectionModal = document.getElementById("collectionModal");
-            $(collectionModal).modal('toggle');
+              success:function(all_data) {
+              for (data0 of all_data) {
+                $('#replaceCollection').html(data0.html);
+                console.log("here");
+                console.log(data0.html);
+                console.log('after');
+                var collectionModal = document.getElementById("collectionModal");
+                $(collectionModal).modal('toggle');
+              }
+              }
+             });
           };
          function filterTrash() {
           var lat = old_latlng.lat;
@@ -517,6 +522,7 @@
             }
            })
           };
+          document.getElementById("garbage-collection").onclick = garbageCollect;
           document.getElementById('filter all').onclick = filterTrash;
           {% for trash_type in trash_types %}
           document.getElementById('filter {{ trash_type }}').onclick = filterTrash;
@@ -560,8 +566,10 @@
   <button class="btn btn-light shadow fw-bold" id="garbage-collection">
 Garbage collection
   </button>
-  <div class="modal fade" id="collectionModal" tabindex="-1" role="dialog" aria-labelledby="collectionModal" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog">
+</div>
+<div class="modal fade" id="collectionModal" tabindex="-1" role="dialog" aria-labelledby="collectionModal" style="display: none;" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="replaceCollection">
     </div>
   </div>
 </div>

@@ -124,7 +124,7 @@ class FilterType(LoginRequiredMixin, ListView):
                 if m == 5000:
                     break
         else:
-            trash_type = TrashType.objects.get(the_type=get_type)
+            trash_type = TrashType.objects.get(the_type__the_type=get_type)
             while farther:
                 closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
                 if closest_trash:

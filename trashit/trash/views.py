@@ -65,6 +65,8 @@ class ReportDump(LoginRequiredMixin, generic.DetailView):
         return True
 
 class GarbageCollection(LoginRequiredMixin, ListView):
+    from trash.models import CollectArea
+    model = CollectArea
     login_url = '/admin/'
     redirect_field_name = 'redirect_to'
     def get(self, request, *arg, **kwargs):
@@ -84,7 +86,7 @@ class GarbageCollection(LoginRequiredMixin, ListView):
         else:
             html = render_to_string('trash/zero-collection-days.html', {'collections': collection_area.trashtype_set.all()}, request=request)
         print(html)
-        return JsonResponse(html, safe=False)
+        return JsonResponse([{'html': html}], safe=False)
 
 class IssueChooseView(ChooseView):
     model = "trash.TrashSpecificities"
