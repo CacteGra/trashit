@@ -24,4 +24,5 @@ urlpatterns = [
     path(r'report_trash/', views.ReportTrash.as_view(), name='report_trash'),
     path(r'report_dump/', views.ReportDump.as_view(), name='report_dump'),
     path('garbage_collection/', views.GarbageCollection.as_view(), name='garbage_collection'),
+    path('scan_wrapper/', views.ScanWrapper.as_view(), name='scan_wrapper'),
 ]

@@ -1,0 +1,74 @@
+{
+    "extends": [
+        "airbnb-base",
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        // "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "airbnb-typescript-base"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 2019,
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "es6": true
+    },
+    "globals": {
+        "ENV": "readonly"
+    },
+    "rules": {
+        "camelcase": "off",
+        "comma-dangle": [ "error", "always-multiline" ],
+        "curly": "error",
+        "eqeqeq": "error",
+        "guard-for-in": "error",
+        "new-cap": "error",
+        "no-caller": "error",
+        "no-empty": "warn",
+        "no-extra-boolean-cast": "warn",
+        "no-multi-spaces": "error",
+        "no-new": "error",
+        "no-plusplus": "off",
+        "no-trailing-spaces": "error",
+        "no-underscore-dangle": "off",
+        "no-unused-expressions": "error",
+        "no-use-before-define": "warn",
+        "quotes": [ "error", "single" ],
+        "strict": "off",
+        "wrap-iife": [ "error", "outside" ],
+        "import/no-named-as-default": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "@typescript-eslint/prefer-namespace-keyword": "off",
+        // STYLE
+        "brace-style": ["error", "1tbs"],
+        "comma-spacing": ["error", { "before": false, "after": true }],
+        "comma-style": ["error", "last"],
+        "consistent-return": "error",
+        "consistent-this": ["warn", "self"],
+        "dot-notation": "error",
+        "eol-last": "error",
+        "func-call-spacing": [ "error", "never" ],
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "@typescript-eslint/indent": ["error", 4],
+        "key-spacing": ["warn", { "beforeColon": false, "afterColon": true }],
+        "keyword-spacing": [ "error", { "after": true }],
+        "max-len" : ["warn", 120],
+        "max-params": ["error", 7],
+        "new-parens": "error",
+        "no-array-constructor": "error",
+        "no-mixed-spaces-and-tabs": "error",
+        "no-multiple-empty-lines": "error",
+        "no-shadow": "error",
+        "no-undef": "error",
+        "padded-blocks": ["error", "never"],
+        "semi-spacing": "error",
+        "semi": ["error", "always"],
+        "space-infix-ops": "error",
+        "yoda": "error",
+        "linebreak-style": "off"
+    }
+}

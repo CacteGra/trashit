@@ -1,0 +1,11 @@
+.sass-cache/
+node_modules/
+coverage/
+.project
+_site/
+.idea/
+.vscode/
+dist/
+lib/quagga.js
+cypress/videos
+.nyc_output
