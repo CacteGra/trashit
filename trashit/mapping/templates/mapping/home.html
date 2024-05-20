@@ -33,7 +33,7 @@
 
       .scan-wrapper {
         position: absolute;
-        right: 150px;
+        right: 260px;
         top: 10px !important;
         z-index: 1001;
       }
@@ -583,7 +583,7 @@
             }
            })
           };
-          document.getElementById("scan-button").onclick = scanWrapper;
+          document.getElementById("scan-wrapper").onclick = scanWrapper;
           document.getElementById("garbage-collection").onclick = garbageCollect;
           document.getElementById('filter all').onclick = filterTrash;
           {% for trash_type in trash_types %}
@@ -624,7 +624,7 @@
     <div class="reload">
     </div>
   </div>
-  <div id="scan-button">
+  <div class="scan-wrapper">
     <button class="btn btn-light shadow fw-bold" id="scan-wrapper">
   Scan wrapper
     </button>
