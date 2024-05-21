@@ -505,6 +505,7 @@
             var code = result.codeResult.code;
             codes.push(code);
             console.log(code);
+            console.log(codes);
             function getRecurringValues(codes) {
               return codes.reduce((acc, current) => {
                 if (acc.includes(current)) {
@@ -516,7 +517,7 @@
                 return acc;
               }, []).filter(([v, c]) => c > 1);
             }
-            const recurring = getRecurringValues(codes)
+            const recurring = getRecurringValues(codes);
 
             console.log(recurring); // Output: { "2": 2, "3": 2, "4": 2, "5": 2 } (most common is 2, 3, 4, and 5)
             if (recurring[0][1] >= 5) {
