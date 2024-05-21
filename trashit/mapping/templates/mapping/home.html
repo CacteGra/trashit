@@ -505,17 +505,24 @@
             var code = result.codeResult.code;
             codes.push(code);
             console.log(code);
-            const mostCommon = Object.values(codes.reduce((acc, current) => {
-              acc[current] = (acc[current] || 0) + 1;
-              return acc;
-            }, {})).reduce((a, b) => a.count > b.count ? a : b);
+            function getRecurringValues(codes) {
+              return codes.reduce((acc, current) => {
+                if (acc.includes(current)) {
+                  let count = acc.findIndex(v => v === current);
+                  acc[count][1]++;
+                } else {
+                  acc.push([current, 1]);
+                }
+                return acc;
+              }, []).filter(([v, c]) => c > 1);
+            }
+            const recurring = getRecurringValues(codes)
 
-            console.log(mostCommon); // Output: { "2": 2, "3": 2, "4": 2, "5": 2 } (most common is 2, 3, 4, and 5)
-            const [firstKey] = Object.keys(mostCommon)[0];
-            if (mostCommon[firstKey] >= 5) {
+            console.log(recurring); // Output: { "2": 2, "3": 2, "4": 2, "5": 2 } (most common is 2, 3, 4, and 5)
+            if (recurring[0][1] >= 5) {
               $.ajax({
                 url: "{% url 'scan_wrapper' %}",
-                data: { 'code': firstKey },
+                data: { 'code': recurring[0][0] },
                 type:'POST',
                 success:function(all_data) {
                 for (data0 of all_data) {
