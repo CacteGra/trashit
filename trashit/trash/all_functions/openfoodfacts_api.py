@@ -1,7 +1,7 @@
 import requests
 from datetime import datetime
 
-from .models import Wrapper, TheType
+from trash.models import Wrapper, TheType
 
 
 def main(code):
