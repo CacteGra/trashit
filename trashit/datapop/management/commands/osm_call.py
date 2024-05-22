@@ -54,7 +54,8 @@ def main():
                     t.trash_type = trash_type
                     t.save()
             except TrashSpecificities.DoesNotExist:
-                TrashSpecificities.objects.create(point_field=point_field, trash_type=trash_type)        query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="recycling"', out='body')
+                TrashSpecificities.objects.create(point_field=point_field, trash_type=trash_type)
+        query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="recycling"', out='body')
         result = overpass.query(query)
         r = result.elements()
         for i in r:
