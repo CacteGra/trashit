@@ -525,7 +525,12 @@
             const recurring = getRecurringValues(codes);
 
             console.log(recurring); // Output: { "2": 2, "3": 2, "4": 2, "5": 2 } (most common is 2, 3, 4, and 5)
-            if (recurring[0][1] >= 5) {
+            if (recurring === undefined) {
+              itemNumber = 1;
+            } else {
+              itemNumber = recurring[0][1];
+            }
+            if (itemNumber >= 5) {
               $.ajax({
                 url: "{% url 'scan_wrapper' %}",
                 data: { 'code': recurring[0][0] },
