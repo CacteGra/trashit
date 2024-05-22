@@ -508,10 +508,15 @@
             console.log(codes);
             function getRecurringValues(codes) {
               return codes.reduce((acc, current) => {
-                if (acc.includes(current)) {
-                  let count = acc.findIndex(v => v === current);
-                  acc[count][1]++;
-                } else {
+                let found = false;
+                for (let i = 0; i < acc.length; i++) {
+                  if (acc[i][0] === current) {
+                    acc[i][1]++;
+                    found = true;
+                    break;
+                  }
+                }
+                if (!found) {
                   acc.push([current, 1]);
                 }
                 return acc;
