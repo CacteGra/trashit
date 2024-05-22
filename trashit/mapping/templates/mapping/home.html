@@ -534,7 +534,7 @@
               $.ajax({
                 url: "{% url 'scan_wrapper' %}",
                 data: { 'code': recurring[0][0] },
-                type:'POST',
+                type:'GET',
                 success:function(all_data) {
                 for (data0 of all_data) {
                   $('#scan-result').html(data0.html);

@@ -65,7 +65,6 @@ class FirstLoad(LoginRequiredMixin, ListView):
             m += 1000
             if m == 5000:
                 break
-        print("clostests: " + str(closest_trashes.count()))
         # check pending/ongoing mission radius
         data_list = []
         for closest_trash in closest_trashes:
