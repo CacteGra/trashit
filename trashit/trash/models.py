@@ -6,6 +6,7 @@ from datapop.models import Pointfield, Polygonfield
 class Wrapper(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     the_time = models.DateTimeField(auto_now_add=True)
+    code = models.CharField(max_length=1000, null=True, blank=True)
     packagings = models.ForeignKey('Packagings', on_delete=models.CASCADE, null=True, blank=True)
 
 class Packagings(models.Model):
