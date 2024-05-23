@@ -11,7 +11,7 @@ class Wrapper(models.Model):
 
 class Packagings(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
-    the_type = models.OneToOneField(TheType, on_delete=models.CASCADE, null=True, blank=True)
+    the_type = models.OneToOneField('TheType', on_delete=models.CASCADE, null=True, blank=True)
 
 class TrashSpecificities(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
