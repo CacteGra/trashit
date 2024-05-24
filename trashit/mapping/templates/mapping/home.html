@@ -502,55 +502,53 @@
             }
             );
             var codes = [];
-            if (scanning == false) {
-              Quagga.onDetected(function (result) {
-                scanning = true;
-                var code = result.codeResult.code;
-                codes.push(code);
-                console.log(code);
-                console.log(codes);
-                function getRecurringValues(codes) {
-                  return codes.reduce((acc, current) => {
-                    let found = false;
-                    for (let i = 0; i < acc.length; i++) {
-                      if (acc[i][0] === current) {
-                        acc[i][1]++;
-                        found = true;
-                        break;
-                      }
+            Quagga.onDetected(function (result) {
+              var code = result.codeResult.code;
+              codes.push(code);
+              console.log(code);
+              console.log(codes);
+              function getRecurringValues(codes) {
+                return codes.reduce((acc, current) => {
+                  let found = false;
+                  for (let i = 0; i < acc.length; i++) {
+                    if (acc[i][0] === current) {
+                      acc[i][1]++;
+                      found = true;
+                      break;
                     }
-                    if (!found) {
-                      acc.push([current, 1]);
-                    }
-                    return acc;
-                  }, []).filter(([v, c]) => c > 1).sort((a, b) => b[1] - a[1]);;
-                }
-                const recurring = getRecurringValues(codes);
+                  }
+                  if (!found) {
+                    acc.push([current, 1]);
+                  }
+                  return acc;
+                }, []).filter(([v, c]) => c > 1).sort((a, b) => b[1] - a[1]);;
+              }
+              const recurring = getRecurringValues(codes);
 
-                console.log(recurring); // Output: { "2": 2, "3": 2, "4": 2, "5": 2 } (most common is 2, 3, 4, and 5)
-                if (recurring.length == 0) {
-                  itemNumber = 1;
-                } else {
-                  itemNumber = recurring[0][1];
-                }
-                if (itemNumber >= 5) {
-                  $.ajax({
-                    url: "{% url 'scan_wrapper' %}",
-                    data: { 'code': recurring[0][0] },
-                    type:'GET',
-                    success:function(all_data) {
-                    for (data0 of all_data) {
-                      $('#scan-result').html(data0.html);
-                      console.log("here");
-                      console.log(data0.html);
-                      console.log('after');
-                      scanning = false;
-                    }
-                    }
-                  });            
-                }
-              });
-            }
+              console.log(recurring); // Output: { "2": 2, "3": 2, "4": 2, "5": 2 } (most common is 2, 3, 4, and 5)
+              if (recurring.length == 0) {
+                itemNumber = 1;
+              } else {
+                itemNumber = recurring[0][1];
+              }
+              if (itemNumber >= 5 && !scanning) {
+                scanning = true;
+                $.ajax({
+                  url: "{% url 'scan_wrapper' %}",
+                  data: { 'code': recurring[0][0] },
+                  type:'GET',
+                  success:function(all_data) {
+                  for (data0 of all_data) {
+                    $('#scan-result').html(data0.html);
+                    console.log("here");
+                    console.log(data0.html);
+                    console.log('after');
+                    scanning = false;
+                  }
+                  }
+                });            
+              }
+            });
           }
          function garbageCollect() {
             var lat = old_latlng.lat;

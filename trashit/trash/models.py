@@ -1,17 +1,7 @@
-from django.db import models
+from django.contrib.gis.db import models
 from datapop.models import Pointfield, Polygonfield
 
 # Create your models here.
-
-class Wrapper(models.Model):
-    id = models.AutoField(primary_key=True, editable=False)
-    the_time = models.DateTimeField(auto_now_add=True)
-    code = models.CharField(max_length=1000, null=True, blank=True)
-    packagings = models.ForeignKey('Packagings', on_delete=models.CASCADE, null=True, blank=True)
-
-class Packagings(models.Model):
-    id = models.AutoField(primary_key=True, editable=False)
-    the_type = models.OneToOneField('TheType', on_delete=models.CASCADE, null=True, blank=True)
 
 class TrashSpecificities(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
@@ -43,6 +33,12 @@ class TheType(models.Model):
     
     def __str__(self):
         return "%s" % (self.the_type)
+
+class Wrapper(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    the_time = models.DateTimeField(auto_now_add=True)
+    code = models.CharField(max_length=1000, null=True, blank=True)
+    the_type = models.ManyToManyField(TheType, blank=True)
 
 class ContainerType(models.Model):
     container_type = models.CharField(max_length=100, null=True, blank=True)

@@ -1,14 +1,14 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 
+from django.utils import timezone
 from trash.models import Wrapper, TheType
 
 
 def main(code):
 
-    wrapper = Wrapper.objects.get_or_create(code=code)
-
-    if (wrapper.date_create < datetime.utcnow() - timedelta(days=60)) or (not wrapper.packaging):
+    wrapper, created = Wrapper.objects.get_or_create(code=code)
+    if (wrapper.the_time < timezone.now() - timedelta(days=60)) or (not wrapper.the_type.all()):
 
         # Set the product ID (e.g., 1234567890123) or search query
         product_id = code
@@ -29,8 +29,8 @@ def main(code):
             for packaging in packagings:
                 material = packaging['material']
                 material = material.split(':')[1]
-                the_type = TheType.objects.get_or_create(the_type=material)
-                wrapper.the_type = the_type
+                the_type, created = TheType.objects.get_or_create(the_type__iexact=material)
+                wrapper.the_type.add(the_type)
                 wrapper.save()
 
         else:
