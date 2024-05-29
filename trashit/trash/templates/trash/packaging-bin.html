@@ -1,3 +1,11 @@
+{% if wrapper %}
+{% if packagings %}
 {% for packaging in packagings %}
 {{ packaging.the_type }}
 {% endfor %}
+{% else %}
+No info on packaging
+{% endif %}
+{% else %}
+Unknown product
+{% endif %}

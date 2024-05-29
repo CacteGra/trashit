@@ -189,7 +189,6 @@ class Command(BaseCommand):
                         all_api.the_time = timezone.now()
                         all_api.save()
             all_operated = OperatedField.objects.all()
-            print('operated')
             for operated in all_operated:
                 api_chosen_set = operated.register_api_chosen.all()
                 api_chosen_set = RegisterAPIChosen.objects.filter(chosen__text_chosen=api_chosen_set[0].chosen.text_chosen,chosen__value_example=api_chosen_set[0].chosen.value_example,children_of__isnull=False)
