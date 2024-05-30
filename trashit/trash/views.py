@@ -77,9 +77,11 @@ class GarbageCollection(LoginRequiredMixin, ListView):
         print(lat)
         print(lng)
         point = Point(lng, lat, srid=4326)
-        collection_area = CollectArea.objects.get(polygon_field__o_field__contains=point)
+        try:
+            collection_area = CollectArea.objects.get(polygon_field__o_field__contains=point)
+        except CollectArea.DoesNotExist:
+            collection_area = None
         print(collection_area)
-        html = ""
         print(collection_area.trashtype_set.all().count())
         if collection_area:
             html = render_to_string('trash/collection-days.html', {'collections': collection_area.trashtype_set.all()}, request=request)
