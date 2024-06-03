@@ -28,17 +28,22 @@ class TrashType(models.Model):
     day = models.ManyToManyField(Weekday, blank=True)
     hour = models.TimeField(null=True, blank=True)
 
+class Wrapper(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    the_time = models.DateTimeField(auto_now_add=True)
+    code = models.CharField(max_length=1000, null=True, blank=True)
+    packaging = models.ManyToManyField(Packaging, blank=True)
+
+class Packaging(models.Model):
+    id = models.AutoField(primary_key=True, editable=False)
+    component = models.CharField(max_length=1000, null=True, blank=True)
+    the_type = models.OneToOneField(TheType, on_delete=models.CASCADE, null=True, blank=True)
+
 class TheType(models.Model):
     the_type = models.CharField(max_length=100, null=True, blank=True)
     
     def __str__(self):
         return "%s" % (self.the_type)
-
-class Wrapper(models.Model):
-    id = models.AutoField(primary_key=True, editable=False)
-    the_time = models.DateTimeField(auto_now_add=True)
-    code = models.CharField(max_length=1000, null=True, blank=True)
-    the_type = models.ManyToManyField(TheType, blank=True)
 
 class ContainerType(models.Model):
     container_type = models.CharField(max_length=100, null=True, blank=True)

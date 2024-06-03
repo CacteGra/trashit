@@ -2,7 +2,7 @@ import requests
 from datetime import datetime, timedelta
 
 from django.utils import timezone
-from trash.models import Wrapper, TheType
+from trash.models import Wrapper, Packaging, TheType
 
 
 def main(code):
@@ -29,14 +29,22 @@ def main(code):
                 return False
             for packaging in packagings:
                 material = packaging['material']
+                shape = material = packaging['shape']
+                try:
+                    packaging = Packaging.objects.get(component=shape)
+                except Packaging.DoesNotExist:
+                    packaging = Packaging.objects.create(component=shape)
+                wrapper.packaging.add(packaging)
+                wrapper.save()
                 material = material.split(':')[1]
                 try:
                     the_type = TheType.objects.get(the_type__iexact=material)
                 except TheType.DoesNotExist:
                     the_type = TheType.objects.create(the_type=material)
+                packaging.the_type = the_type
+                packaging.save()
                 #the_type, created = TheType.objects.get_or_create(the_type__iexact=material)
-                wrapper.the_type.add(the_type)
-                wrapper.save()
+
 
         else:
             print("Error:", response.status_code)

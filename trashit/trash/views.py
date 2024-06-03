@@ -103,7 +103,7 @@ class ScanWrapper(LoginRequiredMixin, ListView):
         pk = openfoodfacts_api.main(code)
         if pk:
             wrapper = Wrapper.objects.get(pk=pk)
-            html = render_to_string('trash/packaging-bin.html', {'packagings': wrapper.the_type.all(), 'wrapper': True}, request=request)
+            html = render_to_string('trash/packaging-bin.html', {'packagings': wrapper.packaging.all(), 'wrapper': True}, request=request)
             print(html)
         else:
             html = render_to_string('trash/packaging-bin.html', {'packagings': None, 'wrapper': False}, request=request)
