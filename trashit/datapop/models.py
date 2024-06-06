@@ -325,7 +325,6 @@ class Polygonfield(models.Model):
     def __str__(self):
         return "%s" % (self._meta.object_name)
 
-
 class LocationFeature(models.Model):
     feature = models.CharField(max_length=100,blank=True,null=True)
 

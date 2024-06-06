@@ -1,6 +1,6 @@
 {% block before_header %}
 
-{% load leaflet_tags %}
+{% load i18n leaflet_tags %}
 
 {% load static %}
 
@@ -658,7 +658,7 @@
   </div>
   <div class="scan-wrapper">
     <button class="btn btn-light shadow fw-bold" id="scan-wrapper">
-  Scan wrapper
+  {% trans "Scan wrapper" %}
     </button>
   </div>
   <div class="modal fade" id="wrapperModal" tabindex="-1" role="dialog" aria-labelledby="scan-wrapper" style="display: none;" aria-hidden="true">
@@ -683,7 +683,7 @@
   </div>
 <div class="garbade-collection">
   <button class="btn btn-light shadow fw-bold" id="garbage-collection">
-Garbage collection
+{% trans "Garbage collection" %}
   </button>
 </div>
 <div class="modal fade" id="collectionModal" tabindex="-1" role="dialog" aria-labelledby="collectionModal" style="display: none;" aria-hidden="true">

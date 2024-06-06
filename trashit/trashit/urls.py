@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.urls import include, path, re_path
 from django.contrib import admin
+from django.conf.urls.i18n import i18n_patterns
 
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
@@ -9,7 +10,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from search import views as search_views
 from mapping import views
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
@@ -17,8 +18,9 @@ urlpatterns = [
     re_path(r'^$', views.MainPageView.as_view(), name='home'),
     path('get_first_load/', views.FirstLoad.as_view(), name='get_first_load'),
     path('filter_type/', views.FilterType.as_view(), name='filter_type'),
-    path('trash/', include('trash.urls'))
-]
+    path('trash/', include('trash.urls')),
+    prefix_default_language=False
+)
 
 
 if settings.DEBUG:

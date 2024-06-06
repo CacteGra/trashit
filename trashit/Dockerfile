@@ -28,6 +28,7 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     binutils \
     libproj-dev \
     cron \
+    gettext \
  && rm -rf /var/lib/apt/lists/*
 
 RUN touch /var/log/cron.log
@@ -73,3 +74,5 @@ RUN python manage.py collectstatic --noinput --clear
 #   phase facilities of your hosting platform. This is used only so the
 #   Wagtail instance can be started with a simple "docker run" command.
 CMD set -xe; python manage.py migrate --noinput; gunicorn trashit.wsgi:application
+
+RUN django-admin compilemessages --ignore venv
