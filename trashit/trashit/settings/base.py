@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "wagtail",
     "modelcluster",
     "taggit",
+    "modeltranslation",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -54,6 +55,7 @@ INSTALLED_APPS = [
     "django_crontab",
     "leaflet",
     "wagtailgeowidget",
+    
 ]
 
 MIDDLEWARE = [
@@ -137,8 +139,12 @@ USE_TZ = True
 LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
-LANGUAGE_CODE = 'en-us'
 
+gettext = lambda s: s
+LANGUAGES = (
+    ('en', gettext('English')),
+    ('fr', gettext('French')),
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

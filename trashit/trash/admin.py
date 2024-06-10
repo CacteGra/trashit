@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib.gis.admin import OSMGeoAdmin
-from .models import TrashSpecificities
+from .models import TrashSpecificities, TheType
+from modeltranslation.admin import TranslationAdmin
+
 
 @admin.register(TrashSpecificities)
 class TrashIssueAdmin(OSMGeoAdmin):
@@ -15,3 +17,8 @@ class TrashIssueAdmin(OSMGeoAdmin):
         queryset = queryset.filter(reported=True)
         print(queryset.count())
         return queryset
+
+
+class TheTypeAdmin(TranslationAdmin):
+    pass
+admin.site.register(TheType, TheTypeAdmin)
