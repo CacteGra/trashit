@@ -50,7 +50,7 @@ def first_connection(request, instance):
 #     r = RegisterAPI.objects.get(pk=register_api.pk)
 #     l = unique_get_data.main(r.api_endpoint)
 #     one_list_item.main(l, r.pk)
-#     return True)
+#     return True
 
 @hooks.register('after_edit_snippet')
 def first_connection(request, connection_object):
@@ -170,6 +170,7 @@ class RegisterAPIChosenTemplate(SnippetViewSet):
 
     panels = [
         FieldPanel("field_type"),
+        FieldPanel("important"),
         NoSameField("line_id", widget_class=Select),
     ]
 
@@ -234,6 +235,7 @@ class OperatedTemplate(SnippetViewSet):
         # FieldPanel("register_api_chosen", widget=forms.CheckboxSelectMultiple(choices=[RegisterAPIChosen.objects.filter(field_type__isnull=False)])),
         TypedOnlyPanel("register_api_chosen", widget_class=CheckboxSelectMultiple),
         FieldPanel('field_type'),
+        FieldPanel('field_name'),
         FieldPanel('operation'),
     ]
 

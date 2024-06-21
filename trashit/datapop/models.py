@@ -339,7 +339,7 @@ class DataLine(models.Model):
     register_api_chosen = models.ManyToManyField('RegisterAPIChosen', blank=True)
     line_id = models.PositiveIntegerField(null=True, blank=True)
     line_number = models.PositiveIntegerField(null=True, blank=True)
-    the_time = models.DateTimeField(auto_now_add=True)
+    the_time = models.DateTimeField(auto_now=True)
 
 class Chosen(models.Model):
     text_chosen = models.CharField(null=True, blank=True)
@@ -438,6 +438,8 @@ class OperatedField(ClusterableModel):
         null=True, blank=True
     )
 
+    field_name = models.CharField(max_length=250, null=True, blank=True)
+
     OPERATION_CHOICES = [
         ("ADD", "ADD"),
         ("SUBSTRAC", "SUBSTRACT"),
@@ -471,8 +473,8 @@ class RegisterAPI(ClusterableModel):
     )
     is_dumb = models.BooleanField(default=False)
     first = models.BooleanField(default=True)
-    the_time = models.DateTimeField(auto_now_add=True)
+    the_time = models.DateTimeField(auto_now=True)
     pagination = models.CharField(max_length=100, default=1)
     pagintation_number = models.PositiveIntegerField(null=True, blank=True)
     once_every = models.PositiveIntegerField(null=True, blank=True)
-    sleep = models.PositiveIntegerField(null=True, blank=True)
+    where_at = models.PositiveIntegerField(null=True, blank=True, default=0)
