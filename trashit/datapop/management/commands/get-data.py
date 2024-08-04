@@ -73,10 +73,10 @@ class Command(BaseCommand):
                 try:
                     d = DataLine.objects.get_or_create(query)
                 except DataLine.DoesNotExist:
-                last_field = None
-                create_dict = {}
-                create_list = []
-                n = 0
+                    last_field = None
+                    create_dict = {}
+                    create_list = []
+                    n = 0
                     for i in query.children:
                         n += 1
                         if i[0] == last_field:

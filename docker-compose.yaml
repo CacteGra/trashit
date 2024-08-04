@@ -43,7 +43,10 @@ services:
     build:
       context: trashit/
     image: trashit/backend
-    command: ./wait-for-it.sh db:5432 -- ./getdatastart.sh -- cron -f
+    entrypoint: ["/bin/sh","-c"]
+    command:
+    - |
+        ./wait-for-it.sh db:5432 -- ./getdatastart.sh -- cron -f
     networks:
       - trashit-backend
     environment:
