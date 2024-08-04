@@ -96,6 +96,9 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('api_type'),
         FieldPanel('is_dumb'),
         FieldPanel('pagination'),
+        FieldPanel('pagination_number'),
+        FieldPanel('rows_name'),
+        FieldPanel('rows_per_page'),
         FieldPanel('once_every'),
         FieldPanel('sleep'),
         MultipleChooserPanel("the_api",
@@ -170,7 +173,6 @@ class RegisterAPIChosenTemplate(SnippetViewSet):
 
     panels = [
         FieldPanel("field_type"),
-        FieldPanel("important"),
         NoSameField("line_id", widget_class=Select),
     ]
 

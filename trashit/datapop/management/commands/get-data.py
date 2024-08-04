@@ -3,6 +3,7 @@ import requests
 import json
 import ast
 
+from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 from datapop.models import RegisterAPI, RegisterAPIChosen, OperatedField, DataLine
 from django.contrib.gis.geos import Point
@@ -49,34 +50,51 @@ class Command(BaseCommand):
                     base_r = RegisterAPIChosen.objects.get(id=data_id)
                     base_r_line = RegisterAPIChosen.objects.filter(chosen__text_chosen=base_r.line_id.chosen.text_chosen,chosen__value_example=base_r.line_id.chosen.value_example,children_of__isnull=False)
                     base_r_line = base_r_line[0]
-                    data_line, created = DataLine.objects.get_or_create(line_number=line_number,register_api=r.register_api_foreign)
-                    data_line.register_api_chosen.add(base_r)
-                    data_line.save()
                     data = l_copy[(base_r.chosen.text_chosen).replace('[0]', '')]
                     field_name = base_r.field_type
                     field_name = field_name[0].upper() + field_name[1:]
                     m = import_string('datapop.models.{}'.format(field_name))
                     if field_name == 'Pointfield':
                         data = Point(data[0], data[1], srid=4326)
-                    the_field, created = m.objects.get_or_create(is_up=True,data_line=data_line,register_api_chosen=base_r)
+                    the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=base_r)
                     if created or the_field.o_field != data:
                         the_field.o_field = data
-                        data_line.the_time = timezone.now()
                     the_field.save()
                     check_new_data.append(the_field)
-                # Query new data line and hook each data to see if new, same or not relevant 
-                query = Q(query_type=check_new_data[0])
+                # Query new data line and hook each data to see if new, same or not relevant
+                current_model = check_new_data[0]
+                field_name = current_model._meta.model.__name__
+                query = Q(**{field_name.lower(): current_model})
                 for t in range(1, len(check_new_data)):
                     current_model = check_new_data[t]
-                    current_model = check_new_data[t]
                     field_name = current_model._meta.model.__name__
-                    query = query & Q(**{field_name: current_model)
+                    query = query & Q(**{field_name.lower(): current_model})
+                print(query)
                 try:
-                    d = DataLine.objects.get(query)
-                    d.save()
-                except DataLine.ObjectDoesNotExist:
-                    DataLine.objects.create(query)
-                    break
+                    d = DataLine.objects.get_or_create(query)
+                except DataLine.DoesNotExist:
+                last_field = None
+                create_dict = {}
+                create_list = []
+                n = 0
+                    for i in query.children:
+                        n += 1
+                        if i[0] == last_field:
+                            create_list.append(i[1])
+                        elif not last_field:
+                            create_list.append(i[1])
+                            last_field = i[0]
+                        else:
+                            create_dict[last_field] = create_list
+                            create_list = []
+                            create_list.append(i[1])
+                            last_field = i[0]
+                        if n == len(query.children):
+                            create_dict[last_field] = create_list
+                    DataLine.objects.create(**create_dict)
+                for new_data in check_new_data:
+                    new_data.data_line = d
+                    new_data.save()
                 return True
             else:
                 r = RegisterAPIChosen.objects.get(id=path_id)
@@ -101,25 +119,21 @@ class Command(BaseCommand):
             for all_api in all_apis:
                 other_chosens = []
                 continuing = False
-                if all_api.the_time < timezone.now() - timedelta(hours=24) and not all_api.first:
-                    continue
-                elif all_api.first:
-                    all_api.first = False
-                    all_api.save()
                 c = all_api.copy_cluster()
                 cluster_id_list = []
                 children_id_list = []
                 for i, j in enumerate(c[1]):
                     o = c[1][j]
                     cluster_id_list.append(o.chosen_id)
+                if all_api.the_time > timezone.now() - timedelta(hours=24) and not all_api.first:
+                    continue
                 for i, j in enumerate(c[1]):
                     o = c[1][j]
                     chosen_id = o.chosen_id
                     r = RegisterAPIChosen.objects.get(id=chosen_id)
-                    if not r.line_id:
+                    if not r.field_type:
                         continue
                     other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
-                    other_chosens = other_chosens.filter(line_id__isnull=False)
                     print(other_chosens)
                     id_list = list(other_chosens.values_list('id', flat=True))
                     print(id_list)
@@ -149,23 +163,23 @@ class Command(BaseCommand):
                             print('children count')
                             self.iterate_child(chosen_id, children_id_list)
                             print(children_id_list)
-                    other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list,line_id__isnull=False)
+                    other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
                 if other_chosens:
                     waiting = False
+                    page_number = all_api.pagination_number
                     for same_level_list in children_id_list:
                         if waiting:
                             break
                         path_list = self.get_path(same_level_list[0], [same_level_list], True)
-                        page_number = all_api
                         while True:
                             print('page {}'.format(page_number))
                             try:
                                 if all_api.is_dumb:
-                                    response = requests.get("{}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number))
+                                    response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
                                     print(response.url)
                                 else:
                                     if all_api.pagination:
-                                        params = {all_api.pagination: page_number}
+                                        params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
                                         response = requests.get("{}".format(all_api.api_endpoint), params=params)
                                     else:
                                         response = requests.get("{}".format(all_api.api_endpoint))
@@ -180,22 +194,19 @@ class Command(BaseCommand):
                                 break
                             l_copy = l
                             iterated = self.iterate_data_lines(path_list, -1, l_copy, page_number)
-                            if all_api.sleep:
-                                sleep(all_api.sleep)
-                            else:
-                                sleep(4)
                             if not iterated:
                                 break
-                            if not all_api.pagination:
-                                break
-                            if not all_api.pagination:
-                                break
                             else:
-                                page_number += all_api.once_every
+                                all_api.pagination_number += page_number
+                            if all_api.sleep:
+                                sleep(all_api.sleep)
+                                break
                     if not waiting:
-                        all_api.where_at = 0
+                        all_api.pagination_number = 0
                     else:
-                        all_api.where_at = page_number
+                        all_api.pagination_number = page_number
+                    if all_api.first:
+                        all_api.first = False
                     all_api.save()
 
             data_lines = DataLine.objects.all()
