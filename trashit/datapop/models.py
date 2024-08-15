@@ -33,7 +33,7 @@ class Charfield(models.Model):
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
-    o_field = models.CharField(null=True, blank=True)
+    o_field = models.CharField(null=True, blank=True, max_length=250)
     is_up = models.BooleanField(default=False)
 
 
@@ -342,8 +342,8 @@ class DataLine(models.Model):
     the_time = models.DateTimeField(auto_now=True)
 
 class Chosen(models.Model):
-    text_chosen = models.CharField(null=True, blank=True)
-    value_example = models.CharField(null=True, blank=True)
+    text_chosen = models.CharField(max_length=250, null=True, blank=True)
+    value_example = models.CharField(max_length=250, null=True, blank=True)
     def __str__(self):
         return "%s" % (self.text_chosen)
 
@@ -393,6 +393,8 @@ class RegisterAPIChosen(Orderable, models.Model):
         null=True, blank=True
     )
 
+    field_name = models.CharField(max_length=250, null=True, blank=True)
+
     panels = [FieldPanel("chosen", widget=ChosenChooserWidget)]
 
     def __str__(self):
@@ -441,6 +443,7 @@ class OperatedField(ClusterableModel):
     field_name = models.CharField(max_length=250, null=True, blank=True)
 
     OPERATION_CHOICES = [
+        ("COMBINE", "COMBINE"),
         ("ADD", "ADD"),
         ("SUBSTRAC", "SUBSTRACT"),
         ("DIVIDE", "DIVIDE"),
@@ -464,6 +467,7 @@ class RegisterAPI(ClusterableModel):
     TYPE_CHOICES = [
         ("NONE", "NONE"),
         ("OSM", "OSM"),
+        ("OTHER", "OTHER"),
     ]
 
     api_type = models.CharField(
@@ -480,3 +484,9 @@ class RegisterAPI(ClusterableModel):
     rows_per_page = models.PositiveIntegerField()
     once_every = models.PositiveIntegerField(null=True, blank=True)
     sleep = models.PositiveIntegerField(null=True, blank=True)
+    json_limit = models.CharField(max_length=100, null=True, blank=True)
+    results = models.CharField(max_length=100, null=True, blank=True)
+    other_field = models.CharField(max_length=100, null=True, blank=True)
+    new_field = models.BooleanField(default=True)
+    def __str__(self):
+        return "%s" % (self.api_title)

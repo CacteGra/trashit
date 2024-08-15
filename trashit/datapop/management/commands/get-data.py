@@ -51,15 +51,13 @@ class Command(BaseCommand):
                     base_r_line = RegisterAPIChosen.objects.filter(chosen__text_chosen=base_r.line_id.chosen.text_chosen,chosen__value_example=base_r.line_id.chosen.value_example,children_of__isnull=False)
                     base_r_line = base_r_line[0]
                     data = l_copy[(base_r.chosen.text_chosen).replace('[0]', '')]
+                    print(data)
                     field_name = base_r.field_type
                     field_name = field_name[0].upper() + field_name[1:]
                     m = import_string('datapop.models.{}'.format(field_name))
                     if field_name == 'Pointfield':
                         data = Point(data[0], data[1], srid=4326)
-                    the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=base_r)
-                    if created or the_field.o_field != data:
-                        the_field.o_field = data
-                    the_field.save()
+                    the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=base_r,o_field=data)
                     check_new_data.append(the_field)
                 # Query new data line and hook each data to see if new, same or not relevant
                 current_model = check_new_data[0]
@@ -71,30 +69,12 @@ class Command(BaseCommand):
                     query = query & Q(**{field_name.lower(): current_model})
                 print(query)
                 try:
-                    d = DataLine.objects.get_or_create(query)
+                    d = DataLine.objects.get(query)
                 except DataLine.DoesNotExist:
-                    last_field = None
-                    create_dict = {}
-                    create_list = []
-                    n = 0
+                    d = DataLine.objects.create()
                     for i in query.children:
-                        n += 1
-                        if i[0] == last_field:
-                            create_list.append(i[1])
-                        elif not last_field:
-                            create_list.append(i[1])
-                            last_field = i[0]
-                        else:
-                            create_dict[last_field] = create_list
-                            create_list = []
-                            create_list.append(i[1])
-                            last_field = i[0]
-                        if n == len(query.children):
-                            create_dict[last_field] = create_list
-                    DataLine.objects.create(**create_dict)
-                for new_data in check_new_data:
-                    new_data.data_line = d
-                    new_data.save()
+                        g = getattr(d, "{}_set".format(i[0]))
+                        g.add(i[1])
                 return True
             else:
                 r = RegisterAPIChosen.objects.get(id=path_id)
@@ -125,153 +105,145 @@ class Command(BaseCommand):
                 for i, j in enumerate(c[1]):
                     o = c[1][j]
                     cluster_id_list.append(o.chosen_id)
-                if all_api.the_time > timezone.now() - timedelta(hours=24) and not all_api.first:
-                    continue
-                for i, j in enumerate(c[1]):
-                    o = c[1][j]
-                    chosen_id = o.chosen_id
-                    r = RegisterAPIChosen.objects.get(id=chosen_id)
-                    if not r.field_type:
-                        continue
-                    other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
-                    print(other_chosens)
-                    id_list = list(other_chosens.values_list('id', flat=True))
-                    print(id_list)
-                    if id_list and not id_list in children_id_list:
-                        children_id_list.append(list(other_chosens.values_list('id', flat=True)))
-                    print(children_id_list)
-                    for other_chosen in other_chosens:
-                        has_field = False
-                        for f in RegisterAPIChosen._meta.get_fields()[3:]:
-                            field = f.name
-                            if 'field' in field and field != ['operatedfield', 'field_type']:
-                                try:
-                                    g = getattr(other_chosen, field)
-                                    has_field = True
-                                except AttributeError:
+                if all_api.the_time < timezone.now() - timedelta(hours=24) or all_api.first:
+                    for i, j in enumerate(c[1]):
+                        o = c[1][j]
+                        chosen_id = o.chosen_id
+                        r = RegisterAPIChosen.objects.get(id=chosen_id)
+                        if not r.field_type:
+                            continue
+                        other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
+                        print(other_chosens)
+                        id_list = list(other_chosens.values_list('id', flat=True))
+                        print(id_list)
+                        if id_list and not id_list in children_id_list:
+                            children_id_list.append(list(other_chosens.values_list('id', flat=True)))
+                        print(children_id_list)
+                        for other_chosen in other_chosens:
+                            has_field = False
+                            for f in RegisterAPIChosen._meta.get_fields()[3:]:
+                                field = f.name
+                                if 'field' in field and field != ['operatedfield', 'field_type']:
+                                    try:
+                                        g = getattr(other_chosen, field)
+                                        has_field = True
+                                    except AttributeError:
+                                        continue
+                                if not has_field:
                                     continue
-                            if not has_field:
-                                continue
-                            print(has_field)
-                        other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
-                        if other_children.count() > 0:
-                            children_id_list[0].remove(other_chosen.id)
-                            if not children_id_list[0]:
-                                children_id_list.remove(children_id_list[0])
-                        children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
-                        if children.count() > 0:
-                            print('children count')
-                            self.iterate_child(chosen_id, children_id_list)
-                            print(children_id_list)
-                    other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
-                if other_chosens:
-                    waiting = False
-                    page_number = all_api.pagination_number
-                    for same_level_list in children_id_list:
-                        if waiting:
-                            break
-                        path_list = self.get_path(same_level_list[0], [same_level_list], True)
-                        while True:
-                            print('page {}'.format(page_number))
-                            try:
-                                if all_api.is_dumb:
-                                    response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
-                                    print(response.url)
-                                else:
-                                    if all_api.pagination:
-                                        params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
-                                        response = requests.get("{}".format(all_api.api_endpoint), params=params)
+                                print(has_field)
+                            other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
+                            if other_children.count() > 0:
+                                children_id_list[0].remove(other_chosen.id)
+                                if not children_id_list[0]:
+                                    children_id_list.remove(children_id_list[0])
+                            children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
+                            if children.count() > 0:
+                                print('children count')
+                                self.iterate_child(chosen_id, children_id_list)
+                                print(children_id_list)
+                        other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
+                    if other_chosens:
+                        empty_type_chosens = other_chosens.filter(field_type__isnull=True)
+                    else:
+                        empty_type_chosens = None
+                    if other_chosens and not empty_type_chosens:
+                        waiting = False
+                        page_number = all_api.pagination_number
+                        for same_level_list in children_id_list:
+                            if waiting:
+                                break
+                            path_list = self.get_path(same_level_list[0], [same_level_list], True)
+                            while True:
+                                print('page {}'.format(page_number))
+                                try:
+                                    if all_api.is_dumb:
+                                        print("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
+                                        response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page), timeout=10)
                                     else:
-                                        response = requests.get("{}".format(all_api.api_endpoint))
-                            except requests.exceptions.ConnectionError:
-                                waiting = True
-                                break
-                            if response.status_code == '404':
-                                break
-                            d = json.dumps(response.json(), sort_keys=True, indent=4)
-                            l = json.loads(d)
-                            if all_api.api_title == 'Washington D.C.' and not l['features']:
-                                break
-                            l_copy = l
-                            iterated = self.iterate_data_lines(path_list, -1, l_copy, page_number)
-                            if not iterated:
-                                break
-                            else:
-                                all_api.pagination_number += page_number
-                            if all_api.sleep:
-                                sleep(all_api.sleep)
-                                break
-                    if not waiting:
-                        all_api.pagination_number = 0
-                    else:
-                        all_api.pagination_number = page_number
-                    if all_api.first:
-                        all_api.first = False
-                    all_api.save()
+                                        params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
+                                        response = requests.get("{}".format(all_api.api_endpoint), params=params, timeout=10)
+                                except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
+                                    waiting = True
+                                    break
+                                if response.status_code == '404':
+                                    break
+                                d = json.dumps(response.json(), sort_keys=True, indent=4)
+                                l = json.loads(d)
+                                if all_api.json_limit:
+                                    try:
+                                        l[all_api.json_limit]
+                                        if not l[all_api.json_limit]:
+                                            break
+                                    except KeyError:
+                                        break
+                                else:
+                                    if l[all_api.results] == 0:
+                                        break
+                                l_copy = l
+                                iterated = self.iterate_data_lines(path_list, -1, l_copy, page_number)
+                                page_number += 1
+                                print('next page {}'.format(page_number))
+                                if all_api.sleep:
+                                    sleep(all_api.sleep)
+                                    break
+                        if not waiting:
+                            all_api.pagination_number = 0
+                        else:
+                            all_api.pagination_number = page_number
+                        if all_api.first:
+                            all_api.first = False
+                        all_api.save()
+                other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
+                # no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True)
+                # if other_chosens and not no_operated:
+                if other_chosens:
+                    data_lines = DataLine.objects.all()
+                    for data_line in data_lines:
+                        field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
+                        for field_type in field_types:
+                            the_type = None
+                            g = getattr(data_line, "{}_set".format(field_type))
+                            if g.all().count() == 0:
+                                continue
+                            for g_object in g.all():
+                                if not g_object.register_api_chosen:
+                                    continue
+                                o_field = g_object.o_field
+                                created = False
+                                operated_fields = g_object.register_api_chosen.operatedfield_set.all()
+                                if operated_fields.count() == 0:
+                                    if field_type == 'Textfield':
+                                        the_type, the_type_created = TheType.objects.get_or_create(the_type=o_field)
+                                else:
+                                    for operated in operated_fields:
+                                        field_type = operated.field_type
+                                        if created:
+                                            continue
+                                        elif field_type == 'Pointfield' and not operated.operation:
+                                            if type(o_field) is list:
+                                                lat = o_field[0]
+                                                lng = o_field[1]
+                                                point = Point(lat,lng)
+                                            else:
+                                                s = ast.literal_eval(o_field)
+                                                lat = s[0]
+                                                lng = s[1]
+                                                point = Point(lat,lng)
+                                        elif field_type == 'Pointfield' and operated.operation == 'COMBINE':
+                                            chosens = operated.register_api_chosen.filter(field_name='lat')
+                                            m = import_string('datapop.models.{}'.format(field_type))
+                                            lat = m.objects.get(data_line=data_line,register_api_chosen__in=chosens)
+                                            lat = lat.o_field
+                                            chosens = operated.register_api_chosen.filter(field_name='lng')
+                                            lng = m.objects.get(data_line=data_line,register_api_chosen__in=chosens)
+                                            lng = lng.o_field
+                                            point = Point(lat,lng)
+                                        m = import_string('datapop.models.{}'.format(field_type))
+                                        point_field, created = m.objects.get_or_create(o_field=point,data_line=data_line)
+                                        trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
+                            if the_type:
+                                trash.the_type = the_type
+                                trash.save()
 
-            data_lines = DataLine.objects.all()
-            for data_line in data_lines:
-                g = getattr(data_line, "{}_set".format(("Pointfield").lower()))
-                if field_type == 'Textfield':
-                    s = ast.literal_eval(g.all()[0].o_field)
-                    lat = s['coordinates'][0]
-                    long = s['coordinates'][1]
-                else:
-                    lat = g.all()[0].o_field
-                    long = g.all()[1].o_field
-                the_data.o_field = Point(lat,long)
-                the_data.save()
-                trash = TrashSpecificities.objects.get_or_create(pointfield__o_field=the_data)
-                field_choices = OperatedField.FIELD_CHOICES
-                for field_choice in field_choices:
-                    field = field_choice[0]
-                    if field == "Pointfield":
-                        continue
-                    else:
-                        g = getattr(data_line, "{}_set".format(field.lower()))
-                        operated = g.all()[0].operated_field
-                        field_name = operated.field_name
-                        the_data, created = m.objects.get_or_create(data_line=data_line,is_up=True,operated_field=operated)
-                        if field_name == "thetype":
-                            the_type = g.all()[0].o_field
-                            trash.trash_type = TrashType.objects.get_or_create(the_type=the_type)
-                            trash.save()
-            
-            # all_operated = OperatedField.objects.all()
-            # for operated in all_operated:
-            #     api_chosen_set = operated.register_api_chosen.all()
-            #     api_chosen_set = RegisterAPIChosen.objects.filter(chosen__text_chosen=api_chosen_set[0].chosen.text_chosen,chosen__value_example=api_chosen_set[0].chosen.value_example,children_of__isnull=False)
-            #     data_lines = api_chosen_set[0].dataline_set.all()
-            #     for data_line in data_lines:
-            #         if data_line.the_time > timezone.now() - timedelta(hours=24):
-            #             if operated.field_type == 'Pointfield':
-            #                 field_type = operated.field_type
-            #                 field_type = field_type[0].upper() + field_type[1:]
-            #                 m = import_string('datapop.models.{}'.format(field_type))
-            #                 the_data, created = m.objects.get_or_create(data_line=data_line,is_up=True,operated_field=operated)
-            #                 field_type = operated.register_api_chosen.all()[0].field_type
-            #                 g = getattr(data_line, "{}_set".format(field_type.lower()))
-            #                 if field_type == 'Textfield':
-            #                     s = ast.literal_eval(g.all()[0].o_field)
-            #                     lat = s['coordinates'][0]
-            #                     long = s['coordinates'][1]
-            #                 else:
-            #                     lat = g.all()[0].o_field
-            #                     long = g.all()[1].o_field
-            #                 the_data.o_field = Point(lat,long)
-            #                 the_data.save()
-            #                 trash = TrashSpecificities.objects.get_or_create(pointfield__o_field=the_data)
-            #             else:
-            #                 field_type = operated.field_type
-            #                 field_type = field_type[0].upper() + field_type[1:]
-            #                 m = import_string('datapop.models.{}'.format(field_type))
-            #                 the_data, created = m.objects.get_or_create(data_line=data_line,is_up=True,operated_field=operated)
-            #                 field_type = operated.register_api_chosen.all()[0].field_type
-            #                 g = getattr(data_line, "{}_set".format(field_type.lower()))
-            #                 field_name = operated.field_name
-            #                 if field_name == 'the_type':
-            #                     the_type = the_type=g.all()[0].o_field
-            #                     trash.trash_type = TrashType.objects.get_or_create(the_type=the_type)
-            #         trash.save()
-                                
-            osm_call.main()
+                osm_call.main()

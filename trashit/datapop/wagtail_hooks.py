@@ -99,8 +99,11 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('pagination_number'),
         FieldPanel('rows_name'),
         FieldPanel('rows_per_page'),
+        FieldPanel('json_limit'),
         FieldPanel('once_every'),
         FieldPanel('sleep'),
+        FieldPanel('other_field'),
+        FieldPanel('new_field'),
         MultipleChooserPanel("the_api",
             chooser_field_name="chosen",
             label="API Key(s)", min_num=0)
@@ -173,6 +176,7 @@ class RegisterAPIChosenTemplate(SnippetViewSet):
 
     panels = [
         FieldPanel("field_type"),
+        FieldPanel('field_name'),
         NoSameField("line_id", widget_class=Select),
     ]
 

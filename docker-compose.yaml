@@ -63,9 +63,14 @@ services:
       - EMAIL_HOST_USER
       - EMAIL_HOST_PASSWORD
       - CSRF_TRUSTED_ORIGINS
+    volumes: 
+      - static:/app/static
+      - media:/app/media
     depends_on:
       - backend
   backend:
+    build:
+      context: trashit/
     restart: always
     image: trashit/backend
     ports:

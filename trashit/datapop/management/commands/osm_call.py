@@ -23,6 +23,14 @@ def main():
             except KeyError:    
                 waste_type = "waste"
                 continue
+            check_same = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=5)),trashspecificities__trash_type=waste_type).annotate(distance=Distance("o_field", point))
+            if check_same:
+                try:
+                    t = TrashSpecificities.objects.get(point_field=point_field)
+                    t.delete()
+                except TrashSpecificities.DoesNotExist:
+                    True
+                continue
             the_type, created = TheType.objects.get_or_create(the_type=waste_type)
             container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
             trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
@@ -44,6 +52,14 @@ def main():
                 waste_type = d['waste']
             except KeyError:
                 waste_type = "waste"
+                continue
+            check_same = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=5)),trashspecificities__trash_type=waste_type).annotate(distance=Distance("o_field", point))
+            if check_same:
+                try:
+                    t = TrashSpecificities.objects.get(point_field=point_field)
+                    t.delete()
+                except TrashSpecificities.DoesNotExist:
+                    True
                 continue
             the_type, created = TheType.objects.get_or_create(the_type=waste_type)
             container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
@@ -76,11 +92,22 @@ def main():
                     try:
                         waste_type = d['operator']
                     except:
-                        waste_type = None
+                        continue
+                check_same = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=5)),trashspecificities__trash_type=waste_type).annotate(distance=Distance("o_field", point))
+                if check_same:
+                    try:
+                        t = TrashSpecificities.objects.get(point_field=point_field)
+                        t.delete()
+                    except TrashSpecificities.DoesNotExist:
+                        True
+                    continue
                 the_type, created = TheType.objects.get_or_create(the_type=waste_type)
                 container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
                 trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
             else:
+                check_same = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=5)),trashspecificities__trash_type=waste_type).annotate(distance=Distance("o_field", point))
+                if check_same:
+                    continue
                 the_type, created = TheType.objects.get_or_create(the_type=waste_type)
                 container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
                 trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
