@@ -16,7 +16,7 @@ from .widgets import ChosenChooserWidget, OperatedChooserWidget
 
 class Booleanfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -29,7 +29,7 @@ class Booleanfield(models.Model):
 
 class Charfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -43,7 +43,7 @@ class Charfield(models.Model):
 
 class Datefield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -57,7 +57,7 @@ class Datefield(models.Model):
 
 class Datetimefield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -71,7 +71,7 @@ class Datetimefield(models.Model):
 
 class Emailfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -85,7 +85,7 @@ class Emailfield(models.Model):
 
 class Filepathfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -99,7 +99,7 @@ class Filepathfield(models.Model):
 
 class Floatfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -113,7 +113,7 @@ class Floatfield(models.Model):
 
 class Integerfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -127,7 +127,7 @@ class Integerfield(models.Model):
 
 class Positiveintegerfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -141,7 +141,7 @@ class Positiveintegerfield(models.Model):
 
 class Textfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -155,7 +155,7 @@ class Textfield(models.Model):
 
 class Timefield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -169,7 +169,7 @@ class Timefield(models.Model):
 
 class Urlfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -183,7 +183,7 @@ class Urlfield(models.Model):
 
 class Filefield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -196,7 +196,7 @@ class Filefield(models.Model):
 
 class Imagefield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -209,7 +209,7 @@ class Imagefield(models.Model):
 
 class Jsonfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -222,7 +222,7 @@ class Jsonfield(models.Model):
 
 class Geometrycollectionfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -235,7 +235,7 @@ class Geometrycollectionfield(models.Model):
 
 class Geometryfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -248,7 +248,7 @@ class Geometryfield(models.Model):
 
 class Linestringfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -261,7 +261,7 @@ class Linestringfield(models.Model):
 
 class Multilinestringfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -275,7 +275,7 @@ class Multilinestringfield(models.Model):
 
 class Multipointfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -288,7 +288,7 @@ class Multipointfield(models.Model):
 
 class Multipolygonfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -301,7 +301,7 @@ class Multipolygonfield(models.Model):
 
 class Pointfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
@@ -314,7 +314,7 @@ class Pointfield(models.Model):
 
 class Polygonfield(models.Model):
     id = models.BigAutoField(primary_key=True)
-    data_line = models.ManyToManyField('DataLine', null=True, blank=True)
+    data_line = models.ManyToManyField('DataLine', blank=True)
     register_api_chosen = models.ForeignKey('RegisterAPIChosen', on_delete=models.SET_NULL, null=True, blank=True)
     operated_field = models.ForeignKey('OperatedField', on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=250, null=True, blank=True)
