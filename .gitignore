@@ -252,3 +252,6 @@ dmypy.json
 *.sync-conflict-*
 
 .env
+
+# VS
+*.code-workspace
