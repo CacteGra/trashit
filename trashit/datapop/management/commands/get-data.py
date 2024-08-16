@@ -39,7 +39,7 @@ class Command(BaseCommand):
             self.get_path(parent.id, path_list, False)
         return path_list
 
-    def iterate_data_lines(self, path_list, list_item, l_copy, line_number=0):
+    def iterate_data_lines(self, path_list, list_item, l_copy, all_api_pk, line_number=0):
         list_item += 1
         n = list_item
         for path_id in path_list[list_item:]:
@@ -51,37 +51,46 @@ class Command(BaseCommand):
                     base_r_line = RegisterAPIChosen.objects.filter(chosen__text_chosen=base_r.line_id.chosen.text_chosen,chosen__value_example=base_r.line_id.chosen.value_example,children_of__isnull=False)
                     base_r_line = base_r_line[0]
                     data = l_copy[(base_r.chosen.text_chosen).replace('[0]', '')]
-                    print(data)
                     field_name = base_r.field_type
                     field_name = field_name[0].upper() + field_name[1:]
                     m = import_string('datapop.models.{}'.format(field_name))
                     if field_name == 'Pointfield':
                         data = Point(data[0], data[1], srid=4326)
                     the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=base_r,o_field=data)
+                    print(the_field.o_field)
                     check_new_data.append(the_field)
                 # Query new data line and hook each data to see if new, same or not relevant
+                all_api = RegisterAPI.objects.get(pk=all_api_pk)
                 current_model = check_new_data[0]
                 field_name = current_model._meta.model.__name__
                 query = Q(**{field_name.lower(): current_model})
+                print(check_new_data)
+                if not check_new_data:
+                    continue
                 for t in range(1, len(check_new_data)):
                     current_model = check_new_data[t]
                     field_name = current_model._meta.model.__name__
                     query = query & Q(**{field_name.lower(): current_model})
-                print(query)
                 try:
                     d = DataLine.objects.get(query)
+                    for data_object in check_new_data:
+                        data_object.delete()
+                    print('exists already')
                 except DataLine.DoesNotExist:
-                    d = DataLine.objects.create()
+                    d = DataLine.objects.create(register_api=all_api)
                     for i in query.children:
                         g = getattr(d, "{}_set".format(i[0]))
+                        print('set {}'.format(i[0]))
                         g.add(i[1])
+                        print('object {}'.format(i[1].o_field))
+                    print(d.textfield_set.count())
                 return True
             else:
                 r = RegisterAPIChosen.objects.get(id=path_id)
                 if r.is_list:
                     i = False
                     for upper_data_line in l_copy[(r.chosen.text_chosen).replace('[0]', '')]:
-                        i = self.iterate_data_lines(path_list, n-1, upper_data_line, line_number)
+                        i = self.iterate_data_lines(path_list, n-1, upper_data_line, all_api_pk, line_number)
                         line_number += 1
                     if i:
                         print("Returning True")
@@ -178,10 +187,12 @@ class Command(BaseCommand):
                                     except KeyError:
                                         break
                                 else:
-                                    if l[all_api.results] == 0:
+                                    counting = DataLine.objects.filter(register_api=all_api, the_time__gte=all_api.the_time).count()
+                                    if int(l[all_api.results]) < counting:
+                                        print(l[all_api.results])
                                         break
                                 l_copy = l
-                                iterated = self.iterate_data_lines(path_list, -1, l_copy, page_number)
+                                iterated = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
                                 page_number += 1
                                 print('next page {}'.format(page_number))
                                 if all_api.sleep:
