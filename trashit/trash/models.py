@@ -43,6 +43,8 @@ class Wrapper(models.Model):
 
 class TheType(models.Model):
     the_type = models.CharField(max_length=100, null=True, blank=True)
+    from_local_api = models.BooleanField(default=False)
+    foreign_type = models.ForeignKey('self', related_name='type_trans', on_delete=models.SET_NULL, null=True, blank=True)
     
     def __str__(self):
         return "%s" % (self.the_type)

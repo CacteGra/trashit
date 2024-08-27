@@ -11,7 +11,7 @@ from django.utils.module_loading import import_string
 from django.utils import timezone
 from datetime import timedelta
 
-from trash.models import TrashSpecificities
+from trash.models import TrashSpecificities, TheType
 
 from . import osm_call
 
@@ -64,6 +64,29 @@ class Command(BaseCommand):
                 current_model = check_new_data[0]
                 field_name = current_model._meta.model.__name__
                 query = Q(**{field_name.lower(): current_model})
+                data_line = DataLine.objects.get(register_api=all_api)
+                for t in range(1, len(check_new_data)):
+                    current_model = check_new_data[t]
+                    field_name = current_model._meta.model.__name__
+                    query = Q(**{field_name.lower(): current_model})
+                    data_line = data_line.objects.filter(Q(query))
+                    # query = query & Q(**{field_name.lower(): current_model})
+                if not data_line:
+                    d = DataLine.objects.create(register_api=all_api)
+                    for i in query.children:
+                        g = getattr(d, "{}_set".format(i[0]))
+                        print('set {}'.format(i[0]))
+                        g.add(i[1])
+                        print('object {}'.format(i[1].o_field))
+                # try:
+                #     DataLine.objects.get(Q(register_api=all_api) & query)
+                # except DataLine.DoesNotExist:
+                #     d = DataLine.objects.create(register_api=all_api)
+                #     for i in query.children:
+                #         g = getattr(d, "{}_set".format(i[0]))
+                #         print('set {}'.format(i[0]))
+                #         g.add(i[1])
+                #         print('object {}'.format(i[1].o_field))
                 print(check_new_data)
                 if not check_new_data:
                     continue
@@ -206,9 +229,9 @@ class Command(BaseCommand):
                             all_api.first = False
                         all_api.save()
                 other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
-                # no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True)
-                # if other_chosens and not no_operated:
-                if other_chosens:
+                no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True)
+                if other_chosens and not no_operated:
+                # if other_chosens:
                     data_lines = DataLine.objects.all()
                     for data_line in data_lines:
                         field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
@@ -223,24 +246,23 @@ class Command(BaseCommand):
                                 o_field = g_object.o_field
                                 created = False
                                 operated_fields = g_object.register_api_chosen.operatedfield_set.all()
-                                if operated_fields.count() == 0:
+                                for operated in operated_fields:
+                                    field_type = operated.field_type
                                     if field_type == 'Textfield':
-                                        the_type, the_type_created = TheType.objects.get_or_create(the_type=o_field)
-                                else:
-                                    for operated in operated_fields:
-                                        field_type = operated.field_type
+                                        the_type, the_type_created = TheType.objects.get_or_create(the_type=o_field,from_local_api=True)
+                                    else:
                                         if created:
                                             continue
                                         elif field_type == 'Pointfield' and not operated.operation:
                                             if type(o_field) is list:
                                                 lat = o_field[0]
                                                 lng = o_field[1]
-                                                point = Point(lat,lng)
+                                                point = Point(lng,lat)
                                             else:
                                                 s = ast.literal_eval(o_field)
                                                 lat = s[0]
                                                 lng = s[1]
-                                                point = Point(lat,lng)
+                                                point = Point(lng,lat)
                                         elif field_type == 'Pointfield' and operated.operation == 'COMBINE':
                                             chosens = operated.register_api_chosen.filter(field_name='lat')
                                             m = import_string('datapop.models.{}'.format(field_type))
@@ -249,9 +271,17 @@ class Command(BaseCommand):
                                             chosens = operated.register_api_chosen.filter(field_name='lng')
                                             lng = m.objects.get(data_line=data_line,register_api_chosen__in=chosens)
                                             lng = lng.o_field
-                                            point = Point(lat,lng)
+                                            point = Point(lng,lat)
                                         m = import_string('datapop.models.{}'.format(field_type))
-                                        point_field, created = m.objects.get_or_create(o_field=point,data_line=data_line)
+                                        try:
+                                            point_field = m.objects.get(o_field=point, data_line__in=[data_line])
+                                        except m.DoesNotExist:
+                                            point_field = m.objects.create(o_field=point)
+                                            point_field.data_line.add(data_line)
+                                        # point_fields = m.objects.filter(o_field=point, data_line__in=data_line)
+                                        # if not point_fields:
+                                        #     point_field = m.objects.create(o_field=point)
+                                        #     point_field.data_line.add(data_line)
                                         trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
                             if the_type:
                                 trash.the_type = the_type
