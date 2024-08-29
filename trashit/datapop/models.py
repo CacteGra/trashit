@@ -486,6 +486,6 @@ class RegisterAPI(ClusterableModel):
     sleep = models.PositiveIntegerField(null=True, blank=True)
     json_limit = models.CharField(max_length=100, null=True, blank=True)
     results = models.CharField(max_length=100, null=True, blank=True)
-    where_line = models.PositiveIntegerField(null=True, blank=True)
+    where_line = models.PositiveIntegerField(default=0)
     def __str__(self):
         return "%s" % (self.api_title)
