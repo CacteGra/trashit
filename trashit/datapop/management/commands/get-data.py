@@ -43,6 +43,13 @@ class Command(BaseCommand):
         list_item += 1
         n = list_item
         for path_id in path_list[list_item:]:
+            if list_item == 0:
+                where_line = 1
+            else:
+                try:
+                    where_line += 1
+                except NameError:
+                    pass
             n += 1
             if (type(path_id) is list):
                 check_new_data = []
@@ -60,24 +67,32 @@ class Command(BaseCommand):
                     print(the_field.o_field)
                     check_new_data.append(the_field)
                 # Query new data line and hook each data to see if new, same or not relevant
+                if not check_new_data:
+                    continue
                 all_api = RegisterAPI.objects.get(pk=all_api_pk)
                 current_model = check_new_data[0]
                 field_name = current_model._meta.model.__name__
                 query = Q(**{field_name.lower(): current_model})
-                data_line = DataLine.objects.get(register_api=all_api)
+                query_to_create = Q(**{field_name.lower(): current_model})
+                data_line = DataLine.objects.filter(register_api=all_api)
+                data_line = data_line.filter(query)
                 for t in range(1, len(check_new_data)):
                     current_model = check_new_data[t]
                     field_name = current_model._meta.model.__name__
                     query = Q(**{field_name.lower(): current_model})
-                    data_line = data_line.objects.filter(Q(query))
-                    # query = query & Q(**{field_name.lower(): current_model})
+                    data_line = data_line.filter(query)
+                    print("data line result")
+                    print(data_line)
+                    query_to_create = query_to_create & Q(**{field_name.lower(): current_model})
                 if not data_line:
                     d = DataLine.objects.create(register_api=all_api)
-                    for i in query.children:
+                    for i in query_to_create.children:
                         g = getattr(d, "{}_set".format(i[0]))
                         print('set {}'.format(i[0]))
                         g.add(i[1])
                         print('object {}'.format(i[1].o_field))
+                else:
+                    data_line.update(the_time=timezone.now())
                 # try:
                 #     DataLine.objects.get(Q(register_api=all_api) & query)
                 # except DataLine.DoesNotExist:
@@ -87,26 +102,26 @@ class Command(BaseCommand):
                 #         print('set {}'.format(i[0]))
                 #         g.add(i[1])
                 #         print('object {}'.format(i[1].o_field))
-                print(check_new_data)
-                if not check_new_data:
-                    continue
-                for t in range(1, len(check_new_data)):
-                    current_model = check_new_data[t]
-                    field_name = current_model._meta.model.__name__
-                    query = query & Q(**{field_name.lower(): current_model})
-                try:
-                    d = DataLine.objects.get(query)
-                    for data_object in check_new_data:
-                        data_object.delete()
-                    print('exists already')
-                except DataLine.DoesNotExist:
-                    d = DataLine.objects.create(register_api=all_api)
-                    for i in query.children:
-                        g = getattr(d, "{}_set".format(i[0]))
-                        print('set {}'.format(i[0]))
-                        g.add(i[1])
-                        print('object {}'.format(i[1].o_field))
-                    print(d.textfield_set.count())
+                # print(check_new_data)
+                # if not check_new_data:
+                #     continue
+                # for t in range(1, len(check_new_data)):
+                #     current_model = check_new_data[t]
+                #     field_name = current_model._meta.model.__name__
+                #     query = query & Q(**{field_name.lower(): current_model})
+                # try:
+                #     d = DataLine.objects.get(query)
+                #     for data_object in check_new_data:
+                #         data_object.delete()
+                #     print('exists already')
+                # except DataLine.DoesNotExist:
+                #     d = DataLine.objects.create(register_api=all_api)
+                #     for i in query.children:
+                #         g = getattr(d, "{}_set".format(i[0]))
+                #         print('set {}'.format(i[0]))
+                #         g.add(i[1])
+                #         print('object {}'.format(i[1].o_field))
+                #     print(d.textfield_set.count())
                 return True
             else:
                 r = RegisterAPIChosen.objects.get(id=path_id)
@@ -119,7 +134,13 @@ class Command(BaseCommand):
                         print("Returning True")
                         return True
                     else:
-                        return False
+                        try:
+                            r = RegisterAPI.objects.get(pk=all_api_pk)
+                            r.where_line = where_line
+                            r.save()
+                            return False
+                        except NameError:
+                            return False
                 else:
                     l_copy_line_id = l_copy
                     l_copy = l_copy[(r.chosen.text_chosen).replace('[0]', '')]
@@ -210,10 +231,13 @@ class Command(BaseCommand):
                                     except KeyError:
                                         break
                                 else:
-                                    counting = DataLine.objects.filter(register_api=all_api, the_time__gte=all_api.the_time).count()
-                                    if int(l[all_api.results]) < counting:
-                                        print(l[all_api.results])
+                                    r = RegisterAPI.objects.get(pk=all_api.pk)
+                                    if int(l[all_api.results]) < r.where_line:
                                         break
+                                    # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()
+                                    # if int(l[all_api.results]) < counting:
+                                    #     print(l[all_api.results])
+                                    #     break
                                 l_copy = l
                                 iterated = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
                                 page_number += 1
@@ -237,6 +261,7 @@ class Command(BaseCommand):
                         field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
                         for field_type in field_types:
                             the_type = None
+                            trash = None
                             g = getattr(data_line, "{}_set".format(field_type))
                             if g.all().count() == 0:
                                 continue
@@ -283,7 +308,7 @@ class Command(BaseCommand):
                                         #     point_field = m.objects.create(o_field=point)
                                         #     point_field.data_line.add(data_line)
                                         trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
-                            if the_type:
+                            if the_type and trash:
                                 trash.the_type = the_type
                                 trash.save()
 
