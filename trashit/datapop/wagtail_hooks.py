@@ -274,6 +274,7 @@ class TrashTypeTemplate(SnippetViewSet):
     panels = [
         FieldPanel('collect_area'),
         FieldPanel('the_type', widget=RadioSelect),
+        FieldPanel('osm_type', widget=RadioSelect),
         FieldPanel('day', widget=CheckboxSelectMultiple),
         FieldPanel('hour'),
     ]

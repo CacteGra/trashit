@@ -45,11 +45,6 @@ class Command(BaseCommand):
         for path_id in path_list[list_item:]:
             if list_item == 0:
                 where_line = 1
-            else:
-                try:
-                    where_line += 1
-                except NameError:
-                    pass
             n += 1
             if (type(path_id) is list):
                 check_new_data = []
@@ -130,17 +125,21 @@ class Command(BaseCommand):
                     for upper_data_line in l_copy[(r.chosen.text_chosen).replace('[0]', '')]:
                         i = self.iterate_data_lines(path_list, n-1, upper_data_line, all_api_pk, line_number)
                         line_number += 1
+                        try:
+                            where_line += 1
+                        except NameError:
+                            pass
                     if i:
                         print("Returning True")
-                        return True
-                    else:
                         try:
                             r = RegisterAPI.objects.get(pk=all_api_pk)
-                            r.where_line = where_line
+                            r.where_line += where_line
                             r.save()
-                            return False
+                            return True
                         except NameError:
-                            return False
+                            return True
+                    else:
+                        return False
                 else:
                     l_copy_line_id = l_copy
                     l_copy = l_copy[(r.chosen.text_chosen).replace('[0]', '')]
@@ -203,6 +202,8 @@ class Command(BaseCommand):
                     if other_chosens and not empty_type_chosens:
                         waiting = False
                         page_number = all_api.pagination_number
+                        all_api.where_line = 0
+                        all_api.save()
                         for same_level_list in children_id_list:
                             if waiting:
                                 break
@@ -261,6 +262,7 @@ class Command(BaseCommand):
                         field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
                         for field_type in field_types:
                             the_type = None
+                            trash_type = None
                             trash = None
                             g = getattr(data_line, "{}_set".format(field_type))
                             if g.all().count() == 0:
@@ -275,6 +277,7 @@ class Command(BaseCommand):
                                     field_type = operated.field_type
                                     if field_type == 'Textfield':
                                         the_type, the_type_created = TheType.objects.get_or_create(the_type=o_field,from_local_api=True)
+                                        trash_type, trash_type_created = TrashType.objects.get_or_create(the_type=the_type)
                                     else:
                                         if created:
                                             continue
@@ -308,8 +311,8 @@ class Command(BaseCommand):
                                         #     point_field = m.objects.create(o_field=point)
                                         #     point_field.data_line.add(data_line)
                                         trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
-                            if the_type and trash:
-                                trash.the_type = the_type
+                            if trash_type and trash:
+                                trash.trash_type = trash_type
                                 trash.save()
 
                 osm_call.main()
