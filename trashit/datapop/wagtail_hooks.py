@@ -13,6 +13,8 @@ from wagtail.admin.filters import WagtailFilterSet
 from django.utils.module_loading import import_string
 from django import forms
 
+import requests
+
 from wagtailgeowidget.panels import LeafletPanel
 
 from .all_functions import unique_get_data, one_list_item, str_to_coords
@@ -34,6 +36,15 @@ def first_connection(request, instance):
     if isinstance(instance, RegisterAPI):
         r = RegisterAPI.objects.get(pk=instance.pk)
         if r.api_endpoint:
+            try:
+                if r.is_dumb:
+                    print("{}&{}={}&{}={}".format(r.api_endpoint, r.pagination, 1, r.rows_name, r.rows_per_page))
+                    response = requests.get("{}&{}={}&{}={}".format(r.api_endpoint, r.pagination, 1, r.rows_name, r.rows_per_page), timeout=10)
+                else:
+                    params = {r.pagination: 1, r.rows_name: r.rows_per_page}
+                    response = requests.get("{}".format(r.api_endpoint), params=params, timeout=10)
+            except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
+                print(False)
             l = unique_get_data.main(r.api_endpoint)
             one_list_item.main(l, r.pk)
     elif isinstance(instance, CollectArea):
@@ -104,7 +115,7 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('json_limit'),
         FieldPanel('results'),
         FieldPanel('sleep'),
-        MultipleChooserPanel("the_api",
+        MultipleChooserPanel("first_api",
             chooser_field_name="chosen",
             label="API Key(s)", min_num=0)
     ]

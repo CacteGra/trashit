@@ -349,7 +349,7 @@ class Chosen(models.Model):
 
 class RegisterAPIChosen(Orderable, models.Model):
     register_api = ParentalKey("RegisterAPI", related_name="the_api", on_delete=models.CASCADE, null=True, blank=True)
-    register_api_foreign = models.ForeignKey('RegisterAPI', on_delete=models.CASCADE, null=True, blank=True)
+    register_api_foreign = models.ForeignKey('RegisterAPI', related_name="first_api", on_delete=models.CASCADE, null=True, blank=True)
     # operated_select = ParentalManyToManyField("OperatedField", related_name="the_operated", blank=True)
     # operated_select_foreign = models.ForeignKey('OperatedField', on_delete=models.CASCADE, null=True, blank=True)
     hierarchy = models.PositiveIntegerField(null=True, blank=True)
@@ -485,7 +485,7 @@ class RegisterAPI(ClusterableModel):
     once_every = models.PositiveIntegerField(null=True, blank=True)
     sleep = models.PositiveIntegerField(null=True, blank=True)
     json_limit = models.CharField(max_length=100, null=True, blank=True)
-    results = models.CharField(max_length=100, null=True, blank=True)
+    results = models.CharField(max_length=100)
     where_line = models.PositiveIntegerField(default=0)
     def __str__(self):
         return "%s" % (self.api_title)

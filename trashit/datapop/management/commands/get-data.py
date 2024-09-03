@@ -11,7 +11,7 @@ from django.utils.module_loading import import_string
 from django.utils import timezone
 from datetime import timedelta
 
-from trash.models import TrashSpecificities, TheType
+from trash.models import TrashSpecificities, TrashType, TheType
 
 from . import osm_call
 
@@ -76,9 +76,9 @@ class Command(BaseCommand):
                     field_name = current_model._meta.model.__name__
                     query = Q(**{field_name.lower(): current_model})
                     data_line = data_line.filter(query)
-                    print("data line result")
-                    print(data_line)
                     query_to_create = query_to_create & Q(**{field_name.lower(): current_model})
+                print("data line result")
+                print(data_line)
                 if not data_line:
                     d = DataLine.objects.create(register_api=all_api)
                     for i in query_to_create.children:
@@ -276,7 +276,7 @@ class Command(BaseCommand):
                                 for operated in operated_fields:
                                     field_type = operated.field_type
                                     if field_type == 'Textfield':
-                                        the_type, the_type_created = TheType.objects.get_or_create(the_type=o_field,from_local_api=True)
+                                        the_type, the_type_created = TheType.objects.get_or_create(the_type=o_field)
                                         trash_type, trash_type_created = TrashType.objects.get_or_create(the_type=the_type)
                                     else:
                                         if created:
@@ -310,7 +310,7 @@ class Command(BaseCommand):
                                         # if not point_fields:
                                         #     point_field = m.objects.create(o_field=point)
                                         #     point_field.data_line.add(data_line)
-                                        trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
+                                        trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field)
                             if trash_type and trash:
                                 trash.trash_type = trash_type
                                 trash.save()
