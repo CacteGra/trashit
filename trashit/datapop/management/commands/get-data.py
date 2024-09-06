@@ -231,8 +231,11 @@ class Command(BaseCommand):
                                 else:
                                     r = RegisterAPI.objects.get(pk=all_api.pk)
                                     print(r.where_line)
-                                    if int(l[all_api.results]) < r.where_line:
+                                    if all_api.until_line and r.where_line <= all_api.until_line:
                                         break
+                                    else:
+                                        if int(l[all_api.results]) < r.where_line:
+                                            break
                                     # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()
                                     # if int(l[all_api.results]) < counting:
                                     #     print(l[all_api.results])
