@@ -115,7 +115,7 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('json_limit'),
         FieldPanel('results'),
         FieldPanel('sleep'),
-        MultipleChooserPanel("first_api",
+        MultipleChooserPanel("the_api",
             chooser_field_name="chosen",
             label="API Key(s)", min_num=0)
     ]

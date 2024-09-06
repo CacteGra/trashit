@@ -479,7 +479,7 @@ class RegisterAPI(ClusterableModel):
     first = models.BooleanField(default=True)
     the_time = models.DateTimeField(auto_now=True)
     pagination = models.CharField(max_length=100)
-    pagination_number = models.PositiveIntegerField(default=0)
+    pagination_number = models.PositiveIntegerField(default=1)
     rows_name = models.CharField(max_length=100)
     rows_per_page = models.PositiveIntegerField()
     once_every = models.PositiveIntegerField(null=True, blank=True)

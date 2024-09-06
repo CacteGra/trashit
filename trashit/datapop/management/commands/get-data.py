@@ -59,7 +59,6 @@ class Command(BaseCommand):
                     if field_name == 'Pointfield':
                         data = Point(data[0], data[1], srid=4326)
                     the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=base_r,o_field=data)
-                    print(the_field.o_field)
                     check_new_data.append(the_field)
                 # Query new data line and hook each data to see if new, same or not relevant
                 if not check_new_data:
@@ -83,9 +82,7 @@ class Command(BaseCommand):
                     d = DataLine.objects.create(register_api=all_api)
                     for i in query_to_create.children:
                         g = getattr(d, "{}_set".format(i[0]))
-                        print('set {}'.format(i[0]))
                         g.add(i[1])
-                        print('object {}'.format(i[1].o_field))
                 else:
                     data_line.update(the_time=timezone.now())
                 # try:
@@ -233,6 +230,7 @@ class Command(BaseCommand):
                                         break
                                 else:
                                     r = RegisterAPI.objects.get(pk=all_api.pk)
+                                    print(r.where_line)
                                     if int(l[all_api.results]) < r.where_line:
                                         break
                                     # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()

@@ -46,7 +46,9 @@ class ChosenChooseView(ChooseView):
 
     def filter_object_list(self, objects):
         print(self.request)
+        print(self.request.META)
         registerapi_url = self.request.META['HTTP_REFERER']
+        print(registerapi_url)
         if 'admin/snippets/datapop/registerapi/edit/' in registerapi_url:
             registerapi_pk = registerapi_url.split('admin/snippets/datapop/registerapi/edit/')
         else:
@@ -54,19 +56,32 @@ class ChosenChooseView(ChooseView):
             if self.construct_queryset_hook_name:
                 # allow hooks to modify the queryset
                 for hook in hooks.get_hooks(self.construct_queryset_hook_name):
+                    # objects = hook(objects, self.request)
+                    # print(objects.count())
+                    # objects = objects.filter(field_type__isnull=False)
+                    # print(objects.count())
+                    # objects = objects.exclude(chosen__text_chosen='root')
+                    # print(objects.count())
                     objects = hook(objects, self.request)
                     print(objects.count())
-                    objects = objects.filter(field_type__isnull=False)
+                    objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                     print(objects.count())
                     objects = objects.exclude(chosen__text_chosen='root')
                     print(objects.count())
             if self.filter_form.is_valid():
                 objects = self.filter_form.filter(objects)
+                # print(objects.count())
+                # objects = objects.filter(field_type__isnull=False)
+                # print(objects.count())
+                # objects = objects.exclude(chosen__text_chosen='root')
+                # print(objects.count())
+                objects = self.filter_form.filter(objects)
                 print(objects.count())
-                objects = objects.filter(field_type__isnull=False)
+                objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                 print(objects.count())
                 objects = objects.exclude(chosen__text_chosen='root')
                 print(objects.count())
+            print("the return of the objects")
             return objects
         print('before url')
         registerapi_pk = registerapi_url.split('admin/snippets/datapop/registerapi/edit/')
@@ -80,6 +95,7 @@ class ChosenChooseView(ChooseView):
                 print(objects.count())
                 objects = objects.exclude(chosen__text_chosen='root')
                 print(objects.count())
+                print('hooks')
         if self.filter_form.is_valid():
             objects = self.filter_form.filter(objects)
             print(objects.count())
@@ -87,6 +103,10 @@ class ChosenChooseView(ChooseView):
             print(objects.count())
             objects = objects.exclude(chosen__text_chosen='root')
             print(objects.count())
+        print("returning objects")
+        print(objects[0].register_api_foreign.pk)
+        print(registerapi_pk)
+        pprint(vars(self.request))
         return objects
 
     def get_results_page(self, request):
@@ -110,16 +130,27 @@ class ChooseAPIResultsView(ChooseResultsViewMixin, CreationFormMixin, BaseChoose
             if self.construct_queryset_hook_name:
                 # allow hooks to modify the queryset
                 for hook in hooks.get_hooks(self.construct_queryset_hook_name):
+                    # objects = hook(objects, self.request)
+                    # print(objects.count())
+                    # objects = objects.filter(field_type__isnull=False)
+                    # print(objects.count())
+                    # objects = objects.exclude(chosen__text_chosen='root')
+                    # print(objects.count())
                     objects = hook(objects, self.request)
                     print(objects.count())
-                    objects = objects.filter(field_type__isnull=False)
+                    objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                     print(objects.count())
                     objects = objects.exclude(chosen__text_chosen='root')
                     print(objects.count())
             if self.filter_form.is_valid():
                 objects = self.filter_form.filter(objects)
+                # print(objects.count())
+                # objects = objects.filter(field_type__isnull=False)
+                # print(objects.count())
+                # objects = objects.exclude(chosen__text_chosen='root')
+                # print(objects.count())
                 print(objects.count())
-                objects = objects.filter(field_type__isnull=False)
+                objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                 print(objects.count())
                 objects = objects.exclude(chosen__text_chosen='root')
                 print(objects.count())
@@ -161,7 +192,7 @@ class ChosenChooserViewSet(ChooserViewSet):
     # using a string avoids circular imports when accessing the StreamField block class (see below)
     model = "datapop.RegisterAPIChosen"
     choose_view_class = ChosenChooseView
-    choose_results_view_class = ChooseAPIResultsView
+    # choose_results_view_class = ChooseAPIResultsView
 
     per_page = 50
 
