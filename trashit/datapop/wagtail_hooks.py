@@ -17,7 +17,7 @@ import requests
 
 from wagtailgeowidget.panels import LeafletPanel
 
-from .all_functions import unique_get_data, one_list_item, str_to_coords
+from .all_functions import unique_get_data, one_list_item, str_to_coords, one_list_item_csv
 
 from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield, Polygonfield
 
@@ -35,7 +35,9 @@ def register_viewsets():
 def first_connection(request, instance):
     if isinstance(instance, RegisterAPI):
         r = RegisterAPI.objects.get(pk=instance.pk)
-        if r.api_endpoint:
+        if r.api_endpoint and r.api_type == "CSV":
+            one_list_item_csv.main(r.pk)
+        else:
             try:
                 if r.is_dumb:
                     print("{}&{}={}&{}={}".format(r.api_endpoint, r.pagination, 1, r.rows_name, r.rows_per_page))
@@ -114,6 +116,7 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('once_every'),
         FieldPanel('json_limit'),
         FieldPanel('results'),
+        FieldPanel('until_line'),
         FieldPanel('sleep'),
         MultipleChooserPanel("the_api",
             chooser_field_name="chosen",

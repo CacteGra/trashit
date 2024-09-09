@@ -466,6 +466,7 @@ class RegisterAPI(ClusterableModel):
     api_endpoint = models.URLField(max_length=500,null=True, blank=True)
     TYPE_CHOICES = [
         ("NONE", "NONE"),
+        ("CSV", "CSV"),
         ("OSM", "OSM"),
         ("OTHER", "OTHER"),
     ]

@@ -13,7 +13,7 @@ from datetime import timedelta
 
 from trash.models import TrashSpecificities, TrashType, TheType
 
-from . import osm_call
+from . import osm_call, get_csv_data
 
 class Command(BaseCommand):
 
@@ -155,105 +155,109 @@ class Command(BaseCommand):
                     o = c[1][j]
                     cluster_id_list.append(o.chosen_id)
                 if all_api.the_time < timezone.now() - timedelta(hours=24) or all_api.first:
-                    for i, j in enumerate(c[1]):
-                        o = c[1][j]
-                        chosen_id = o.chosen_id
-                        r = RegisterAPIChosen.objects.get(id=chosen_id)
-                        if not r.field_type:
-                            continue
-                        other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
-                        print(other_chosens)
-                        id_list = list(other_chosens.values_list('id', flat=True))
-                        print(id_list)
-                        if id_list and not id_list in children_id_list:
-                            children_id_list.append(list(other_chosens.values_list('id', flat=True)))
-                        print(children_id_list)
-                        for other_chosen in other_chosens:
-                            has_field = False
-                            for f in RegisterAPIChosen._meta.get_fields()[3:]:
-                                field = f.name
-                                if 'field' in field and field != ['operatedfield', 'field_type']:
-                                    try:
-                                        g = getattr(other_chosen, field)
-                                        has_field = True
-                                    except AttributeError:
-                                        continue
-                                if not has_field:
-                                    continue
-                                print(has_field)
-                            other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
-                            if other_children.count() > 0:
-                                children_id_list[0].remove(other_chosen.id)
-                                if not children_id_list[0]:
-                                    children_id_list.remove(children_id_list[0])
-                            children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
-                            if children.count() > 0:
-                                print('children count')
-                                self.iterate_child(chosen_id, children_id_list)
-                                print(children_id_list)
-                        other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
-                    if other_chosens:
-                        empty_type_chosens = other_chosens.filter(field_type__isnull=True)
+                    if all_api.api_type == "CSV":
+                        get_csv_data.main(all_api.pk)
+                        all_api.save()
                     else:
-                        empty_type_chosens = None
-                    if other_chosens and not empty_type_chosens:
-                        waiting = False
-                        page_number = all_api.pagination_number
-                        all_api.where_line = 0
-                        all_api.save()
-                        for same_level_list in children_id_list:
-                            if waiting:
-                                break
-                            path_list = self.get_path(same_level_list[0], [same_level_list], True)
-                            while True:
-                                print('page {}'.format(page_number))
-                                try:
-                                    if all_api.is_dumb:
-                                        print("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
-                                        response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page), timeout=10)
-                                    else:
-                                        params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
-                                        response = requests.get("{}".format(all_api.api_endpoint), params=params, timeout=10)
-                                except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
-                                    waiting = True
-                                    break
-                                if response.status_code == '404':
-                                    break
-                                d = json.dumps(response.json(), sort_keys=True, indent=4)
-                                l = json.loads(d)
-                                if all_api.json_limit:
-                                    try:
-                                        l[all_api.json_limit]
-                                        if not l[all_api.json_limit]:
-                                            break
-                                    except KeyError:
-                                        break
-                                else:
-                                    r = RegisterAPI.objects.get(pk=all_api.pk)
-                                    print(r.where_line)
-                                    if all_api.until_line and r.where_line <= all_api.until_line:
-                                        break
-                                    else:
-                                        if int(l[all_api.results]) < r.where_line:
-                                            break
-                                    # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()
-                                    # if int(l[all_api.results]) < counting:
-                                    #     print(l[all_api.results])
-                                    #     break
-                                l_copy = l
-                                iterated = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
-                                page_number += 1
-                                print('next page {}'.format(page_number))
-                                if all_api.sleep:
-                                    sleep(all_api.sleep)
-                                    break
-                        if not waiting:
-                            all_api.pagination_number = 0
+                        for i, j in enumerate(c[1]):
+                            o = c[1][j]
+                            chosen_id = o.chosen_id
+                            r = RegisterAPIChosen.objects.get(id=chosen_id)
+                            if not r.field_type:
+                                continue
+                            other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
+                            print(other_chosens)
+                            id_list = list(other_chosens.values_list('id', flat=True))
+                            print(id_list)
+                            if id_list and not id_list in children_id_list:
+                                children_id_list.append(list(other_chosens.values_list('id', flat=True)))
+                            print(children_id_list)
+                            for other_chosen in other_chosens:
+                                has_field = False
+                                for f in RegisterAPIChosen._meta.get_fields()[3:]:
+                                    field = f.name
+                                    if 'field' in field and field != ['operatedfield', 'field_type']:
+                                        try:
+                                            g = getattr(other_chosen, field)
+                                            has_field = True
+                                        except AttributeError:
+                                            continue
+                                    if not has_field:
+                                        continue
+                                    print(has_field)
+                                other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
+                                if other_children.count() > 0:
+                                    children_id_list[0].remove(other_chosen.id)
+                                    if not children_id_list[0]:
+                                        children_id_list.remove(children_id_list[0])
+                                children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
+                                if children.count() > 0:
+                                    print('children count')
+                                    self.iterate_child(chosen_id, children_id_list)
+                                    print(children_id_list)
+                            other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
+                        if other_chosens:
+                            empty_type_chosens = other_chosens.filter(field_type__isnull=True)
                         else:
-                            all_api.pagination_number = page_number
-                        if all_api.first:
-                            all_api.first = False
-                        all_api.save()
+                            empty_type_chosens = None
+                        if other_chosens and not empty_type_chosens:
+                            waiting = False
+                            page_number = all_api.pagination_number
+                            all_api.where_line = 0
+                            all_api.save()
+                            for same_level_list in children_id_list:
+                                if waiting:
+                                    break
+                                path_list = self.get_path(same_level_list[0], [same_level_list], True)
+                                while True:
+                                    print('page {}'.format(page_number))
+                                    try:
+                                        if all_api.is_dumb:
+                                            print("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
+                                            response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page), timeout=10)
+                                        else:
+                                            params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
+                                            response = requests.get("{}".format(all_api.api_endpoint), params=params, timeout=10)
+                                    except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
+                                        waiting = True
+                                        break
+                                    if response.status_code == '404':
+                                        break
+                                    d = json.dumps(response.json(), sort_keys=True, indent=4)
+                                    l = json.loads(d)
+                                    if all_api.json_limit:
+                                        try:
+                                            l[all_api.json_limit]
+                                            if not l[all_api.json_limit]:
+                                                break
+                                        except KeyError:
+                                            break
+                                    else:
+                                        r = RegisterAPI.objects.get(pk=all_api.pk)
+                                        print(r.where_line)
+                                        if all_api.until_line and all_api.until_line <= r.where_line:
+                                            break
+                                        elif not all_api.until_line:
+                                            if int(l[all_api.results]) < r.where_line:
+                                                break
+                                        # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()
+                                        # if int(l[all_api.results]) < counting:
+                                        #     print(l[all_api.results])
+                                        #     break
+                                    l_copy = l
+                                    iterated = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
+                                    page_number += 1
+                                    print('next page {}'.format(page_number))
+                                    if all_api.sleep:
+                                        sleep(all_api.sleep)
+                                        break
+                            if not waiting:
+                                all_api.pagination_number = 0
+                            else:
+                                all_api.pagination_number = page_number
+                            if all_api.first:
+                                all_api.first = False
+                            all_api.save()
                 other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
                 no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True)
                 if other_chosens and not no_operated:
