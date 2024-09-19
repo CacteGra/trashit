@@ -1,7 +1,7 @@
 import urllib.request
 import csv
 
-from datapop.models import RegisterAPI, DataLine
+from datapop.models import RegisterAPI, RegisterAPIChosen, DataLine
 
 def main(register_api_pk, cluster_id_list):
 

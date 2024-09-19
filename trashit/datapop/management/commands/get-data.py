@@ -156,8 +156,9 @@ class Command(BaseCommand):
                     cluster_id_list.append(o.chosen_id)
                 if all_api.the_time < timezone.now() - timedelta(hours=24) or all_api.first:
                     if all_api.api_type == "CSV":
-                        get_csv_data.main(all_api.pk)
-                        all_api.save()
+                        if cluster_id_list:
+                            get_csv_data.main(all_api.pk, cluster_id_list)
+                            all_api.save()
                     else:
                         for i, j in enumerate(c[1]):
                             o = c[1][j]
