@@ -15,5 +15,5 @@ def main(register_api_pk):
     csv_reader = csv.DictReader(content.splitlines())
     first_line = next(csv_reader)
     for head in header:
-        chosen = Chosen.objects.get_or_create(text_chosen=head, value_example=first_line[head])
+        chosen, created = Chosen.objects.get_or_create(text_chosen=head, value_example=first_line[head])
         RegisterAPIChosen.objects.get_or_create(register_api_foreign=all_api, chosen=chosen, is_list=True)

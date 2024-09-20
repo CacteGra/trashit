@@ -349,7 +349,8 @@ class Chosen(models.Model):
 
 class RegisterAPIChosen(Orderable, models.Model):
     id = models.BigAutoField(primary_key=True)
-    register_api = ParentalKey("RegisterAPI", related_name="the_api", on_delete=models.CASCADE, null=True, blank=True)
+    #register_api = ParentalKey("RegisterAPI", related_name="the_api", on_delete=models.CASCADE, null=True, blank=True)
+    register_api = models.ForeignKeyKey("RegisterAPI", related_name="the_api", on_delete=models.CASCADE, null=True, blank=True)
     register_api_foreign = models.ForeignKey('RegisterAPI', related_name="first_api", on_delete=models.CASCADE, null=True, blank=True)
     # operated_select = ParentalManyToManyField("OperatedField", related_name="the_operated", blank=True)
     # operated_select_foreign = models.ForeignKey('OperatedField', on_delete=models.CASCADE, null=True, blank=True)

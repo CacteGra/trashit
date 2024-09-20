@@ -118,9 +118,10 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('results'),
         FieldPanel('until_line'),
         FieldPanel('sleep'),
-        MultipleChooserPanel("the_api",
-            chooser_field_name="chosen",
-            label="API Key(s)", min_num=0)
+        # MultipleChooserPanel("the_api",
+        #     chooser_field_name="chosen",
+        #     label="API Key(s)", min_num=0)
+        InlinePanel('the_api')
     ]
 
 class RegisterAPIChosenIndex(IndexView):

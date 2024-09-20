@@ -1,6 +1,8 @@
 import urllib.request
 import csv
 
+from django.utils.module_loading import import_string
+
 from datapop.models import RegisterAPI, RegisterAPIChosen, DataLine
 
 def main(register_api_pk, cluster_id_list):

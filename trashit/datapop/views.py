@@ -106,14 +106,16 @@ class ChosenChooseView(ChooseView):
         print("returning objects")
         print(objects[0].register_api_foreign.pk)
         print(registerapi_pk)
+        objects = objects.filter(register_api_foreign__pk=registerapi_pk)
         pprint(vars(self.request))
         return objects
 
     def get_results_page(self, request):
+        from datapop.models import RegisterAPIChosen
         objects = self.get_object_list()
         objects = self.apply_object_list_ordering(objects)
         objects = self.filter_object_list(objects)
-        print('gonna paginate')
+        objects = RegisterAPIChosen.objects.filter(register_api_foreign__pk=registerapi_pk)
         paginator = Paginator(objects, per_page=self.per_page)
         try:
             return paginator.page(request.GET.get("p", 1))
