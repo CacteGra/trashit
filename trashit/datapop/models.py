@@ -356,7 +356,9 @@ class RegisterAPIChosen(Orderable, models.Model):
     hierarchy = models.PositiveIntegerField(null=True, blank=True)
     children_of = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     line_id = models.ForeignKey('self', related_name='the_id', on_delete=models.SET_NULL, null=True, blank=True)
-    the_chosen = models.OneToOneField("Chosen", on_delete=models.CASCADE, null=True, blank=True)
+    the_chosen = models.ForeignKey(
+        "Chosen", related_name="the_chosen", on_delete=models.CASCADE, null=True, blank=True
+    )
     ticked = models.BooleanField(default=False)
     is_list = models.BooleanField(default=False)
 
@@ -399,10 +401,10 @@ class RegisterAPIChosen(Orderable, models.Model):
     def __str__(self):
         h = self.hierarchy
         n = len(list(str(h)))
-        if self.chosen.value_example:
-            return "%s%s: %s" % ('.'*n, self.chosen.text_chosen, self.chosen.value_example)
+        if self.the_chosen.value_example:
+            return "%s%s: %s" % ('.'*n, self.the_chosen.text_chosen, self.the_chosen.value_example)
         else:
-            return "%s%s" % ('.'*n, self.chosen.text_chosen)
+            return "%s%s" % ('.'*n, self.the_chosen.text_chosen)
 
 class OperatedField(ClusterableModel):
     # register_api_chosen = ParentalManyToManyField("RegisterAPIChosen", related_name='api_chosen', blank=True)
