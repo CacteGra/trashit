@@ -67,6 +67,7 @@ def first_connection(request, instance):
 
 @hooks.register('after_edit_snippet')
 def first_connection(request, connection_object):
+    print('Hello')
     # try:
     #     r = RegisterAPI.objects.get(pk=connection_object.pk)
     #     all_chosen = RegisterAPIChosen.objects.filter(register_api=r, register_api_chosen_foreign__isnull=True)
@@ -85,7 +86,7 @@ def first_connection(request, connection_object):
     # except RegisterAPI.DoesNotExist:
     #     print(False)
     # try:
-    #     r = RegisterAPIChosen.objects.get(pk=connection_object.pk)
+    #     r = RegisterAPICehosen.objects.get(pk=connection_object.pk)
     #     select_field = r.selected_register_api_chosen
     #     text = select_field.field.text_field
     #     field_name = text[0].upper() + text[1:]
@@ -118,10 +119,10 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('results'),
         FieldPanel('until_line'),
         FieldPanel('sleep'),
-        # MultipleChooserPanel("the_api",
-        #     chooser_field_name="chosen",
-        #     label="API Key(s)", min_num=0)
-        InlinePanel('the_api')
+        MultipleChooserPanel("the_api",
+            chooser_field_name="chosen",
+            label="API Key(s)", min_num=0)
+        # InlinePanel('the_api')
     ]
 
 class RegisterAPIChosenIndex(IndexView):

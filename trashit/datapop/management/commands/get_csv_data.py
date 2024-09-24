@@ -18,11 +18,11 @@ def main(register_api_pk, cluster_id_list):
     for row in csv_reader:
         check_new_data = []
         for chosen in chosens:
-            field_name = chosen.chosen.text_chosen
+            field_name = chosen.the_chosen.text_chosen
             field_name = field_name[0].upper() + field_name[1:]
             m = import_string('datapop.models.{}'.format(field_name))
             the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=base_r,o_field=data)
-            check_new_data[chosen.chosen.text_chosen] = row[chosen.chosen.text_chosen]
+            check_new_data[chosen.the_chosen.text_chosen] = row[chosen.the_chosen.text_chosen]
         current_model = check_new_data[0]
         field_name = current_model._meta.model.__name__
         query = Q(**{field_name.lower(): current_model})

@@ -50,19 +50,19 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
                 dict_level = dict_level[k.replace('[0]', '')]
                 follow_list_dict['title'] = k.replace('[0]', '')
                 chosen = Chosen.objects.create(text_chosen=k)
-                child = RegisterAPIChosen.objects.create(register_api_foreign=api, chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True )
+                child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True )
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], k, dict_numbered, child)
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
                 follow_list_dict['title'] = k
                 chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
-                child = RegisterAPIChosen.objects.create(register_api_foreign=api, chosen=chosen, hierarchy=dict_numbered, children_of=parent)
+                child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[k])), dict_level[k], pk, dict_numbered, child)
             else:
                 follow_list_dict['title'] = k
                 follow_list_dict['value'] = str(dict_level[k])
                 chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
-                child = RegisterAPIChosen.objects.create(register_api_foreign=api, chosen=chosen, hierarchy=dict_numbered, children_of=parent)
+                child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
             list_dict.append(follow_list_dict)
             dict_numbered += 1
     return list_dict
@@ -80,7 +80,7 @@ def main(l, pk):
     one_list_dict['children'] = []
     one_list_dict['id'] = 0
     chosen = Chosen.objects.create(text_chosen="root")
-    parent = RegisterAPIChosen.objects.create(register_api_foreign=api, chosen=chosen, hierarchy=0, children_of=None)
+    parent = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=0, children_of=None)
     for i in using_dict:
         follow_list_dict = {'id': dict_numbered }
         if '[]' in i:
@@ -100,20 +100,20 @@ def main(l, pk):
                 dict_level = dict_level[k.replace('[0]', '')]
                 follow_list_dict['title'] = k.replace('[0]', '')
                 chosen = Chosen.objects.create(text_chosen=k)
-                child = RegisterAPIChosen.objects.create(register_api_foreign=api, chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
+                child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], pk, dict_numbered, child)
                 print('liste {}'.format(follow_list_dict['children']))
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
                 follow_list_dict['title'] = k
                 chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
-                child = RegisterAPIChosen.objects.create(register_api_foreign=api, chosen=chosen, hierarchy=dict_numbered, children_of=parent)
+                child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[k])), dict_level[k], pk, dict_numbered, child)
             else:
                 follow_list_dict['title'] = k
                 follow_list_dict['value'] = str(dict_level[k])
                 chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
-                child = RegisterAPIChosen.objects.create(register_api_foreign=api, chosen=chosen, hierarchy=dict_numbered, children_of=parent)
+                child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
             one_list_dict['children'].append(follow_list_dict)
             dict_numbered += 1
     return one_list_dict

@@ -35,7 +35,7 @@ class Command(BaseCommand):
         if not first_off:
             path_list.insert(0, r.pk)
         parent = r.children_of
-        if parent and (parent.chosen.text_chosen != 'root'):
+        if parent and (parent.the_chosen.text_chosen != 'root'):
             self.get_path(parent.id, path_list, False)
         return path_list
 
@@ -50,9 +50,9 @@ class Command(BaseCommand):
                 check_new_data = []
                 for data_id in path_id:
                     base_r = RegisterAPIChosen.objects.get(id=data_id)
-                    base_r_line = RegisterAPIChosen.objects.filter(chosen__text_chosen=base_r.line_id.chosen.text_chosen,chosen__value_example=base_r.line_id.chosen.value_example,children_of__isnull=False)
+                    base_r_line = RegisterAPIChosen.objects.filter(the_chosen__text_chosen=base_r.line_id.chosen.text_chosen,chosen__value_example=base_r.line_id.chosen.value_example,children_of__isnull=False)
                     base_r_line = base_r_line[0]
-                    data = l_copy[(base_r.chosen.text_chosen).replace('[0]', '')]
+                    data = l_copy[(base_r.the_chosen.text_chosen).replace('[0]', '')]
                     field_name = base_r.field_type
                     field_name = field_name[0].upper() + field_name[1:]
                     m = import_string('datapop.models.{}'.format(field_name))
@@ -119,7 +119,7 @@ class Command(BaseCommand):
                 r = RegisterAPIChosen.objects.get(id=path_id)
                 if r.is_list:
                     i = False
-                    for upper_data_line in l_copy[(r.chosen.text_chosen).replace('[0]', '')]:
+                    for upper_data_line in l_copy[(r.the_chosen.text_chosen).replace('[0]', '')]:
                         i = self.iterate_data_lines(path_list, n-1, upper_data_line, all_api_pk, line_number)
                         line_number += 1
                         try:
@@ -139,7 +139,7 @@ class Command(BaseCommand):
                         return False
                 else:
                     l_copy_line_id = l_copy
-                    l_copy = l_copy[(r.chosen.text_chosen).replace('[0]', '')]
+                    l_copy = l_copy[(r.the_chosen.text_chosen).replace('[0]', '')]
 
     def handle(self, *args, **options):
         while True:
@@ -157,8 +157,12 @@ class Command(BaseCommand):
                 if all_api.the_time < timezone.now() - timedelta(hours=24) or all_api.first:
                     if all_api.api_type == "CSV":
                         if cluster_id_list:
-                            get_csv_data.main(all_api.pk, cluster_id_list)
-                            all_api.save()
+                            register_api_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, field_type__isnull=True)
+                            if register_api_chosens:
+                                continue
+                            else:
+                                get_csv_data.main(all_api.pk, cluster_id_list)
+                                all_api.save()
                     else:
                         for i, j in enumerate(c[1]):
                             o = c[1][j]

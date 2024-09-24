@@ -56,30 +56,30 @@ class ChosenChooseView(ChooseView):
             if self.construct_queryset_hook_name:
                 # allow hooks to modify the queryset
                 for hook in hooks.get_hooks(self.construct_queryset_hook_name):
-                    # objects = hook(objects, self.request)
+                    objects = hook(objects, self.request)
                     # print(objects.count())
-                    # objects = objects.filter(field_type__isnull=False)
+                    objects = objects.filter(field_type__isnull=False)
                     # print(objects.count())
-                    # objects = objects.exclude(chosen__text_chosen='root')
+                    objects = objects.exclude(the_chosen__text_chosen='root')
                     # print(objects.count())
                     objects = hook(objects, self.request)
                     print(objects.count())
                     objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                     print(objects.count())
-                    objects = objects.exclude(chosen__text_chosen='root')
+                    objects = objects.exclude(the_chosen__text_chosen='root')
                     print(objects.count())
             if self.filter_form.is_valid():
                 objects = self.filter_form.filter(objects)
                 # print(objects.count())
-                # objects = objects.filter(field_type__isnull=False)
+                objects = objects.filter(field_type__isnull=False)
                 # print(objects.count())
-                # objects = objects.exclude(chosen__text_chosen='root')
+                objects = objects.exclude(the_chosen__text_chosen='root')
                 # print(objects.count())
                 objects = self.filter_form.filter(objects)
                 print(objects.count())
                 objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                 print(objects.count())
-                objects = objects.exclude(chosen__text_chosen='root')
+                objects = objects.exclude(the_chosen__text_chosen='root')
                 print(objects.count())
             print("the return of the objects")
             return objects
@@ -93,7 +93,7 @@ class ChosenChooseView(ChooseView):
                 print(objects.count())
                 objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                 print(objects.count())
-                objects = objects.exclude(chosen__text_chosen='root')
+                objects = objects.exclude(the_chosen__text_chosen='root')
                 print(objects.count())
                 print('hooks')
         if self.filter_form.is_valid():
@@ -101,7 +101,7 @@ class ChosenChooseView(ChooseView):
             print(objects.count())
             objects = objects.filter(register_api_foreign__pk=registerapi_pk)
             print(objects.count())
-            objects = objects.exclude(chosen__text_chosen='root')
+            objects = objects.exclude(the_chosen__text_chosen='root')
             print(objects.count())
         print("returning objects")
         print(objects[0].register_api_foreign.pk)
@@ -115,7 +115,6 @@ class ChosenChooseView(ChooseView):
         objects = self.get_object_list()
         objects = self.apply_object_list_ordering(objects)
         objects = self.filter_object_list(objects)
-        objects = RegisterAPIChosen.objects.filter(register_api_foreign__pk=registerapi_pk)
         paginator = Paginator(objects, per_page=self.per_page)
         try:
             return paginator.page(request.GET.get("p", 1))
@@ -124,39 +123,45 @@ class ChosenChooseView(ChooseView):
 
 class ChooseAPIResultsView(ChooseResultsViewMixin, CreationFormMixin, BaseChooseView):
     def filter_object_list(self, objects):
+        print(self.request)
+        print(self.request.META)
         registerapi_url = self.request.META['HTTP_REFERER']
+        print(registerapi_url)
         if 'admin/snippets/datapop/registerapi/edit/' in registerapi_url:
             registerapi_pk = registerapi_url.split('admin/snippets/datapop/registerapi/edit/')
         else:
-            print('inside not registerapi second')
+            print('inside not registerapi')
             if self.construct_queryset_hook_name:
                 # allow hooks to modify the queryset
                 for hook in hooks.get_hooks(self.construct_queryset_hook_name):
-                    # objects = hook(objects, self.request)
+                    objects = hook(objects, self.request)
                     # print(objects.count())
-                    # objects = objects.filter(field_type__isnull=False)
+                    objects = objects.filter(field_type__isnull=False)
                     # print(objects.count())
-                    # objects = objects.exclude(chosen__text_chosen='root')
+                    objects = objects.exclude(the_chosen__text_chosen='root')
                     # print(objects.count())
                     objects = hook(objects, self.request)
                     print(objects.count())
                     objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                     print(objects.count())
-                    objects = objects.exclude(chosen__text_chosen='root')
+                    objects = objects.exclude(the_chosen__text_chosen='root')
                     print(objects.count())
             if self.filter_form.is_valid():
                 objects = self.filter_form.filter(objects)
                 # print(objects.count())
-                # objects = objects.filter(field_type__isnull=False)
+                objects = objects.filter(field_type__isnull=False)
                 # print(objects.count())
-                # objects = objects.exclude(chosen__text_chosen='root')
+                objects = objects.exclude(the_chosen__text_chosen='root')
                 # print(objects.count())
+                objects = self.filter_form.filter(objects)
                 print(objects.count())
                 objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                 print(objects.count())
-                objects = objects.exclude(chosen__text_chosen='root')
+                objects = objects.exclude(the_chosen__text_chosen='root')
                 print(objects.count())
+            print("the return of the objects")
             return objects
+        print('before url')
         registerapi_pk = registerapi_url.split('admin/snippets/datapop/registerapi/edit/')
         registerapi_pk = registerapi_pk[-1].replace('/','')
         if self.construct_queryset_hook_name:
@@ -166,35 +171,40 @@ class ChooseAPIResultsView(ChooseResultsViewMixin, CreationFormMixin, BaseChoose
                 print(objects.count())
                 objects = objects.filter(register_api_foreign__pk=registerapi_pk)
                 print(objects.count())
-                objects = objects.exclude(chosen__text_chosen='root')
+                objects = objects.exclude(the_chosen__text_chosen='root')
                 print(objects.count())
+                print('hooks')
         if self.filter_form.is_valid():
             objects = self.filter_form.filter(objects)
             print(objects.count())
             objects = objects.filter(register_api_foreign__pk=registerapi_pk)
             print(objects.count())
-            objects = objects.exclude(chosen__text_chosen='root')
+            objects = objects.exclude(the_chosen__text_chosen='root')
             print(objects.count())
+        print("returning objects")
+        print(objects[0].register_api_foreign.pk)
+        print(registerapi_pk)
+        objects = objects.filter(register_api_foreign__pk=registerapi_pk)
+        pprint(vars(self.request))
         return objects
 
     def get_results_page(self, request):
+        from datapop.models import RegisterAPIChosen
         objects = self.get_object_list()
         objects = self.apply_object_list_ordering(objects)
         objects = self.filter_object_list(objects)
-        print('gonna paginate')
         paginator = Paginator(objects, per_page=self.per_page)
         try:
             return paginator.page(request.GET.get("p", 1))
         except InvalidPage:
             raise Http404
-    pass
 
 class ChosenChooserViewSet(ChooserViewSet):
     # The model can be specified as either the model class or an "app_label.model_name" string;
     # using a string avoids circular imports when accessing the StreamField block class (see below)
     model = "datapop.RegisterAPIChosen"
     choose_view_class = ChosenChooseView
-    # choose_results_view_class = ChooseAPIResultsView
+    choose_results_view_class = ChooseAPIResultsView
 
     per_page = 50
 
@@ -244,14 +254,14 @@ class OperatedChooseView(ChooseView):
                 print(objects.count())
                 objects = objects.filter(field_type__isnull=False)
                 print(objects.count())
-                objects = objects.exclude(chosen__text_chosen='root')
+                objects = objects.exclude(the_chosen__text_chosen='root')
                 print(objects.count())
         if self.filter_form.is_valid():
             objects = self.filter_form.filter(objects)
             print(objects.count())
             objects = objects.filter(field_type__isnull=False)
             print(objects.count())
-            objects = objects.exclude(chosen__text_chosen='root')
+            objects = objects.exclude(the_chosen__text_chosen='root')
             print(objects.count())
         return objects
 
@@ -275,14 +285,14 @@ class OperatedResultsView(ChooseResultsViewMixin, CreationFormMixin, BaseChooseV
                 print(objects.count())
                 objects = objects.filter(field_type__isnull=False)
                 print(objects.count())
-                objects = objects.exclude(chosen__text_chosen='root')
+                objects = objects.exclude(the_chosen__text_chosen='root')
                 print(objects.count())
         if self.filter_form.is_valid():
             objects = self.filter_form.filter(objects)
             print(objects.count())
             objects = objects.filter(field_type__isnull=False)
             print(objects.count())
-            objects = objects.exclude(chosen__text_chosen='root')
+            objects = objects.exclude(the_chosen__text_chosen='root')
             print(objects.count())
         return objects
 
