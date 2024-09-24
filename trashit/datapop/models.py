@@ -356,7 +356,7 @@ class RegisterAPIChosen(Orderable, models.Model):
     hierarchy = models.PositiveIntegerField(null=True, blank=True)
     children_of = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     line_id = models.ForeignKey('self', related_name='the_id', on_delete=models.SET_NULL, null=True, blank=True)
-    the_chosen = models.OneToOneField("Chosen", "chosen", on_delete=models.CASCADE, null=True, blank=True)
+    the_chosen = models.OneToOneField("Chosen", on_delete=models.CASCADE, null=True, blank=True)
     ticked = models.BooleanField(default=False)
     is_list = models.BooleanField(default=False)
 
@@ -394,7 +394,7 @@ class RegisterAPIChosen(Orderable, models.Model):
 
     field_name = models.CharField(max_length=250, null=True, blank=True)
 
-    panels = [FieldPanel("chosen", widget=ChosenChooserWidget)]
+    panels = [FieldPanel("the_chosen", widget=ChosenChooserWidget)]
 
     def __str__(self):
         h = self.hierarchy

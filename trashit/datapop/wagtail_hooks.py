@@ -120,7 +120,7 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('until_line'),
         FieldPanel('sleep'),
         MultipleChooserPanel("the_api",
-            chooser_field_name="chosen",
+            chooser_field_name="the_chosen",
             label="API Key(s)", min_num=0)
         # InlinePanel('the_api')
     ]
