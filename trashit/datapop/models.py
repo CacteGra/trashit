@@ -357,7 +357,7 @@ class RegisterAPIChosen(Orderable, models.Model):
     children_of = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
     line_id = models.ForeignKey('self', related_name='the_id', on_delete=models.SET_NULL, null=True, blank=True)
     the_chosen = models.ForeignKey(
-        "Chosen", related_name="the_chosen", on_delete=models.CASCADE, null=True, blank=True
+        "Chosen", related_name="choosing", on_delete=models.CASCADE, null=True, blank=True
     )
     ticked = models.BooleanField(default=False)
     is_list = models.BooleanField(default=False)
