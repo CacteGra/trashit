@@ -49,6 +49,8 @@ class ChosenChooseView(ChooseView):
         print(self.request.META)
         registerapi_url = self.request.META['HTTP_REFERER']
         print(registerapi_url)
+        registerapi_pk = registerapi_url.split('admin/snippets/datapop/registerapi/edit/')
+        registerapi_pk = registerapi_pk[-1].replace('/','')
         if 'admin/snippets/datapop/registerapi/edit/' in registerapi_url:
             registerapi_pk = registerapi_url.split('admin/snippets/datapop/registerapi/edit/')
         else:
@@ -203,8 +205,8 @@ class ChosenChooserViewSet(ChooserViewSet):
     # The model can be specified as either the model class or an "app_label.model_name" string;
     # using a string avoids circular imports when accessing the StreamField block class (see below)
     model = "datapop.RegisterAPIChosen"
-    choose_view_class = ChosenChooseView
-    choose_results_view_class = ChooseAPIResultsView
+    # choose_view_class = ChosenChooseView
+    # choose_results_view_class = ChooseAPIResultsView
 
     per_page = 50
 

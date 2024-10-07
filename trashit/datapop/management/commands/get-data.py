@@ -153,21 +153,24 @@ class Command(BaseCommand):
                 children_id_list = []
                 for i, j in enumerate(c[1]):
                     o = c[1][j]
-                    cluster_id_list.append(o.chosen_id)
+                    register_api_chosen_id = o.the_chosen.choosing.get(register_api__isnull=False)
+                    cluster_id_list.append(register_api_chosen_id.id)
                 if all_api.the_time < timezone.now() - timedelta(hours=24) or all_api.first:
-                    if all_api.api_type == "CSV":
+                    if all_api.api_type == "OSM":
+                        osm_call.main()
+                    elif all_api.api_type == "CSV":
                         if cluster_id_list:
                             register_api_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, field_type__isnull=True)
                             if register_api_chosens:
                                 continue
                             else:
                                 get_csv_data.main(all_api.pk, cluster_id_list)
+                                all_api.first = False
                                 all_api.save()
                     else:
                         for i, j in enumerate(c[1]):
                             o = c[1][j]
-                            chosen_id = o.chosen_id
-                            r = RegisterAPIChosen.objects.get(id=chosen_id)
+                            r = o.the_chosen.choosing.get(register_api__isnull=False)
                             if not r.field_type:
                                 continue
                             other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
@@ -198,7 +201,7 @@ class Command(BaseCommand):
                                 children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
                                 if children.count() > 0:
                                     print('children count')
-                                    self.iterate_child(chosen_id, children_id_list)
+                                    self.iterate_child(the_chosen_id, children_id_list)
                                     print(children_id_list)
                             other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
                         if other_chosens:
@@ -320,9 +323,7 @@ class Command(BaseCommand):
                                         # if not point_fields:
                                         #     point_field = m.objects.create(o_field=point)
                                         #     point_field.data_line.add(data_line)
-                                        trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field)
+                                        trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
                             if trash_type and trash:
                                 trash.trash_type = trash_type
                                 trash.save()
-
-                osm_call.main()

@@ -37,7 +37,7 @@ def first_connection(request, instance):
         r = RegisterAPI.objects.get(pk=instance.pk)
         if r.api_endpoint and r.api_type == "CSV":
             one_list_item_csv.main(r.pk)
-        else:
+        elif r.api_endpoint and r.api_type != "CSV":
             try:
                 if r.is_dumb:
                     print("{}&{}={}&{}={}".format(r.api_endpoint, r.pagination, 1, r.rows_name, r.rows_per_page))
@@ -119,10 +119,10 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('results'),
         FieldPanel('until_line'),
         FieldPanel('sleep'),
-        MultipleChooserPanel("the_api",
-            chooser_field_name="the_chosen",
-            label="API Key(s)", min_num=0)
-        # InlinePanel('the_api')
+        # MultipleChooserPanel("the_api",
+        #     chooser_field_name="the_chosen",
+        #     label="API Key(s)", min_num=0)
+        InlinePanel('the_api')
     ]
 
 class RegisterAPIChosenIndex(IndexView):
@@ -137,7 +137,8 @@ class RegisterAPIChosenIndex(IndexView):
                 c = all_api.copy_cluster()
                 for i, j in enumerate(c[1]):
                     o = c[1][j]
-                    cluster_id_list.append(o.chosen_id)
+                    register_api_chosen_id = o.the_chosen.choosing.get(register_api__isnull=False)
+                    cluster_id_list.append(register_api_chosen_id.id)
             self.queryset = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
         return super().get_base_queryset()
 

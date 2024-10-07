@@ -9,6 +9,7 @@ def main():
     register_apis = RegisterAPI.objects.filter(api_type='OSM')
     nominatim = Nominatim()
     overpass = Overpass()
+    print("osm")
     for register_api in register_apis:
         areaId = nominatim.query('{}, {}'.format(register_api.city, register_api.country)).areaId()
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_basket"', out='body')
@@ -91,3 +92,5 @@ def main():
                     t.save()
             except TrashSpecificities.DoesNotExist:
                 TrashSpecificities.objects.create(point_field=point_field, trash_type=trash_type)
+    register_api.first = False
+    register_api.save()

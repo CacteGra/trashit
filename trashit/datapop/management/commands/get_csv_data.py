@@ -1,7 +1,9 @@
 import urllib.request
 import csv
 
+from django.db.models import Q
 from django.utils.module_loading import import_string
+from django.utils import timezone
 
 from datapop.models import RegisterAPI, RegisterAPIChosen, DataLine
 
@@ -14,15 +16,16 @@ def main(register_api_pk, cluster_id_list):
     csv_reader = csv.reader(content.splitlines())
     header = next(csv_reader)
     csv_reader = csv.DictReader(content.splitlines())
-    chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
+    registerapichosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
     for row in csv_reader:
         check_new_data = []
-        for chosen in chosens:
-            field_name = chosen.the_chosen.text_chosen
+        for registerapichosen in registerapichosens:
+            field_name = registerapichosen.field_type
             field_name = field_name[0].upper() + field_name[1:]
             m = import_string('datapop.models.{}'.format(field_name))
-            the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=base_r,o_field=data)
-            check_new_data[chosen.the_chosen.text_chosen] = row[chosen.the_chosen.text_chosen]
+            data = row[registerapichosen.the_chosen.text_chosen]
+            the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=registerapichosen,o_field=data)
+            check_new_data.append(the_field)
         current_model = check_new_data[0]
         field_name = current_model._meta.model.__name__
         query = Q(**{field_name.lower(): current_model})
