@@ -3,7 +3,17 @@
   <div class="modal-dialog modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">{{ trash.trashspecificities.trash_type.the_type.the_type }}</h1>
+        {% if trash.trashspecificities.from_local_api %}
+        {% for locale in trash.trashspecificities.trash_type.the_type.the_type.type_locale %}
+        {% if locale.language == trash.data_line.language %}
+        <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">{{ locale.locale }}</h1>
+        {% endif %}
+        {% else %}
+        {% for locale in trash.trashspecificities.trash_type.the_type.related_local.the_type.type_locale %}
+        {% if locale.language == trash.data_line.language %}
+        <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">{{ locale.locale }}</h1>
+        {% endif %}
+        {% endif %}
         <button type="button" class="btn-close close-trash" data-bs-dismiss="modal" aria-label="Close" id="{{ trash.id }} close"></button>
       </div>
       <div class="modal-body">

@@ -44,13 +44,15 @@ class Wrapper(models.Model):
 
 class TheType(models.Model):
     the_type = models.CharField(max_length=100, null=True, blank=True)
-    osm_type = models.ManyToManyField('OSMType', blank=True)
+    osm_type = models.ForeignKey('self', related_name='related_local', on_delete=models.SET_NULL, null=True, blank=True)
+    type_locale = models.ManyToManyField('TypeLocale', blank=True)
     
     def __str__(self):
         return "%s" % (self.the_type)
 
-class OSMType(models.Model):
-    the_type = models.CharField(max_length=100, null=True, blank=True)
+class TypeLocale(models.Model):
+    locale = models.CharField(max_length=100, null=True, blank=True)
+    language = models.CharField(max_length=2, null=True, blank=True)
     
     def __str__(self):
         return "%s" % (self.the_type)
