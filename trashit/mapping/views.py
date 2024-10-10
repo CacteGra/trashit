@@ -72,7 +72,11 @@ class FirstLoad(LoginRequiredMixin, ListView):
         if closest_trashes:
             for closest_trash in closest_trashes:
                 html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash}, request=request)
-                data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': closest_trash.trashspecificities.trash_type.the_type.the_type})
+                if closest_trash.trashspecificities.from_local_api:
+                    trash_type = closest_trash.trashspecificities.trash_type.the_type.type_locale.get(language=closest_trash.data_line.register_api.language)
+                else:
+                    trash_type = closest_trash.trashspecificities.trash_type.the_type.related_local.type_locale.get(language=closest_trash.data_line.register_api.language)
+                data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': trash_type})
         return JsonResponse(data_list, safe=False)
 
 class FilterType(LoginRequiredMixin, ListView):
@@ -145,5 +149,9 @@ class FilterType(LoginRequiredMixin, ListView):
         data_list = []
         for closest_trash in closest_trashes:
             html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash}, request=request)
-            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': closest_trash.trashspecificities.trash_type.the_type.the_type})
+            if closest_trash.trashspecificities.from_local_api:
+                trash_type = closest_trash.trashspecificities.trash_type.the_type.type_locale.get(language=closest_trash.data_line.register_api.language)
+            else:
+                trash_type = closest_trash.trashspecificities.trash_type.the_type.related_local.type_locale.get(language=closest_trash.data_line.register_api.language)
+            data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': trash_type})
         return JsonResponse(data_list, safe=False)

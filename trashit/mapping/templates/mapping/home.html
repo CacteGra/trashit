@@ -293,9 +293,12 @@
           var id = this.options.alt;
            var targetTrash = document.getElementById(id+" modal");
            $(targetTrash).modal('toggle');
+           var reportIssue = document.getElementById(id).getElementsByClassName("btn btn-success modal-button")[0];
+           reportIssue.style.display = "block";
          };
          $(document).on('click', '.modal-button', function () {
           var id = this.id;
+          this.style.display = "none";
           photoModal = document.getElementById(id+" photo-modal");
           photoModal.style.display = "block";
           // The width and height of the captured photo. We will set the

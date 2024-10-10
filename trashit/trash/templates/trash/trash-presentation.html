@@ -4,12 +4,12 @@
     <div class="modal-content">
       <div class="modal-header">
         {% if trash.trashspecificities.from_local_api %}
-        {% for locale in trash.trashspecificities.trash_type.the_type.the_type.type_locale %}
+        {% for locale in trash.trashspecificities.trash_type.the_type.the_type.type_locale.all %}
         {% if locale.language == trash.data_line.language %}
         <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">{{ locale.locale }}</h1>
         {% endif %}
         {% else %}
-        {% for locale in trash.trashspecificities.trash_type.the_type.related_local.the_type.type_locale %}
+        {% for locale in trash.trashspecificities.trash_type.the_type.related_local.the_type.type_locale.all %}
         {% if locale.language == trash.data_line.language %}
         <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">{{ locale.locale }}</h1>
         {% endif %}
