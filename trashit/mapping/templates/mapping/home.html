@@ -263,101 +263,106 @@
             }
              old_latlng = e.latlng;
           }
-         map.on('locationfound', onLocationFound);
-         function onLocationError(e) {
-             if (found == false) {
-              found = true;
-              map.locate({setView: true, maxZoom: 19})
-             }
-         }
-         map.on('locationerror', onLocationError);
-         function dyn_locate() {
-             if (found == false) {
-              found = true;
-              map.locate({setView: true, maxZoom: 19})
-             }
-         }
-         setInterval(dyn_locate, 3000);
-         // zoom in function
-         document.getElementById("in").onclick = function() {
-           map.setZoom(map.getZoom() + 1)
-         };
-         // zoom out function
-         document.getElementById("out").onclick = function() {
-           map.setZoom(map.getZoom() - 1)
-         };
-         document.getElementById("recenter").onclick = function() {
-           map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
-         };
-          function highlightTrash(e) {
-           var id = this.options.alt;
+          map.on('locationfound', onLocationFound);
+          function onLocationError(e) {
+              if (found == false) {
+                found = true;
+                map.locate({setView: true, maxZoom: 19})
+              }
+          }
+          map.on('locationerror', onLocationError);
+          function dyn_locate() {
+              if (found == false) {
+                found = true;
+                map.locate({setView: true, maxZoom: 19})
+              }
+          }
+          setInterval(dyn_locate, 3000);
+          // zoom in function
+          document.getElementById("in").onclick = function() {
+            map.setZoom(map.getZoom() + 1)
+          };
+          // zoom out function
+          document.getElementById("out").onclick = function() {
+            map.setZoom(map.getZoom() - 1)
+          };
+          document.getElementById("recenter").onclick = function() {
+            map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
+          };
+         function highlightTrash(e) {
+          var id = this.options.alt;
            var targetTrash = document.getElementById(id+" modal");
            $(targetTrash).modal('toggle');
-            // The width and height of the captured photo. We will set the
-            // width to the value defined here, but the height will be
-            // calculated based on the aspect ratio of the input stream.
+         };
+         $(document).on('click', '.modal-button', function () {
+          var id = this.id;
+          photoModal = document.getElementById(id+" photo-modal");
+          photoModal.style.display = "block";
+          // The width and height of the captured photo. We will set the
+          // width to the value defined here, but the height will be
+          // calculated based on the aspect ratio of the input stream.
+        
+          const width = 475; // We will scale the photo width to this
+          let height = 0; // This will be computed based on the input stream
+        
+          // |streaming| indicates whether or not we're currently streaming
+          // video from the camera. Obviously, we start at false.
+        
+          let streaming = false;
+        
+          // The various HTML elements we need to configure or control. These
+          // will be set by the startup() function.
+        
+          var modalContent = document.getElementById("modal content "+id);
+          var video = document.getElementById(id+"video");
+          var canvas = document.getElementById(id+" canvas");
+          var photo = document.getElementById(id+" photo");
+          var camera = document.getElementById("camera "+id);
+          var output = document.getElementById("output "+id);
+          var startbutton = document.getElementById(id+" startbutton");
+          var retakebutton = document.getElementById(id+" retake picture");
+          var reportbutton = document.getElementById(id+" report trash");
+          var closebutton = document.getElementById(id+" close");
+          camera.style.display = "block";
+          output.style.display = "none";
+          clearphoto();
+          function gettingMedia() {
+            navigator.mediaDevices
+              .getUserMedia({ video: true, audio: false })
+              .then(function (stream) {
+                let genders = Object.keys(stream);
+                console.log(genders);
+                window.stream = stream;
+                video.srcObject = stream;
+                video.play();
+              })
+              .catch(function (err) {
+                console.error(`An error occurred: ${err}`);
+              });
+        
+              video.addEventListener(
+                "canplay",
+                (ev) => {
+                  if (!streaming) {
+                    height = video.videoHeight / (video.videoWidth / width);
           
-            const width = 475; // We will scale the photo width to this
-            let height = 0; // This will be computed based on the input stream
+                    // Firefox currently has a bug where the height can't be read from
+                    // the video, so we will make assumptions if this happens.
           
-            // |streaming| indicates whether or not we're currently streaming
-            // video from the camera. Obviously, we start at false.
-          
-            let streaming = false;
-          
-            // The various HTML elements we need to configure or control. These
-            // will be set by the startup() function.
-          
-            var modalContent = document.getElementById("modal content "+id);
-            var video = document.getElementById(id+"video");
-            var canvas = document.getElementById(id+" canvas");
-            var photo = document.getElementById(id+" photo");
-            var camera = document.getElementById("camera "+id);
-            var output = document.getElementById("output "+id);
-            var startbutton = document.getElementById(id+" startbutton");
-            var retakebutton = document.getElementById(id+" retake picture");
-            var reportbutton = document.getElementById(id+" report trash");
-            var closebutton = document.getElementById(id+" close");
-            camera.style.display = "block";
-            output.style.display = "none";
-            clearphoto();
-            function gettingMedia() {
-              navigator.mediaDevices
-                .getUserMedia({ video: true, audio: false })
-                .then(function (stream) {
-                  let genders = Object.keys(stream);
-                  console.log(genders);
-                  window.stream = stream;
-                  video.srcObject = stream;
-                  video.play();
-                })
-                .catch(function (err) {
-                  console.error(`An error occurred: ${err}`);
-                });
-          
-                video.addEventListener(
-                  "canplay",
-                  (ev) => {
-                    if (!streaming) {
-                      height = video.videoHeight / (video.videoWidth / width);
-            
-                      // Firefox currently has a bug where the height can't be read from
-                      // the video, so we will make assumptions if this happens.
-            
-                      if (isNaN(height)) {
-                        height = width / (4 / 3);
-                      }
-            
-                      video.setAttribute("width", width);
-                      video.setAttribute("height", height);
-                      canvas.setAttribute("width", width);
-                      canvas.setAttribute("height", height);
-                      streaming = true;
+                    if (isNaN(height)) {
+                      height = width / (4 / 3);
                     }
-                  },
-                  false,
-                );
-            }
+          
+                    video.setAttribute("width", width);
+                    video.setAttribute("height", height);
+                    canvas.setAttribute("width", width);
+                    canvas.setAttribute("height", height);
+                    streaming = true;
+                  }
+                },
+                false,
+            );
+          }
 
             function stoppingMedia() {
                   const stream = video.srcObject;
@@ -385,7 +390,7 @@
             };
 
             var closeTrash = document.getElementsByClassName("close-trash")
-	      closeTrash[0].onclick = function(ev) {
+	          closeTrash[0].onclick = function(ev) {
               stoppingMedia();
               ev.preventDefault();
             };
@@ -466,7 +471,7 @@
                element.style.background = "#fff";
              }
            }
-         };
+         });
          $(document).on('click', '.trashSelect', function () {
            var id = this.options.alt;
            var targetTrash = document.getElementById(id+" modal");
