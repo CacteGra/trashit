@@ -22,7 +22,6 @@ class TrashType(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     collect_area = models.ForeignKey('CollectArea', on_delete=models.CASCADE, null=True, blank=True)
     the_type = models.ForeignKey('TheType', on_delete=models.CASCADE, null=True, blank=True)
-    osm_type = models.ForeignKey('OSMType', on_delete=models.CASCADE, null=True, blank=True)
     container_type = models.ForeignKey('ContainerType', on_delete=models.CASCADE, null=True, blank=True)
     underground = models.BooleanField(default=False)
     area = models.BooleanField(default=False)
