@@ -21,7 +21,7 @@ from .all_functions import unique_get_data, one_list_item, str_to_coords, one_li
 
 from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield, Polygonfield
 
-from trash.models import CollectArea, TrashType, TheType
+from trash.models import CollectArea, TrashType, TheType, TypeLocale
 
 from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset
 
@@ -279,10 +279,21 @@ class TrashTypeIndex(IndexView):
             self.queryset = TrashType.objects.filter(area=True)
         return super().get_base_queryset()
 
+
+class TypeLocaleTemplate(SnippetViewSet):
+    model = TypeLocale
+    panels = [
+        FieldPanel('locale'),
+        FieldPanel('language'),
+        FieldPanel('related_the_type'),
+    ]
+
 class TheTypeTemplate(SnippetViewSet):
     model = TheType
     panels = [
         FieldPanel('the_type'),
+        FieldPanel('osm_type'),
+        FieldPanel('type_locale', widget=CheckboxSelectMultiple),
     ]
 
 class TrashTypeTemplate(SnippetViewSet):
@@ -291,7 +302,6 @@ class TrashTypeTemplate(SnippetViewSet):
     panels = [
         FieldPanel('collect_area'),
         FieldPanel('the_type', widget=RadioSelect),
-        FieldPanel('osm_type', widget=RadioSelect),
         FieldPanel('day', widget=CheckboxSelectMultiple),
         FieldPanel('hour'),
     ]
@@ -317,6 +327,8 @@ register_snippet(RegisterAPIChosenTemplate)
 register_snippet(OperatedTemplate)
 
 register_snippet(CollectAreaTemplate)
+
+register_snippet(TypeLocaleTemplate)
 
 register_snippet(TheTypeTemplate)
 
