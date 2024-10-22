@@ -279,7 +279,6 @@ class TrashTypeIndex(IndexView):
             self.queryset = TrashType.objects.filter(area=True)
         return super().get_base_queryset()
 
-
 class TypeLocaleTemplate(SnippetViewSet):
     model = TypeLocale
     panels = [

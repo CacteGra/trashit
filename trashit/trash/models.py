@@ -49,8 +49,6 @@ class TypeLocale(Orderable, models.Model):
     the_type = ParentalKey("TheType", related_name="related_the_type", on_delete=models.CASCADE, null=True, blank=True)
     locale = models.CharField(max_length=100, null=True, blank=True)
     language = models.CharField(max_length=2, null=True, blank=True)
-
-    panels = [FieldPanel("the_type")]
     
     def __str__(self):
         return "%s" % (self.locale)
