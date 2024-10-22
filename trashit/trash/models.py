@@ -1,4 +1,6 @@
+from modelcluster.models import ClusterableModel
 from wagtail.models import Orderable
+from wagtail.admin.panels import FieldPanel
 from django.contrib.gis.db import models
 from datapop.models import Pointfield, Polygonfield
 from modelcluster.fields import ParentalKey
@@ -47,11 +49,13 @@ class TypeLocale(Orderable, models.Model):
     the_type = ParentalKey("TheType", related_name="related_the_type", on_delete=models.CASCADE, null=True, blank=True)
     locale = models.CharField(max_length=100, null=True, blank=True)
     language = models.CharField(max_length=2, null=True, blank=True)
+
+    panels = [FieldPanel("the_type")]
     
     def __str__(self):
         return "%s" % (self.locale)
 
-class TheType(models.Model):
+class TheType(ClusterableModel):
     the_type = models.CharField(max_length=100, null=True, blank=True)
     osm_type = models.ForeignKey('self', related_name='related_local', on_delete=models.SET_NULL, null=True, blank=True)
     

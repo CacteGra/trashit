@@ -293,7 +293,7 @@ class TheTypeTemplate(SnippetViewSet):
     panels = [
         FieldPanel('the_type'),
         FieldPanel('osm_type'),
-        FieldPanel('related_the_type', widget=CheckboxSelectMultiple),
+        InlinePanel('related_the_type'),
     ]
 
 class TrashTypeTemplate(SnippetViewSet):
