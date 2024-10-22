@@ -1,5 +1,7 @@
+from wagtail.models import Orderable
 from django.contrib.gis.db import models
 from datapop.models import Pointfield, Polygonfield
+from modelcluster.fields import ParentalKey
 
 # Create your models here.
 
@@ -41,20 +43,20 @@ class Wrapper(models.Model):
     code = models.CharField(max_length=1000, null=True, blank=True)
     packaging = models.ManyToManyField(Packaging, blank=True)
 
-class TheType(models.Model):
-    the_type = models.CharField(max_length=100, null=True, blank=True)
-    osm_type = models.ForeignKey('self', related_name='related_local', on_delete=models.SET_NULL, null=True, blank=True)
-    type_locale = models.ManyToManyField('TypeLocale', related_name='related_the_type', blank=True)
-    
-    def __str__(self):
-        return "%s" % (self.the_type)
-
-class TypeLocale(models.Model):
+class TypeLocale(Orderable, models.Model):
+    the_type = ParentalKey("TheType", related_name="related_the_type", on_delete=models.CASCADE, null=True, blank=True)
     locale = models.CharField(max_length=100, null=True, blank=True)
     language = models.CharField(max_length=2, null=True, blank=True)
     
     def __str__(self):
         return "%s" % (self.locale)
+
+class TheType(models.Model):
+    the_type = models.CharField(max_length=100, null=True, blank=True)
+    osm_type = models.ForeignKey('self', related_name='related_local', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    def __str__(self):
+        return "%s" % (self.the_type)
 
 class ContainerType(models.Model):
     container_type = models.CharField(max_length=100, null=True, blank=True)

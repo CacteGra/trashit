@@ -285,7 +285,7 @@ class TypeLocaleTemplate(SnippetViewSet):
     panels = [
         FieldPanel('locale'),
         FieldPanel('language'),
-        FieldPanel('related_the_type'),
+        FieldPanel('the_type'),
     ]
 
 class TheTypeTemplate(SnippetViewSet):
@@ -293,7 +293,7 @@ class TheTypeTemplate(SnippetViewSet):
     panels = [
         FieldPanel('the_type'),
         FieldPanel('osm_type'),
-        FieldPanel('type_locale', widget=CheckboxSelectMultiple),
+        FieldPanel('related_the_type', widget=CheckboxSelectMultiple),
     ]
 
 class TrashTypeTemplate(SnippetViewSet):
