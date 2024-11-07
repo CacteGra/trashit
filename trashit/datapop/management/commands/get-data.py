@@ -325,5 +325,5 @@ class Command(BaseCommand):
                                         #     point_field.data_line.add(data_line)
                                         trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
                             if trash_type and trash:
-                                trash.trash_type = trash_type
+                                trash.trash_type.add(trash_type)
                                 trash.save()

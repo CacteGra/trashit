@@ -10,7 +10,7 @@ from modelcluster.fields import ParentalKey
 class TrashSpecificities(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     the_type = models.ForeignKey('TheType', on_delete=models.CASCADE, null=True, blank=True)
-    trash_type = models.ForeignKey('TrashType', on_delete=models.CASCADE, null=True, blank=True)
+    trash_type = models.ManyToManyField('TrashType', blank=True)
     point_field = models.OneToOneField(Pointfield, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to="media", null=True, blank=True)
     from_local_api = models.BooleanField(default=False)

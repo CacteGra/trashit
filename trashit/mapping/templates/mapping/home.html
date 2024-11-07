@@ -229,7 +229,10 @@
                     if (data0.lat) {
                       var latlng = L.latLng(data0.lat, data0.lng);
                     }
-
+                    var trash_types;
+                     for(trash_type of data0.trash_types) {
+                      trash_types = trash_types + trash_type;
+                     }
                     the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id, icon: selectedIcon}).on('click', highlightTrash);
                     if (data0.trash_id == all_data[0].trash_id) {
                       $('.trashList').html('');
