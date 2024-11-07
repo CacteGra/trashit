@@ -6,7 +6,11 @@ from modeltranslation.admin import TranslationAdmin
 
 @admin.register(TrashSpecificities)
 class TrashIssueAdmin(OSMGeoAdmin):
-    list_display = ('trash_type', 'map_point')
+    list_display = ('get_trash_types', 'map_point')
+
+
+    def get_trash_types(self, obj):
+        return "\n".join([p.the_type for p in obj.trash_type.all()])
 
     def map_point(self, obj):
         return obj.point_field.o_field
