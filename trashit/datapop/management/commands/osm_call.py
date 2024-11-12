@@ -32,7 +32,8 @@ def main():
                 if not t.trash_type:
                     t.trash_type.add(trash_type)
             except TrashSpecificities.DoesNotExist:
-                TrashSpecificities.objects.create(point_field=point_field, trash_type=trash_type)
+                t = TrashSpecificities.objects.create(point_field=point_field)
+                t.trash_type.add(trash_type)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_disposal"', out='body')
         result = overpass.query(query)
         r = result.elements()
@@ -53,7 +54,8 @@ def main():
                 if not t.trash_type:
                     t.trash_type.add(trash_type)
             except TrashSpecificities.DoesNotExist:
-                TrashSpecificities.objects.create(point_field=point_field, trash_type=trash_type)
+                t = TrashSpecificities.objects.create(point_field=point_field)
+                t.trash_type.add(trash_type)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="recycling"', out='body')
         result = overpass.query(query)
         r = result.elements()
@@ -88,6 +90,7 @@ def main():
                 if not t.trash_type:
                     t.trash_type.add(trash_type)
             except TrashSpecificities.DoesNotExist:
-                TrashSpecificities.objects.create(point_field=point_field, trash_type=trash_type)
+                t = TrashSpecificities.objects.create(point_field=point_field)
+                t.trash_type.add(trash_type)
     register_api.first = False
     register_api.save()

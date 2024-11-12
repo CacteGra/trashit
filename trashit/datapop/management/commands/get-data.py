@@ -144,7 +144,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         while True:
             sleep(1)
-            all_apis = RegisterAPI.objects.filter(api_endpoint__isnull=False)
+            all_apis = RegisterAPI.objects.all()
             for all_api in all_apis:
                 other_chosens = []
                 continuing = False

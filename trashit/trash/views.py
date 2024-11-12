@@ -32,13 +32,12 @@ class ReportTrash(LoginRequiredMixin, generic.DetailView):
     model = User
     context_object_name = 'user'
     def post(self, request, *arg, **kwargs):
-        print(self.request.POST)
-        print(request.POST)
+        data = {'status': 'Report failed'}
         if request.method == 'POST':
             response_json = request.POST
             response_json = json.dumps(response_json)
             data = json.loads(response_json)
-            trash_id = data['id']
+            point_id = data['id']
             dataUrlPattern = re.compile('data:image/(png|jpeg);base64,(.*)$')
             ImageData = data['imageBase64']
             ImageData = dataUrlPattern.match(ImageData).group(2)
@@ -46,7 +45,7 @@ class ReportTrash(LoginRequiredMixin, generic.DetailView):
                 pass
             ImageData = base64.b64decode(ImageData)
             trash_image = ContentFile(ImageData, name='trash-image-' + str(id))
-            trash = TrashSpecificities.objects.get(id=trash_id)
+            trash = Pointfield.objects.get(id=point_id)
             trash.photo = trash_image
             trash.save()
             data = {'status': 'Reported'}

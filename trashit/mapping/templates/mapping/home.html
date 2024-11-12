@@ -229,20 +229,19 @@
                     if (data0.lat) {
                       var latlng = L.latLng(data0.lat, data0.lng);
                     }
-                    var trash_types;
                      for(trash_type of data0.trash_types) {
-                      trash_types = trash_types + trash_type;
+                      console.log(trash_type);
+                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id, icon: selectedIcon}).on('click', highlightTrash);
+                      if (data0.trash_id == all_data[0].trash_id) {
+                        $('.trashList').html('');
+                      }
+                      document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                      circle = L.circle(latlng, data0.radius);
+                      markersLayer.addLayer(the_trash);
+                      circlesLayer.addLayer(circle);
+                      markers.push(the_trash);
+                      circles.push(circle);
                      }
-                    the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id, icon: selectedIcon}).on('click', highlightTrash);
-                    if (data0.trash_id == all_data[0].trash_id) {
-                      $('.trashList').html('');
-                    }
-                    document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
-                    circle = L.circle(latlng, data0.radius);
-                    markersLayer.addLayer(the_trash);
-                    circlesLayer.addLayer(circle);
-                    markers.push(the_trash);
-                    circles.push(circle);
                     }
                    })
                 } else if (markers.length > 0 && checking == false) {
@@ -293,14 +292,17 @@
             map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
           };
          function highlightTrash(e) {
-          var id = this.options.alt;
-           var targetTrash = document.getElementById(id+" modal");
-           $(targetTrash).modal('toggle');
-           var reportIssue = document.getElementById(id).getElementsByClassName("btn btn-success modal-button")[0];
-           reportIssue.style.display = "block";
+          console.log(e);
+          var id = e.target.options.alt;
+          console.log(id);
+          var targetTrash = document.getElementById(id+" modal");
+          $(targetTrash).modal('toggle');
+          var reportIssue = document.getElementById(id+" report");
+          console.log(reportIssue);
+          reportIssue.style.display = "block";
          };
          $(document).on('click', '.modal-button', function () {
-          var id = this.id;
+          var id = this.id.replace(" report", "");
           this.style.display = "none";
           photoModal = document.getElementById(id+" photo-modal");
           photoModal.style.display = "block";
@@ -456,7 +458,7 @@
                                 "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
                               },
               success: function(data){
-
+                photoModal.innerHTML = data.status;
               }
               });
             }

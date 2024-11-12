@@ -47,23 +47,24 @@ class FirstLoad(LoginRequiredMixin, ListView):
         operated = OperatedField.objects.filter(field_type='Pointfield')
         p = Pointfield.objects.all()
         print(p[0].o_field)
-        m = 1000
         trash_types = TrashType.objects.all()
         closest_trashes = None
         for trash_type in trash_types:
-            farther = True
-            while farther:
-                type_locale = None
-                closest_trash = None
+            m = 1000
+            type_locale = None
+            closest_trash = None
+            while True:
                 c = trash_type.the_type.copy_cluster()
                 for i, j in enumerate(c[1]):
                     type_locale = c[1][j]
                 if type_locale:
                     locale_trash_types = TrashType.objects.filter(the_type__the_type=type_locale.locale)
                     closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type__in=locale_trash_types,trashspecificities__from_local_api=True).annotate(distance=Distance("o_field", point)).order_by("distance").first()
+                    print("local {}".format(type_locale))
                 if not closest_trash:
                     print(trash_type.the_type.the_type)
-                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type=trash_type).annotate(distance=Distance("o_field", point)).order_by("distance").first()
+                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type__in=[trash_type]).annotate(distance=Distance("o_field", point)).order_by("distance").first()
+                    print(closest_trash)
                 if closest_trash:
                     trash_types.exclude(pk=trash_type.pk)
                     closest = Pointfield.objects.filter(pk=closest_trash.pk)
@@ -76,25 +77,25 @@ class FirstLoad(LoginRequiredMixin, ListView):
                 m += 1000
                 if m == 5000:
                     break
+        print(closest_trashes.count())
         # check pending/ongoing mission radius
         data_list = []
         if closest_trashes:
             for closest_trash in closest_trashes:
                 trash_types = []
                 type_locale = None
-                t = closest_trash.trashspecificities.trash_type
-                for c in t:
-                    c = t.the_type.copy_cluster()
+                all_trash_types = closest_trash.trashspecificities.trash_type
+                for all_trash_type in all_trash_types.all():
+                    c = all_trash_type.the_type.copy_cluster()
                     for i, j in enumerate(c[1]):
                         type_locale = c[1][j]
                     if not type_locale:
-                        trash_type = closest_trash.trashspecificities.trash_type.the_type.the_type
+                        trash_types = list(closest_trash.trashspecificities.trash_type.all().values_list("the_type__the_type", flat=True))
                     else:
                         trash_type = type_locale.locale
-                    trash_types.append(trash_type)
-                print('presenting {}'.format(trash_type))
-                html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash, 'trash_type': trash_types}, request=request)
-                data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_type': trash_types})
+                        trash_types.append(trash_type)
+                    html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash, 'trash_types': trash_types}, request=request)
+                    data_list.append({'html': html, 'lat': closest_trash.o_field.y, 'lng': closest_trash.o_field.x, 'radius': 30, 'trash_id': closest_trash.id, 'trash_types': trash_types})
         return JsonResponse(data_list, safe=False)
 
 class FilterType(LoginRequiredMixin, ListView):
