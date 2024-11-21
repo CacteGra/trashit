@@ -191,7 +191,7 @@
 
           iconSize:     [25, 41], // size of the icon
           shadowSize:   [50, 64], // size of the shadow
-          iconAnchor:   [12, 41], // point of the icon which will correspond to marker's location
+          iconAnchor:   [13, 20], // point of the icon which will correspond to marker's location
           shadowAnchor: [14, 65],  // the same for the shadow
           popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
@@ -221,29 +221,38 @@
                     url: "{% url 'get_first_load' %}",
                     data: { 'lat': lat, 'lng': lng, 'same_session': false},
                     type:'GET',
-                })).then(function(all_data) {
-                  for (data0 of all_data) {
-                    if (data0.reload) {
-                      $('.reload').html(data0.reload);
-                    }
-                    if (data0.lat) {
-                      var latlng = L.latLng(data0.lat, data0.lng);
-                    }
-                     for(trash_type of data0.trash_types) {
-                      console.log(trash_type);
-                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id, icon: selectedIcon}).on('click', highlightTrash);
-                      if (data0.trash_id == all_data[0].trash_id) {
-                        $('.trashList').html('');
+                })).then(function(response) {
+                  console.log(response);
+                  for (all_data of response) {
+                    console.log(all_data);
+                    var latlng = L.latLng(all_data.lat, all_data.lng);
+                    circle = L.circle(latlng, all_data.radius);
+                    circlesLayer.addLayer(circle);
+                    circles.push(circle);
+                    for (data0 of all_data.data_list) {
+                      if (data0.reload) {
+                        $('.reload').html(data0.reload);
                       }
+                      if (data0.lat) {
+                        var latlng = L.latLng(data0.lat, data0.lng);
+                      }
+                      console.log(data0.trash_type);
+                      var selectedIcon = L.icon({
+                        iconUrl: "{% static 'icons/ %}" + data0.trash_type + '.svg',
+                        //shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
+                        iconSize:     [25, 41], // size of the icon
+                        shadowSize:   [50, 64], // size of the shadow
+                        iconAnchor:   [13, 20], // point of the icon which will correspond to marker's location
+                        shadowAnchor: [14, 65],  // the same for the shadow
+                        popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                      });
+                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: selectedIcon}).on('click', highlightTrash);
                       document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
-                      circle = L.circle(latlng, data0.radius);
                       markersLayer.addLayer(the_trash);
-                      circlesLayer.addLayer(circle);
                       markers.push(the_trash);
-                      circles.push(circle);
-                     }
+                      }
                     }
-                   })
+                  })
                 } else if (markers.length > 0 && checking == false) {
                   checking = true;
                   $.when($.ajax({

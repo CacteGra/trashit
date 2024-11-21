@@ -1,12 +1,10 @@
 {% load static %}
-<div class="modal fade" id="{{ trash.id }} modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="{{ trash.id }} {{ trash_type }} modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">
-          {% for trash_type in trash_types %}
           {{ trash_type }}
-          {% endfor %}
         </h1>
         <button type="button" class="btn-close close-trash" data-bs-dismiss="modal" aria-label="Close" id="{{ trash.id }} close"></button>
       </div>

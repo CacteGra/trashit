@@ -99,6 +99,16 @@ def first_connection(request, connection_object):
     #     print(False)
     return True
 
+@hooks.register('before_delete_snippet')
+def after_snippet_delete(request, instances):
+    if isinstance(instance, RegisterAPI):
+        r = RegisterAPI.objects.get(pk=instance.pk)
+        data_lines = DataLine.objects.filter(register_api=r)
+        points = PointField.objects.filter(data_line__in=data_lines).annotate(num_api=Count('register_api__id')).exclude(num_api__gt=2)
+        TrashSpecificities.objects.filter(point_field__in=points).delete()
+        points.delete()
+        data_lines.delete()
+
 class RegisterAPITemplate(SnippetViewSet):
     model = RegisterAPI
 

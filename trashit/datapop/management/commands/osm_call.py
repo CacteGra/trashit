@@ -60,6 +60,7 @@ def main():
         result = overpass.query(query)
         r = result.elements()
         for i in r:
+            type_list = []``
             point = Point(i.lon(), i.lat(), srid=4326)
             point_field, created = Pointfield.objects.get_or_create(o_field=point)
             d = i.tags()
@@ -69,7 +70,8 @@ def main():
                 if "location:" in key and value == 'underground':
                     underground = True
                 if ("recycling:" in key and value == 'yes'):
-                    waste_type = key.replace("recycling:", '') 
+                    waste_type = key.replace("recycling:", '')
+                    type_list.append(waste_type)
             if waste_type == None:
                 try:
                     waste_type = d['name']
@@ -81,16 +83,23 @@ def main():
                 the_type, created = TheType.objects.get_or_create(the_type=waste_type)
                 container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
                 trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
-            else:
-                the_type, created = TheType.objects.get_or_create(the_type=waste_type)
-                container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
-                trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
-            try:
-                t = TrashSpecificities.objects.get(point_field=point_field)
-                if not t.trash_type:
+                try:
+                    t = TrashSpecificities.objects.get(point_field=point_field)
+                    if not t.trash_type:
+                        t.trash_type.add(trash_type)
+                except TrashSpecificities.DoesNotExist:
+                    t = TrashSpecificities.objects.create(point_field=point_field)
                     t.trash_type.add(trash_type)
-            except TrashSpecificities.DoesNotExist:
-                t = TrashSpecificities.objects.create(point_field=point_field)
-                t.trash_type.add(trash_type)
+            else:
+                for recycle_type in type_list:
+                    the_type, created = TheType.objects.get_or_create(the_type=recycle_type)
+                    container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
+                    trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
+                    try:
+                        t = TrashSpecificities.objects.get(point_field=point_field)
+                        t.trash_type.add(trash_type)
+                    except TrashSpecificities.DoesNotExist:
+                        t = TrashSpecificities.objects.create(point_field=point_field)
+                        t.trash_type.add(trash_type)
     register_api.first = False
     register_api.save()
