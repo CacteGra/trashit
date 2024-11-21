@@ -58,6 +58,23 @@ class TheType(ClusterableModel):
     the_type = models.CharField(max_length=100, null=True, blank=True)
     osm_type = models.ForeignKey('self', related_name='related_local', on_delete=models.SET_NULL, null=True, blank=True)
     
+    ICON_CHOICES = [
+        ("Cardboard", "cardboard"),
+        ("Glass", "glass-bottle"),
+        ("Can", "can"),
+        ("Paper", "paper"),
+        ("Plastic", "plastic-bottle"),
+        ("Recycling material", "recycle"),
+        ("Special waste", "special-bin"),
+        ("General trash", "trash-icon"),
+    ]
+
+    icon = models.CharField(
+        max_length=23,
+        choices=ICON_CHOICES,
+        null=True, blank=True
+    )
+
     def __str__(self):
         return "%s" % (self.the_type)
 

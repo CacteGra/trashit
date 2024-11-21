@@ -302,6 +302,7 @@ class TheTypeTemplate(SnippetViewSet):
     panels = [
         FieldPanel('the_type'),
         FieldPanel('osm_type'),
+        FieldPanel('icon'),
         InlinePanel('related_the_type'),
     ]
 
