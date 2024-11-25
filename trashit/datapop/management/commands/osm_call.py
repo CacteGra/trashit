@@ -60,7 +60,7 @@ def main():
         result = overpass.query(query)
         r = result.elements()
         for i in r:
-            type_list = []``
+            type_list = []
             point = Point(i.lon(), i.lat(), srid=4326)
             point_field, created = Pointfield.objects.get_or_create(o_field=point)
             d = i.tags()

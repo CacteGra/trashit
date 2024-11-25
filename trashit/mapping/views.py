@@ -121,7 +121,9 @@ class FirstLoad(LoginRequiredMixin, ListView):
                     else:
                         trash_type = type_locale.locale
                     html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash, 'trash_type': trash_type}, request=request)
-                    data_list.append({'html': html, 'lat': lats[n], 'lng': lngs[n], 'trash_id': closest_trash.id, 'trash_type': trash_type, 'trash-icon': trash-icon})
+                    trash_icon = all_trash_type.the_type.icon
+                    print(trash_icon)
+                    data_list.append({'html': html, 'lat': lats[n], 'lng': lngs[n], 'trash_id': closest_trash.id, 'trash_type': trash_type, 'trash_icon': trash_icon})
                 response.append({'lng': closest_trash.o_field.x, 'lat': closest_trash.o_field.y, 'radius': 30, 'data_list': data_list})
         return JsonResponse(response, safe=False)
 

@@ -21,7 +21,7 @@ from django.template.response import TemplateResponse
 
 
 from datapop.models import Pointfield
-from .models import TrashSpecificities
+from .models import TrashSpecificities, TrashType, TheType, TypeLocale
 
 import re
 from pprint import pprint
@@ -37,7 +37,9 @@ class ReportTrash(LoginRequiredMixin, generic.DetailView):
             response_json = request.POST
             response_json = json.dumps(response_json)
             data = json.loads(response_json)
-            point_id = data['id']
+            identification = data['id'].split(" ")
+            point_id = identification[0]
+            trash_type = identification[1]
             dataUrlPattern = re.compile('data:image/(png|jpeg);base64,(.*)$')
             ImageData = data['imageBase64']
             ImageData = dataUrlPattern.match(ImageData).group(2)
@@ -45,7 +47,15 @@ class ReportTrash(LoginRequiredMixin, generic.DetailView):
                 pass
             ImageData = base64.b64decode(ImageData)
             trash_image = ContentFile(ImageData, name='trash-image-' + str(id))
-            trash = Pointfield.objects.get(id=point_id)
+            point = Pointfield.objects.get(id=point_id)
+            try:
+                locale_type = TypeLocale.objects.get(locale=trash_type)
+                spec_type = TrashType.objects.get(the_type=locale_trash.the_type, trashspecificities__point_field=point)
+                trash = TrashSpecificities.objects.get(trash_type=spec_type, point_field=point)
+            except TypeLocale.DoesNotExist:
+                the_type = TheType.objects.get(the_type=trash_type)
+                spec_type = TrashType.objects.get(the_type=the_type, trashspecificities__point_field=point)
+                trash = TrashSpecificities.objects.get(trash_type=spec_type, point_field=point)
             trash.photo = trash_image
             trash.save()
             data = {'status': 'Reported'}

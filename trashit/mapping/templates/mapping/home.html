@@ -185,15 +185,17 @@
           shadowAnchor: [14, 65],  // the same for the shadow
           popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
         });
-        var selectedIcon = L.icon({
-          iconUrl: "{% static 'icons/trash-icon.svg' %}",
-          //shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
+        var selectedIcon = L.Icon.extend({
+          options: {
+            //iconUrl: "{% static 'icons/trash-icon.svg' %}",
+            //shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
 
-          iconSize:     [25, 41], // size of the icon
-          shadowSize:   [50, 64], // size of the shadow
-          iconAnchor:   [13, 20], // point of the icon which will correspond to marker's location
-          shadowAnchor: [14, 65],  // the same for the shadow
-          popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+            iconSize:     [25, 41], // size of the icon
+            shadowSize:   [50, 64], // size of the shadow
+            iconAnchor:   [13, 20], // point of the icon which will correspond to marker's location
+            shadowAnchor: [14, 65],  // the same for the shadow
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+          }
         });
         containers = document.querySelectorAll(".leaflet-control-container:not(.leaflet-control-container.custom)")
         $(containers).remove()
@@ -237,16 +239,19 @@
                         var latlng = L.latLng(data0.lat, data0.lng);
                       }
                       console.log(data0.trash_type);
-                      var selectedIcon = L.icon({
-                        iconUrl: "{% static 'icons/' %}" + data0.trash-icon + '.svg',
-                        //shadowUrl: "{% static 'leafl2et/images/marker-shadow.png' %}",
-                        iconSize:     [25, 41], // size of the icon
-                        shadowSize:   [50, 64], // size of the shadow
-                        iconAnchor:   [13, 20], // point of the icon which will correspond to marker's location
-                        shadowAnchor: [14, 65],  // the same for the shadow
-                        popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+                      console.log(data0.trash_icon);
+                      var iconName;
+                      if (data0.trash_icon){
+                        iconName = data0.trash_icon;
+                      } else {
+                        iconName = 'trash-icon';
+                      }
+                      console.log(iconName);
+                      var trashIcon = new selectedIcon({
+                        iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
                       });
-                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: selectedIcon}).on('click', highlightTrash);
+                      console.log(trashIcon);
+                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
                       document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
                       markersLayer.addLayer(the_trash);
                       markers.push(the_trash);

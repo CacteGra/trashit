@@ -3,26 +3,27 @@
   <div class="modal-dialog modal-fullscreen-sm-down">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}">
+        <!-- <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}"> -->
+        <h1 class="modal-title fs-5" id="{{ trash.id }}"></h1>
           {{ trash_type }}
         </h1>
         <button type="button" class="btn-close close-trash" data-bs-dismiss="modal" aria-label="Close" id="{{ trash.id }} close"></button>
       </div>
       <div class="modal-body">
-        <button class="btn btn-success modal-button" id="{{ trash.id }} report">Report issue</button>
-        <div id="{{ trash.id}} photo-modal" style="display: none;">
-          <div class="camera" id="camera {{ trash.id }}" style="display: block;">
-            <video autoplay="true" class="video" id="{{ trash.id }}video">Video stream not available.</video>
+        <button class="btn btn-success modal-button" id="{{ trash.id }} {{ trash_type }} report">Report issue</button>
+        <div id="{{ trash.id}} {{ trash_type }} photo-modal" style="display: none;">
+          <div class="camera" id="camera {{ trash.id }} {{ trash_type }}" style="display: block;">
+            <video autoplay="true" class="video" id="{{ trash.id }} {{ trash_type }}video">Video stream not available.</video>
             <div class="video-content start-50 translate-middle">
-              <button class="btn btn-success send-issue" id="{{ trash.id }} startbutton">Take photo</button>
+              <button class="btn btn-success send-issue" id="{{ trash.id }} {{ trash_type }} startbutton">Take photo</button>
             </div>
           </div>
-          <canvas class="canvas" id="{{ trash.id }} canvas"> </canvas>
-          <div class="output" id="output {{ trash.id }}">
-            <img class="photo" id="{{ trash.id }} photo" alt="The screen capture will appear in this box." />
+          <canvas class="canvas" id="{{ trash.id }} {{ trash_type }} canvas"> </canvas>
+          <div class="output" id="output {{ trash.id }} {{ trash_type }}">
+            <img class="photo" id="{{ trash.id }} {{ trash_type }} photo" alt="The screen capture will appear in this box." />
             <div class="video-content">
-            <button type="button" class="btn btn-success send-info retake" id="{{ trash.id }} retake picture">Retake Photo</button>
-            <button type="button" class="btn btn-success send-issue report" id="{{ trash.id }} report trash">Report Trash</button>
+            <button type="button" class="btn btn-success send-info retake" id="{{ trash.id }} {{ trash_type }} retake picture">Retake Photo</button>
+            <button type="button" class="btn btn-success send-issue report" id="{{ trash.id }} {{ trash_type }} report trash">Report Trash</button>
             </div>
           </div>
         </div>
