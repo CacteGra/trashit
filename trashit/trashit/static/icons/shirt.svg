@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 17.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="142.196px" height="129.756px" viewBox="0 0 142.196 129.756" enable-background="new 0 0 142.196 129.756"
+	 xml:space="preserve">
+<g>
+	<defs>
+		<rect id="SVGID_1_" x="0" y="0" width="142.196" height="129.756"/>
+	</defs>
+	<clipPath id="SVGID_2_">
+		<use xlink:href="#SVGID_1_"  overflow="visible"/>
+	</clipPath>
+	<g id="T-Shirt" clip-path="url(#SVGID_2_)">
+		<rect x="33.531" y="121.221" fill="#FFFFFF" width="75.104" height="5.536"/>
+		<path fill="#FFFFFF" d="M109.542,3.014L88.674,3.01c-0.928,10.216-8.459,12.158-17.536,12.158h0
+			c-9.078,0-16.611-1.943-17.537-12.164L32.652,3L7.194,28.458l20.89,20.89l5.447-5.447v74.319h75.104V43.887l5.005,5.005
+			l20.89-20.89L109.542,3.014z"/>
+		
+			<rect x="0.331" y="40.852" transform="matrix(-0.7071 -0.7071 0.7071 -0.7071 -3.5205 81.4207)" fill="#FFFFFF" width="29.543" height="1.175"/>
+		
+			<rect x="125.937" y="26.448" transform="matrix(-0.7071 -0.7071 0.7071 -0.7071 187.4128 160.0674)" fill="#FFFFFF" width="1.842" height="29.543"/>
+		<path fill="#FCD30A" d="M71.138,15.168L71.138,15.168c9.077,0,16.608-1.942,17.536-12.158L53.601,3.004
+			C54.527,13.225,62.059,15.168,71.138,15.168z"/>
+		
+			<rect x="1.807" y="38.464" transform="matrix(-0.7071 -0.7071 0.7071 -0.7071 0.0425 79.9449)" fill="#FCD30A" width="29.543" height="3"/>
+		
+			<rect x="110.374" y="38.008" transform="matrix(0.7071 -0.7071 0.7071 0.7071 8.7183 100.0629)" fill="#FCD30A" width="29.543" height="3"/>
+		<rect x="33.531" y="118.221" fill="#FCD30A" width="75.104" height="3"/>
+		<path fill="#070707" d="M31.41,0L0,31.41l25.132,25.132l5.398-5.398v78.613h81.104V51.129l5.429,5.429l25.132-25.132
+			L110.785,0.014L31.41,0z M117.063,52.315l-1.302-1.302l-2.121-2.121l-5.005-5.005v74.334v3v5.536H33.531v-5.536v-3V43.901
+			l-5.447,5.447l-2.121,2.121L25.132,52.3L4.242,31.41l0.831-0.831l2.121-2.121L32.652,3l20.949,0.004L88.674,3.01l20.868,0.004
+			l24.989,24.988l2.121,2.121l1.302,1.302L117.063,52.315z"/>
+	</g>
+</g>
+</svg>

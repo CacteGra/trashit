@@ -81,6 +81,12 @@ def main():
                     except:
                         continue
                 the_type, created = TheType.objects.get_or_create(the_type=waste_type)
+                if created and 'plastic' in waste_type:
+                    the_type.icon = 'plastic-bottle'
+                    the_type.save()
+                elif created and 'paper' in waste_type:
+                    the_type.icon = 'paper'
+                    the_type.save()
                 container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
                 trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
                 try:
@@ -93,6 +99,12 @@ def main():
             else:
                 for recycle_type in type_list:
                     the_type, created = TheType.objects.get_or_create(the_type=recycle_type)
+                    if created and 'plastic' in waste_type:
+                        the_type.icon = 'plastic-bottle'
+                        the_type.save()
+                    elif created and 'paper' in waste_type:
+                        the_type.icon = 'paper'
+                        the_type.save()
                     container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
                     trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
                     try:

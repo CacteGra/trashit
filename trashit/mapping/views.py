@@ -93,6 +93,18 @@ class FirstLoad(LoginRequiredMixin, ListView):
                     else:
                         print("unioning")
                         closest_trashes = closest_trashes.union(closest)
+                for all_trash_type in all_trash_types.all():
+                    html = None
+                    type_locale = None
+                    n += 1
+                    c = all_trash_type.the_type.copy_cluster()
+                    for i, j in enumerate(c[1]):
+                        type_locale = c[1][j]
+                    if not type_locale:
+                        trash_type = all_trash_type.the_type
+                    else:
+                        trash_type = type_locale
+                    trash_types.exclude(pk=trash_type.pk)
                     break
                 m += 1000
                 if m == 5000:
