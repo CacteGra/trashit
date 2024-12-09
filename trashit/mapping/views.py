@@ -91,21 +91,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
                     if not closest_trashes:
                         closest_trashes = closest
                     else:
-                        print("unioning")
                         closest_trashes = closest_trashes.union(closest)
-                for all_trash_type in all_trash_types.all():
-                    html = None
-                    type_locale = None
-                    n += 1
-                    c = all_trash_type.the_type.copy_cluster()
-                    for i, j in enumerate(c[1]):
-                        type_locale = c[1][j]
-                    if not type_locale:
-                        trash_type = all_trash_type.the_type
-                    else:
-                        trash_type = type_locale
-                    trash_types.exclude(pk=trash_type.pk)
-                    break
                 m += 1000
                 if m == 5000:
                     break
@@ -113,6 +99,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         response = []
         if closest_trashes:
             for closest_trash in closest_trashes:
+                print("{} {}".format(closest_trash.o_field.x, closest_trash.o_field.y))
                 data_list = []
                 all_trash_types = closest_trash.trashspecificities.trash_type
                 types_count = all_trash_types.all().count()
@@ -122,6 +109,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
                 else:
                     lngs, lats = self.spread(types_count, closest_trash.o_field)
                 for all_trash_type in all_trash_types.all():
+                    print(all_trash_type.the_type.the_type)
                     html = None
                     type_locale = None
                     n += 1
@@ -134,7 +122,6 @@ class FirstLoad(LoginRequiredMixin, ListView):
                         trash_type = type_locale.locale
                     html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash, 'trash_type': trash_type}, request=request)
                     trash_icon = all_trash_type.the_type.icon
-                    print(trash_icon)
                     data_list.append({'html': html, 'lat': lats[n], 'lng': lngs[n], 'trash_id': closest_trash.id, 'trash_type': trash_type, 'trash_icon': trash_icon})
                 response.append({'lng': closest_trash.o_field.x, 'lat': closest_trash.o_field.y, 'radius': 30, 'data_list': data_list})
         return JsonResponse(response, safe=False)

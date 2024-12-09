@@ -315,10 +315,11 @@ class Command(BaseCommand):
                                             point = Point(lng,lat)
                                         m = import_string('datapop.models.{}'.format(field_type))
                                         try:
-                                            point_field = m.objects.get(o_field=point, data_line__in=[data_line])
+                                            # point_field = m.objects.get(o_field=point, data_line__in=[data_line])
+                                            point_field = m.objects.get(o_field=point)
                                         except m.DoesNotExist:
                                             point_field = m.objects.create(o_field=point)
-                                            point_field.data_line.add(data_line)
+                                            # point_field.data_line.add(data_line)
                                         # point_fields = m.objects.filter(o_field=point, data_line__in=data_line)
                                         # if not point_fields:
                                         #     point_field = m.objects.create(o_field=point)

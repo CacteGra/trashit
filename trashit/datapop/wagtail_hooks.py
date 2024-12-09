@@ -19,13 +19,15 @@ from wagtailgeowidget.panels import LeafletPanel
 
 from .all_functions import unique_get_data, one_list_item, str_to_coords, one_list_item_csv
 
-from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield, Polygonfield
+from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield, Polygonfield, DataLine
 
-from trash.models import CollectArea, TrashType, TheType, TypeLocale
+from trash.models import CollectArea, TrashType, TheType, TypeLocale, TrashSpecificities
 
 from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset
 
 from .widgets import OperatedChooserWidget, TrashTypeChooserWidget
+
+from django.db.models import Count
 
 @hooks.register("register_admin_viewset")
 def register_viewsets():
@@ -101,13 +103,25 @@ def first_connection(request, connection_object):
 
 @hooks.register('before_delete_snippet')
 def after_snippet_delete(request, instances):
-    if isinstance(instance, RegisterAPI):
-        r = RegisterAPI.objects.get(pk=instance.pk)
-        data_lines = DataLine.objects.filter(register_api=r)
-        points = PointField.objects.filter(data_line__in=data_lines).annotate(num_api=Count('register_api__id')).exclude(num_api__gt=2)
-        TrashSpecificities.objects.filter(point_field__in=points).delete()
-        points.delete()
-        data_lines.delete()
+    for instance in instances:
+        if isinstance(instance, RegisterAPI):
+            r = RegisterAPI.objects.get(pk=instance.pk)
+            all_apis = RegisterAPI.objects.all().exclude(pk=r.pk)
+            other_data_lines = DataLine.objects.filter(register_api__in=all_apis)
+            data_lines = DataLine.objects.filter(register_api=r)
+            points = Pointfield.objects.filter(data_line__in=data_lines).exclude(data_line__in=other_data_lines)
+            TrashSpecificities.objects.filter(point_field__in=points).delete()
+            trash_types = TrashType.objects.filter(register_api=r).exclude(pk=r.pk)
+            c = all_api.copy_cluster()
+            cluster_id_list = []
+            for i, j in enumerate(c[1]):
+                o = c[1][j]
+                register_api_chosen_id = o.the_chosen.choosing.get(register_api__isnull=False)
+                cluster_id_list.append(register_api_chosen_id.id)
+            OperatedField.objects.filter(id__in=cluster_id_list).delete()
+            trash_types.delete()
+            points.delete()
+            data_lines.delete()
 
 class RegisterAPITemplate(SnippetViewSet):
     model = RegisterAPI

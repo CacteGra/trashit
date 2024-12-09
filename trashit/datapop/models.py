@@ -345,12 +345,15 @@ class Chosen(models.Model):
     text_chosen = models.CharField(max_length=250, null=True, blank=True)
     value_example = models.CharField(max_length=250, null=True, blank=True)
     def __str__(self):
-        h = self.choosing.all()[0].hierarchy
-        n = len(list(str(h)))
-        if self.value_example:
-            return "%s%s: %s" % ('.'*n, self.text_chosen, self.value_example)
+        if self.choosing.all():
+            h = self.choosing.all()[0].hierarchy
+            n = len(list(str(h)))
+            if self.value_example:
+                return "%s%s: %s" % ('.'*n, self.text_chosen, self.value_example)
+            else:
+                return "%s%s" % ('.'*n, self.text_chosen)
         else:
-            return "%s%s" % ('.'*n, self.text_chosen)
+            return "%s" % (self.text_chosen)
 
 class RegisterAPIChosen(Orderable, models.Model):
     id = models.BigAutoField(primary_key=True)
