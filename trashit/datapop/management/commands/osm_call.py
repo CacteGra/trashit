@@ -24,7 +24,7 @@ def main():
             except KeyError:    
                 waste_type = "waste"
                 continue
-            the_type, created = TheType.objects.get_or_create(the_type=waste_type)
+            the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
             container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
             trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
             try:
@@ -46,7 +46,7 @@ def main():
             except KeyError:
                 waste_type = "waste"
                 continue
-            the_type, created = TheType.objects.get_or_create(the_type=waste_type)
+            the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
             container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
             trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
             try:
@@ -80,7 +80,7 @@ def main():
                         waste_type = d['operator']
                     except:
                         continue
-                the_type, created = TheType.objects.get_or_create(the_type=waste_type)
+                the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True),
                 if created and 'plastic' in waste_type:
                     the_type.icon = 'plastic-bottle'
                     the_type.save()
@@ -98,7 +98,7 @@ def main():
                     t.trash_type.add(trash_type)
             else:
                 for recycle_type in type_list:
-                    the_type, created = TheType.objects.get_or_create(the_type=recycle_type)
+                    the_type, created = TheType.objects.get_or_create(the_type=recycle_type, is_osm=True)
                     if created and 'plastic' in waste_type:
                         the_type.icon = 'plastic-bottle'
                         the_type.save()

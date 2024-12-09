@@ -25,7 +25,7 @@ from trash.models import CollectArea, TrashType, TheType, TypeLocale, TrashSpeci
 
 from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset
 
-from .widgets import OperatedChooserWidget, TrashTypeChooserWidget
+from .widgets import OperatedChooserWidget, TrashTypeChooserWidget, TheTypeChooserWidget
 
 from django.db.models import Count
 
@@ -315,7 +315,11 @@ class TheTypeTemplate(SnippetViewSet):
     model = TheType
     panels = [
         FieldPanel('the_type'),
-        FieldPanel('osm_type'),
+        #FieldPanel('osm_type', widget=CheckboxSelectMultiple),
+        FieldPanel("osm_type", widget=TheTypeChooserWidget),
+        #MultipleChooserPanel(
+        #    'related_osm', label="Related OSM types", chooser_field_name="OSM type(s)"
+        #),
         FieldPanel('icon'),
         InlinePanel('related_the_type'),
     ]

@@ -1,7 +1,9 @@
-from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset
+from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset, the_type_chooser_viewset
 
 ChosenChooserWidget = chosen_chooser_viewset.widget_class
 
 OperatedChooserWidget = operated_chooser_viewset.widget_class
 
 TrashTypeChooserWidget = trash_type_chooser_viewset.widget_class
+
+TheTypeChooserWidget = the_type_chooser_viewset.widget_class

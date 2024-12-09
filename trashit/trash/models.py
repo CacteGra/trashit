@@ -55,7 +55,8 @@ class TypeLocale(Orderable, models.Model):
 
 class TheType(ClusterableModel):
     the_type = models.CharField(max_length=100, null=True, blank=True)
-    osm_type = models.ManyToManyField('self', related_name='related_osm', null=True, blank=True)
+    osm_type = models.ManyToManyField('self', blank=True)
+    is_osm = models.BooleanField(default=False)
     
     ICON_CHOICES = [
         ("cardboard", "Cardboard"),
