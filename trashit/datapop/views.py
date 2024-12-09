@@ -479,7 +479,7 @@ class TheTypeChooseView(ChooseView):
         objects = self.get_object_list()
         objects = self.apply_object_list_ordering(objects)
         objects = self.filter_object_list(objects)
-        objects.exclude("is_osm"=False)
+        objects.exclude(is_osm=False)
         print('gonna paginate')
         paginator = Paginator(objects, per_page=self.per_page)
         try:
@@ -507,7 +507,7 @@ class TheTypeResultsView(ChooseResultsViewMixin, CreationFormMixin, BaseChooseVi
         objects = self.get_object_list()
         objects = self.apply_object_list_ordering(objects)
         objects = self.filter_object_list(objects)
-        objects.exclude("is_osm"=False)
+        objects.exclude(is_osm=False)
         print('gonna paginate')
         paginator = Paginator(objects, per_page=self.per_page)
         try:
