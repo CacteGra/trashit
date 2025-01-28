@@ -224,9 +224,7 @@
                     data: { 'lat': lat, 'lng': lng, 'same_session': false},
                     type:'GET',
                 })).then(function(response) {
-                  console.log(response);
                   for (all_data of response) {
-                    console.log(all_data);
                     var latlng = L.latLng(all_data.lat, all_data.lng);
                     circle = L.circle(latlng, all_data.radius);
                     circlesLayer.addLayer(circle);
@@ -238,19 +236,15 @@
                       if (data0.lat) {
                         var latlng = L.latLng(data0.lat, data0.lng);
                       }
-                      console.log(data0.trash_type);
-                      console.log(data0.trash_icon);
                       var iconName;
                       if (data0.trash_icon){
                         iconName = data0.trash_icon;
                       } else {
                         iconName = 'trash-icon';
                       }
-                      console.log(iconName);
                       var trashIcon = new selectedIcon({
                         iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
                       });
-                      console.log(trashIcon);
                       the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
                       document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
                       markersLayer.addLayer(the_trash);

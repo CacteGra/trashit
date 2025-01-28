@@ -12,6 +12,7 @@ class TrashSpecificities(models.Model):
     the_type = models.ForeignKey('TheType', on_delete=models.CASCADE, null=True, blank=True)
     trash_type = models.ManyToManyField('TrashType', blank=True)
     point_field = models.OneToOneField(Pointfield, on_delete=models.CASCADE)
+    osm_trash_spec = models.ManyToManyField(Pointfield, related_name='osm_trash_spec', blank=True)
     photo = models.ImageField(upload_to="media", null=True, blank=True)
     from_local_api = models.BooleanField(default=False)
     reported = models.BooleanField(default=False)
@@ -67,12 +68,13 @@ class TheType(ClusterableModel):
         ("recycle", "Recycling material"),
         ("special-bin", "Special waste"),
         ("trash-icon", "General trash"),
+        ("shirt", "Clothes"),
     ]
 
     icon = models.CharField(
         max_length=23,
         choices=ICON_CHOICES,
-        null=True, blank=True
+        default='trash-icon'
     )
 
     def __str__(self):

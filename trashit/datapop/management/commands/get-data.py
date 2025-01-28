@@ -4,6 +4,7 @@ import json
 import ast
 
 from django.db.models import Q
+from django.contrib.gis.measure import D
 from django.core.management.base import BaseCommand, CommandError
 from datapop.models import RegisterAPI, RegisterAPIChosen, OperatedField, DataLine
 from django.contrib.gis.geos import Point
@@ -307,10 +308,10 @@ class Command(BaseCommand):
                                         elif field_type == 'Pointfield' and operated.operation == 'COMBINE':
                                             chosens = operated.register_api_chosen.filter(field_name='lat')
                                             m = import_string('datapop.models.{}'.format(field_type))
-                                            lat = m.objects.get(data_line=data_line,register_api_chosen__in=chosens)
+                                            lat = m.objects.get(data_line__in=[data_line],register_api_chosen__in=chosens)
                                             lat = lat.o_field
                                             chosens = operated.register_api_chosen.filter(field_name='lng')
-                                            lng = m.objects.get(data_line=data_line,register_api_chosen__in=chosens)
+                                            lng = m.objects.get(data_line__in=[data_line],register_api_chosen__in=chosens)
                                             lng = lng.o_field
                                             point = Point(lng,lat)
                                         m = import_string('datapop.models.{}'.format(field_type))
@@ -325,6 +326,9 @@ class Command(BaseCommand):
                                         #     point_field = m.objects.create(o_field=point)
                                         #     point_field.data_line.add(data_line)
                                         trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
+                                        # Find closest OSM trash points and hook them to local API trashes
+                                        close_osms = m.objects.filter(o_field__distance_lte=(point,D(m=5))).exclude(point_field)
+                                        trash.osm_trash_spec.add(close_osms)
                             if trash_type and trash:
                                 trash.trash_type.add(trash_type)
                                 trash.save()

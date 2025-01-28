@@ -25,7 +25,7 @@ from trash.models import CollectArea, TrashType, TheType, TypeLocale, TrashSpeci
 
 from .views import chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset
 
-from .widgets import OperatedChooserWidget, TrashTypeChooserWidget, TheTypeChooserWidget
+from .widgets import OperatedChooserWidget, TrashTypeChooserWidget
 
 from django.db.models import Count
 
@@ -108,11 +108,15 @@ def after_snippet_delete(request, instances):
             r = RegisterAPI.objects.get(pk=instance.pk)
             all_apis = RegisterAPI.objects.all().exclude(pk=r.pk)
             other_data_lines = DataLine.objects.filter(register_api__in=all_apis)
-            data_lines = DataLine.objects.filter(register_api=r)
-            points = Pointfield.objects.filter(data_line__in=data_lines).exclude(data_line__in=other_data_lines)
-            TrashSpecificities.objects.filter(point_field__in=points).delete()
-            trash_types = TrashType.objects.filter(register_api=r).exclude(pk=r.pk)
-            c = all_api.copy_cluster()
+            if r.api_type == 'OSM':
+                trash_specificities = TrashSpecificities.objects.filter(from_local_api=False)
+                points = Pointfield.objects.filter(trashspecificities__in=trash_specificities).exclude(data_line__in=other_data_lines)
+            else:
+                data_lines = DataLine.objects.filter(register_api=r)
+                points = Pointfield.objects.filter(data_line__in=data_lines).exclude(data_line__in=other_data_lines)
+                trash_specificities = TrashSpecificities.objects.filter(point_field__in=points)
+            trash_types = TrashType.objects.filter(trashspecificities__in=trash_specificities)
+            c = r.copy_cluster()
             cluster_id_list = []
             for i, j in enumerate(c[1]):
                 o = c[1][j]
@@ -120,8 +124,10 @@ def after_snippet_delete(request, instances):
                 cluster_id_list.append(register_api_chosen_id.id)
             OperatedField.objects.filter(id__in=cluster_id_list).delete()
             trash_types.delete()
+            trash_specificities.delete()
             points.delete()
-            data_lines.delete()
+            if r.api_type != 'OSM':
+                data_lines.delete()
 
 class RegisterAPITemplate(SnippetViewSet):
     model = RegisterAPI
@@ -311,12 +317,57 @@ class TypeLocaleTemplate(SnippetViewSet):
         FieldPanel('the_type'),
     ]
 
+class OSMType(FieldPanel):
+    """
+    Customised FieldPanel to filter choices based on locale of page/model being created/edited
+    Usage:
+    widget_class - optional, override field widget type
+                 - should be CheckboxSelectMultiple, RadioSelect, Select or SelectMultiple
+    typed_choice_field - set to True with Select widget forces drop down list
+    """
+
+    def __init__(self, field_name, widget_class=None, typed_choice_field=False, *args, **kwargs):
+        if not widget_class in [None, CheckboxSelectMultiple, RadioSelect, Select, SelectMultiple]:
+            raise ImproperlyConfigured(_(
+                "widget_class should be a Django form widget class of type "
+                "CheckboxSelectMultiple, RadioSelect, Select or SelectMultiple"
+            ))
+        self.widget_class = widget_class
+        self.typed_choice_field = typed_choice_field
+        super().__init__(field_name, *args, **kwargs)
+
+    def clone_kwargs(self):
+        return {
+            'heading': self.heading,
+            'classname': self.classname,
+            'help_text': self.help_text,
+            'widget_class': self.widget_class,
+            'typed_choice_field': self.typed_choice_field,
+            'field_name': self.field_name,
+        }
+    class BoundPanel(FieldPanel.BoundPanel):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            if not self.panel.widget_class:
+                self.form.fields[self.field_name].widget.choices=self.choice_list
+            else:
+                self.form.fields[self.field_name].widget = self.panel.widget_class(choices=self.choice_list)
+            if self.panel.typed_choice_field:
+                self.form.fields[self.field_name].__class__.__name__ = 'typed_choice_field'
+            pass
+
+        @property
+        def choice_list(self):
+            self.form.fields[self.field_name].queryset = self.form.fields[self.field_name].queryset.exclude(is_osm=False)
+            choices = ModelChoiceIterator(self.form.fields[self.field_name])
+            return choices
+
 class TheTypeTemplate(SnippetViewSet):
     model = TheType
     panels = [
         FieldPanel('the_type'),
         #FieldPanel('osm_type', widget=CheckboxSelectMultiple),
-        FieldPanel("osm_type", widget=TheTypeChooserWidget),
+        OSMType("osm_type", widget_class=CheckboxSelectMultiple),
         #MultipleChooserPanel(
         #    'related_osm', label="Related OSM types", chooser_field_name="OSM type(s)"
         #),

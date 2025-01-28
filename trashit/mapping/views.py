@@ -53,7 +53,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         from pytz import utc
 
         from datapop.models import OperatedField, Pointfield
-        from trash.models import TrashSpecificities, TrashType
+        from trash.models import TrashSpecificities, TrashType, TheType
 
         #from .views_scripts import get_missions
 
@@ -64,66 +64,67 @@ class FirstLoad(LoginRequiredMixin, ListView):
         print(lat)
         print(lng)
         point = Point(lng, lat, srid=4326)
-        operated = OperatedField.objects.filter(field_type='Pointfield')
-        p = Pointfield.objects.all()
-        print(p[0].o_field)
-        trash_types = TrashType.objects.all()
-        closest_trashes = None
-        for trash_type in trash_types:
-            m = 1000
-            type_locale = None
-            closest_trash = None
-            while True:
-                c = trash_type.the_type.copy_cluster()
-                for i, j in enumerate(c[1]):
-                    type_locale = c[1][j]
-                if type_locale:
-                    locale_trash_types = TrashType.objects.filter(the_type__the_type=type_locale.locale)
-                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type__in=locale_trash_types,trashspecificities__from_local_api=True).annotate(distance=Distance("o_field", point)).order_by("distance").first()
-                    print("local {}".format(type_locale))
-                if not closest_trash:
-                    print(trash_type.the_type.the_type)
-                    closest_trash = Pointfield.objects.filter(o_field__distance_lte=(point,D(m=m)),trashspecificities__trash_type__in=[trash_type]).annotate(distance=Distance("o_field", point)).order_by("distance").first()
-                    print(closest_trash)
-                if closest_trash:
-                    trash_types.exclude(pk=trash_type.pk)
-                    closest = Pointfield.objects.filter(pk=closest_trash.pk)
-                    if not closest_trashes:
-                        closest_trashes = closest
-                    else:
-                        closest_trashes = closest_trashes.union(closest)
-                m += 1000
-                if m == 5000:
-                    break
-        # check pending/ongoing mission radius
+        no_repeat_closest_trash = None
         response = []
-        if closest_trashes:
-            for closest_trash in closest_trashes:
-                print("{} {}".format(closest_trash.o_field.x, closest_trash.o_field.y))
-                data_list = []
-                all_trash_types = closest_trash.trashspecificities.trash_type
-                types_count = all_trash_types.all().count()
-                n = -1
-                if types_count == 1:
-                    lngs, lats = [closest_trash.o_field.x], [closest_trash.o_field.y]
-                else:
-                    lngs, lats = self.spread(types_count, closest_trash.o_field)
-                for all_trash_type in all_trash_types.all():
-                    print(all_trash_type.the_type.the_type)
-                    html = None
-                    type_locale = None
-                    n += 1
-                    c = all_trash_type.the_type.copy_cluster()
-                    for i, j in enumerate(c[1]):
-                        type_locale = c[1][j]
-                    if not type_locale:
-                        trash_type = all_trash_type.the_type.the_type
-                    else:
-                        trash_type = type_locale.locale
-                    html = render_to_string('trash/trash-presentation.html', {'trash': closest_trash, 'trash_type': trash_type}, request=request)
-                    trash_icon = all_trash_type.the_type.icon
-                    data_list.append({'html': html, 'lat': lats[n], 'lng': lngs[n], 'trash_id': closest_trash.id, 'trash_type': trash_type, 'trash_icon': trash_icon})
-                response.append({'lng': closest_trash.o_field.x, 'lat': closest_trash.o_field.y, 'radius': 30, 'data_list': data_list})
+        m = 250
+        # Get trashes from local api
+        ts = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=m)),from_local_api=True)
+        for t in ts:
+            data_list = []
+            # Gather all types of current local api trash 
+            current_types = t.trash_type.all().values('the_type__the_type', 'the_type__icon')
+            # Get types that are not referenced in local api
+            tt = TrashType.objects.filter(trashspecificities__point_field__in=t.osm_trash_spec.all())
+            the_type = tt.values_list('the_type__the_type', flat=True)
+            non_local = the_type.filter(osm_type__isnull=True)
+            # Add non referenced types to local api trash types
+            current_types = current_types.union(non_local)
+            print(current_types)
+            # Generate coordinates for each type icon
+            n = -1
+            types_count = current_types.count()
+            if types_count == 1:
+                lngs, lats = [t.point_field.o_field.x], [t.point_field.o_field.y]
+            else:
+                lngs, lats = self.spread(types_count, t.point_field.o_field)
+            # Create trash html and add it to list with trash info
+            for current_type in current_types:
+                print(current_type['the_type__the_type'])
+                html = None
+                n += 1
+                trash_type = current_type['the_type__the_type']
+                html = render_to_string('trash/trash-presentation.html', {'trash': t, 'trash_type': trash_type}, request=request)
+                trash_icon = current_type['the_type__icon']
+                data_list.append({'html': html, 'lat': lats[n], 'lng': lngs[n], 'trash_id': t.id, 'trash_type': trash_type, 'trash_icon': trash_icon})
+            response.append({'lng': t.point_field.o_field.x, 'lat': closest_trash.o_field.y, 'radius': 30, 'data_list': data_list})
+        # Get trashes that are not in local api, by way of querying osm trashes that are not found in trashspecificities osm_trash_spec field
+        ts = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=m)),osm_trash_spec__isnull=True,from_local_api=False)
+        print("counting trashes {}".format(ts.count()))
+        for t in ts:
+            data_list = []
+            # Gather all types of current local api trash 
+            current_types = t.trash_type.all().values('the_type__the_type', 'the_type__icon')
+            print(current_types)
+            # Generate coordinates for each type icon
+            n = -1
+            types_count = current_types.count()
+            if types_count == 1:
+                lngs, lats = [t.point_field.o_field.x], [t.point_field.o_field.y]
+            else:
+                lngs, lats = self.spread(types_count, t.point_field.o_field)
+            # Create trash html and add it to list with trash info
+            for current_type in current_types:
+                print("n {}".format(n))
+                print(current_type['the_type__the_type'])
+                html = None
+                n += 1
+                trash_type = current_type['the_type__the_type']
+                html = render_to_string('trash/trash-presentation.html', {'trash': t, 'trash_type': trash_type}, request=request)
+                trash_icon = current_type['the_type__icon']
+                data_list.append({'html': html, 'lat': lats[n], 'lng': lngs[n], 'trash_id': t.id, 'trash_type': trash_type, 'trash_icon': trash_icon})
+            print(len(data_list))
+            response.append({'lng': t.point_field.o_field.x, 'lat': t.point_field.o_field.y, 'radius': 30, 'data_list': data_list})
+        print(len(response))
         return JsonResponse(response, safe=False)
 
 class FilterType(LoginRequiredMixin, ListView):

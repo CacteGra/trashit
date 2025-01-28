@@ -23,10 +23,12 @@ def main():
                 waste_type = d['waste']
             except KeyError:    
                 waste_type = "waste"
-                continue
             the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
-            container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
-            trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
+            if created:
+                if not any(x in waste_type for x in ['waste', 'trash']):
+                    the_type.icon = "special-bin"
+                    the_type.save()
+            trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
             try:
                 t = TrashSpecificities.objects.get(point_field=point_field)
                 if not t.trash_type:
@@ -45,10 +47,12 @@ def main():
                 waste_type = d['waste']
             except KeyError:
                 waste_type = "waste"
-                continue
             the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
-            container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
-            trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
+            if created:
+                if not any(x in waste_type for x in ['waste', 'trash']):
+                    the_type.icon = "special-bin"
+                    the_type.save()
+            trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
             try:
                 t = TrashSpecificities.objects.get(point_field=point_field)
                 if not t.trash_type:
@@ -72,23 +76,47 @@ def main():
                 if ("recycling:" in key and value == 'yes'):
                     waste_type = key.replace("recycling:", '')
                     type_list.append(waste_type)
-            if waste_type == None:
+            if not type_list:
                 try:
                     waste_type = d['name']
                 except KeyError:
                     try:
                         waste_type = d['operator']
                     except:
-                        continue
-                the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True),
-                if created and 'plastic' in waste_type:
-                    the_type.icon = 'plastic-bottle'
-                    the_type.save()
-                elif created and 'paper' in waste_type:
-                    the_type.icon = 'paper'
-                    the_type.save()
-                container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
-                trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
+                        waste_type = 'recycle'
+                the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
+                if created:
+                    if 'plastic' in waste_type:
+                        the_type.icon = 'plastic-bottle'
+                        the_type.save()
+                    elif 'paper' in waste_type:
+                        the_type.icon = 'paper'
+                        the_type.save()
+                    elif 'magazines' in waste_type:
+                        the_type.icon = 'paper'
+                        the_type.save()
+                    elif 'shoes' in waste_type:
+                        the_type.icon = 'shirt'
+                        the_type.save()
+                    elif 'clothes' in waste_type:
+                        the_type.icon = 'shirt'
+                        the_type.save()
+                    elif 'cans' in waste_type:
+                        the_type.icon = 'can'
+                        the_type.save()
+                    elif 'cardboard' in waste_type:
+                        the_type.icon = 'cardboard'
+                        the_type.save()
+                    elif 'glass' in waste_type:
+                        the_type.icon = 'glass-bottle'
+                        the_type.save()
+                    elif 'oil' in waste_type:
+                        the_type.icon = 'spcial-bin'
+                        the_type.save()
+                    else:
+                        the_type.icon = 'recycle'
+                        the_type.save()
+                trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
                 try:
                     t = TrashSpecificities.objects.get(point_field=point_field)
                     if not t.trash_type:
@@ -99,14 +127,38 @@ def main():
             else:
                 for recycle_type in type_list:
                     the_type, created = TheType.objects.get_or_create(the_type=recycle_type, is_osm=True)
-                    if created and 'plastic' in waste_type:
-                        the_type.icon = 'plastic-bottle'
-                        the_type.save()
-                    elif created and 'paper' in waste_type:
-                        the_type.icon = 'paper'
-                        the_type.save()
-                    container, created = ContainerType.objects.get_or_create(container_type='waste_basket')
-                    trash_type, created = TrashType.objects.get_or_create(the_type=the_type, container_type=container)
+                    if created:
+                        if 'plastic' in waste_type:
+                            the_type.icon = 'plastic-bottle'
+                            the_type.save()
+                        elif 'paper' in waste_type:
+                            the_type.icon = 'paper'
+                            the_type.save()
+                        elif 'magazines' in waste_type:
+                            the_type.icon = 'paper'
+                            the_type.save()
+                        elif 'shoes' in waste_type:
+                            the_type.icon = 'shirt'
+                            the_type.save()
+                        elif 'clothes' in waste_type:
+                            the_type.icon = 'shirt'
+                            the_type.save()
+                        elif 'cans' in waste_type:
+                            the_type.icon = 'can'
+                            the_type.save()
+                        elif 'cardboard' in waste_type:
+                            the_type.icon = 'cardboard'
+                            the_type.save()
+                        elif 'glass' in waste_type:
+                            the_type.icon = 'glass-bottle'
+                            the_type.save()
+                        elif 'oil' in waste_type:
+                            the_type.icon = 'spcial-bin'
+                            the_type.save()
+                        else:
+                            the_type.icon = 'recycle'
+                            the_type.save()
+                    trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
                     try:
                         t = TrashSpecificities.objects.get(point_field=point_field)
                         t.trash_type.add(trash_type)
