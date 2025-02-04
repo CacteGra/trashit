@@ -111,7 +111,7 @@ def main():
                         the_type.icon = 'glass-bottle'
                         the_type.save()
                     elif 'oil' in waste_type:
-                        the_type.icon = 'spcial-bin'
+                        the_type.icon = 'special-bin'
                         the_type.save()
                     else:
                         the_type.icon = 'recycle'
@@ -125,35 +125,36 @@ def main():
                     t = TrashSpecificities.objects.create(point_field=point_field)
                     t.trash_type.add(trash_type)
             else:
+                recycle_type = None
                 for recycle_type in type_list:
                     the_type, created = TheType.objects.get_or_create(the_type=recycle_type, is_osm=True)
                     if created:
-                        if 'plastic' in waste_type:
+                        if 'plastic' in recycle_type:
                             the_type.icon = 'plastic-bottle'
                             the_type.save()
-                        elif 'paper' in waste_type:
+                        elif 'paper' in recycle_type:
                             the_type.icon = 'paper'
                             the_type.save()
-                        elif 'magazines' in waste_type:
+                        elif 'magazines' in recycle_type:
                             the_type.icon = 'paper'
                             the_type.save()
-                        elif 'shoes' in waste_type:
+                        elif 'shoes' in recycle_type:
                             the_type.icon = 'shirt'
                             the_type.save()
-                        elif 'clothes' in waste_type:
+                        elif 'clothes' in recycle_type:
                             the_type.icon = 'shirt'
                             the_type.save()
-                        elif 'cans' in waste_type:
+                        elif 'cans' in recycle_type:
                             the_type.icon = 'can'
                             the_type.save()
-                        elif 'cardboard' in waste_type:
+                        elif 'cardboard' in recycle_type:
                             the_type.icon = 'cardboard'
                             the_type.save()
-                        elif 'glass' in waste_type:
+                        elif 'glass' in recycle_type:
                             the_type.icon = 'glass-bottle'
                             the_type.save()
-                        elif 'oil' in waste_type:
-                            the_type.icon = 'spcial-bin'
+                        elif 'oil' in recycle_type:
+                            the_type.icon = 'special-bin'
                             the_type.save()
                         else:
                             the_type.icon = 'recycle'

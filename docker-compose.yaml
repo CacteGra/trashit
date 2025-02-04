@@ -21,7 +21,7 @@ services:
     volumes: 
       - static:/app/static
       - media:/app/media
-      - shared:/shared/
+      - ssl:/etc/porkcron:ro
     depends_on:
       - porkcron
   porkcron:
@@ -36,7 +36,7 @@ services:
       - CERTIFICATE_PATH
       - PRIVATE_KEY_PATH
     volumes:
-      - shared:/shared/
+      - ssl:/etc/porkcron
     depends_on:
       - backend
   getdata:
@@ -120,3 +120,4 @@ volumes:
       driver: local
     shared:
       driver: local
+    ssl:

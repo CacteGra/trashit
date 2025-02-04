@@ -11,3 +11,6 @@ EXPOSE 443
 
 RUN mkdir /etc/nginx/templates
 COPY default.conf.template /etc/nginx/templates
+
+COPY wait-for-ssl.sh /docker-entrypoint.d/
+RUN chmod +x /docker-entrypoint.d/wait-for-ssl.sh

@@ -47,8 +47,8 @@ server {
 
     server_name ${DOMAIN} ${DOMAINWWW};
 
-    ssl_certificate /shared/domain.cert.pem;
-    ssl_certificate_key /shared/private.key.pem;
+    ssl_certificate     /etc/porkcron/certificate.pem;
+    ssl_certificate_key /etc/porkcron/private_key.pem;
     #ssl_trusted_certificate /etc/nginx/ssl/live/${DOMAIN}/intermediate.cert.pem;
 
 
