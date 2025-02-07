@@ -224,7 +224,25 @@
                     data: { 'lat': lat, 'lng': lng, 'same_session': false},
                     type:'GET',
                 })).then(function(response) {
-                  for (all_data of response) {
+                  var filteringMenu = document.getElementsByClassName("filtering dropdown-menu")[0];
+                  for (theType of response.all_types) {
+                    const dividerNode = document.createElement("li");
+                    const hrNode = document.createElement("hr");
+                    hrNode.class = "dropdown-divider";
+                    dividerNode.appendChild(hrNode);
+                    filteringMenu.appendChild(dividerNode);
+                    const node = document.createElement("li");
+                    const buttNode = document.createElement("button");
+                    const buttTextNode = document.createTextNode(theType);
+                    buttNode.appendChild(buttTextNode);
+                    buttNode.setAttribute("class", "dropdown-item filter");
+                    buttNode.id = "filter " + theType;
+                    buttNode.name = theType;
+                    buttNode.onclick = filterTrash;
+                    node.appendChild(buttNode);
+                    filteringMenu.appendChild(buttNode);
+                  };
+                  for (all_data of response.response) {
                     var latlng = L.latLng(all_data.lat, all_data.lng);
                     circle = L.circle(latlng, all_data.radius);
                     circlesLayer.addLayer(circle);
@@ -614,35 +632,39 @@
             url: "{% url 'filter_type' %}",
             data: { 'lat': lat, 'lng': lng, 'type': trash_type},
             type:'GET',
-          })).then(function(all_data) {
-          for (data0 of all_data) {
-            if (data0.reload) {
-              $('.reload').html(data0.reload);
-            }
-            if (data0.lat) {
-              console.log(data0.lat);
-              var latlng = L.latLng(data0.lat, data0.lng);
-            }
-
-            the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id, icon: selectedIcon}).on('click', highlightTrash);
-            if (data0.trash_id == all_data[0].trash_id) {
-              $('.trashList').html('');
-            }
-            document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
-            circle = L.circle(latlng, data0.radius);
-            markersLayer.addLayer(the_trash);
-            circlesLayer.addLayer(circle);
-            markers.push(the_trash);
-            circles.push(circle);
-            }
+          })).then(function(response) {
+            for (all_data of response) {
+              var latlng = L.latLng(all_data.lat, all_data.lng);
+              circle = L.circle(latlng, all_data.radius);
+              circlesLayer.addLayer(circle);
+              circles.push(circle);
+              for (data0 of all_data.data_list) {
+                if (data0.reload) {
+                  $('.reload').html(data0.reload);
+                }
+                if (data0.lat) {
+                  var latlng = L.latLng(data0.lat, data0.lng);
+                }
+                var iconName;
+                if (data0.trash_icon){
+                  iconName = data0.trash_icon;
+                } else {
+                  iconName = 'trash-icon';
+                }
+                var trashIcon = new selectedIcon({
+                  iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
+                });
+                the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
+                document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                markersLayer.addLayer(the_trash);
+                markers.push(the_trash);
+                }
+              }
            })
           };
           document.getElementById("scan-wrapper").onclick = scanWrapper;
           document.getElementById("garbage-collection").onclick = garbageCollect;
           document.getElementById('filter all').onclick = filterTrash;
-          {% for trash_type in trash_types %}
-          document.getElementById('filter {{ trash_type }}').onclick = filterTrash;
-          {% endfor %}
        document.getElementById("add-menu").onclick = function() {
          var dumpNotif = document.getElementById("dumping-notif");
          theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
@@ -736,12 +758,8 @@
   <button type="button" class="btn btn-secondary shadow rounded-circle btn-lg" id="add-filter" data-bs-toggle="dropdown" aria-expanded="false">
     <i class="bi bi-funnel" style="font-size: 35px;"></i>
   </button>
-  <ul class="dropdown-menu">
+  <ul class="filtering dropdown-menu">
     <li><button class="dropdown-item filter" id="filter all" name="all">All</button></li>
-    <li><hr class="dropdown-divider"></li>
-    {% for trash_type in trash_types %}
-    <li><button class="dropdown-item filter" id="filter {{ trash_type }}" name="{{ trash_type }}">{{ trash_type }}</button></li>
-    {% endfor %}
   </ul>
 </div>
 <div>
