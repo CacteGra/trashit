@@ -404,8 +404,8 @@ class RegisterAPIChosen(Orderable, models.Model):
 
     field_name = models.CharField(max_length=250, null=True, blank=True)
 
-    # panels = [FieldPanel("the_chosen", widget=ChosenChooserWidget)]
-    panels = [FieldPanel("the_chosen")]
+    panels = [FieldPanel("the_chosen", widget=ChosenChooserWidget)]
+    # panels = [FieldPanel("the_chosen")]
 
     def __str__(self):
         h = self.hierarchy
@@ -478,6 +478,7 @@ class RegisterAPI(ClusterableModel):
     TYPE_CHOICES = [
         ("NONE", "NONE"),
         ("CSV", "CSV"),
+        ("JSON", "JSON"),
         ("OSM", "OSM"),
         ("OTHER", "OTHER"),
     ]

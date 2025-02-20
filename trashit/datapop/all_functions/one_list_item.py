@@ -1,5 +1,7 @@
 import json
 
+from django.db.utils import DataError
+
 from datapop.models import RegisterAPI, RegisterAPIChosen, Chosen
 
 def hierarchy(struct, path=None):
@@ -55,7 +57,10 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
                 follow_list_dict['title'] = k
-                chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
+                try:
+                    chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
+                except DataError:
+                    chosen = Chosen.objects.create(text_chosen=k, value_example="data")
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[k])), dict_level[k], pk, dict_numbered, child)
             else:

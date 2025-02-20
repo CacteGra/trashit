@@ -7,17 +7,19 @@ from django.forms.models import ModelChoiceIterator
 from django.forms.widgets import (CheckboxSelectMultiple, RadioSelect, Select,
                                   SelectMultiple)
 from django.utils.translation import gettext_lazy as _
-from wagtail.admin.panels import FieldPanel, MultipleChooserPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel, MultipleChooserPanel, InlinePanel, Panel
 
 from wagtail.admin.filters import WagtailFilterSet
 from django.utils.module_loading import import_string
 from django import forms
 
+from wagtail.telepath import JSContext
+
 import requests
 
 from wagtailgeowidget.panels import LeafletPanel
 
-from .all_functions import unique_get_data, one_list_item, str_to_coords, one_list_item_csv
+from .all_functions import unique_get_data, one_list_item, str_to_coords, one_list_item_csv, one_list_item_json
 
 from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield, Polygonfield, DataLine
 
@@ -31,7 +33,7 @@ from django.db.models import Count
 
 @hooks.register("register_admin_viewset")
 def register_viewsets():
-    return [chosen_chooser_viewset, operated_chooser_viewset, trash_type_chooser_viewset]
+    return [chosen_chooser_viewset]
 
 @hooks.register('after_create_snippet')
 def first_connection(request, instance):
@@ -39,6 +41,8 @@ def first_connection(request, instance):
         r = RegisterAPI.objects.get(pk=instance.pk)
         if r.api_endpoint and r.api_type == "CSV":
             one_list_item_csv.main(r.pk)
+        elif r.api_endpoint and r.api_type == "JSON":
+            one_list_item_json.main(r.pk)
         elif r.api_endpoint and r.api_type != "CSV":
             try:
                 if r.is_dumb:
@@ -131,7 +135,6 @@ def after_snippet_delete(request, instances):
 
 class RegisterAPITemplate(SnippetViewSet):
     model = RegisterAPI
-
     panels = [
         FieldPanel('api_title'),
         FieldPanel('api_endpoint'),
@@ -152,7 +155,7 @@ class RegisterAPITemplate(SnippetViewSet):
         # MultipleChooserPanel("the_api",
         #     chooser_field_name="the_chosen",
         #     label="API Key(s)", min_num=0)
-        InlinePanel('the_api')
+        MultipleChooserPanel('the_api', chooser_field_name='the_chosen', label="API Key(s)", min_num=0),
     ]
 
 class RegisterAPIChosenIndex(IndexView):
