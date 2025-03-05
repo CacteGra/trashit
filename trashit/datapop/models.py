@@ -502,6 +502,6 @@ class RegisterAPI(ClusterableModel):
     results = models.CharField(max_length=100, null=True)
     where_line = models.PositiveIntegerField(default=0)
     until_line = models.PositiveIntegerField(blank=True, null=True)
-    register_file = models.FileField(null=True)
+    register_file = models.FileField(blank=True, null=True)
     def __str__(self):
         return "%s" % (self.api_title)
