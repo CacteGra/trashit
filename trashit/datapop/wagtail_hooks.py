@@ -41,9 +41,9 @@ def first_connection(request, instance):
         r = RegisterAPI.objects.get(pk=instance.pk)
         if r.api_endpoint and r.api_type == "CSV":
             one_list_item_csv.main(r.pk)
-        elif r.api_endpoint and r.api_type == "JSON":
+        elif r.api_endpoint and r.api_type in ["JSON", "KML"]:
             one_list_item_json.main(r.pk)
-        elif r.api_endpoint and r.api_type != "CSV":
+        elif r.api_endpoint and r.api_type not in ["CSV", "JSON", "KML"]:
             try:
                 if r.is_dumb:
                     print("{}&{}={}&{}={}".format(r.api_endpoint, r.pagination, 1, r.rows_name, r.rows_per_page))
@@ -73,36 +73,6 @@ def first_connection(request, instance):
 
 @hooks.register('after_edit_snippet')
 def first_connection(request, connection_object):
-    print('Hello')
-    # try:
-    #     r = RegisterAPI.objects.get(pk=connection_object.pk)
-    #     all_chosen = RegisterAPIChosen.objects.filter(register_api=r, register_api_chosen_foreign__isnull=True)
-        # for chosen in all_chosen:
-        #     for f in SelectField._meta.get_fields()[3:]:
-        #         field = f.name
-        #         if field in ['register_api_chosen_foreign', 'field']:
-        #             pass
-        #         else:
-        #             print(field)
-        #             field_title = Field.objects.create(text_field=field)
-        #             s = SelectField.objects.create(field=field_title)
-        #             s.register_api_chosen_foreign = chosen
-        #             s.save()
-    #     return True
-    # except RegisterAPI.DoesNotExist:
-    #     print(False)
-    # try:
-    #     r = RegisterAPICehosen.objects.get(pk=connection_object.pk)
-    #     select_field = r.selected_register_api_chosen
-    #     text = select_field.field.text_field
-    #     field_name = text[0].upper() + text[1:]
-    #     m = import_string('datapop.models.{}'.format(field_name))
-    #     the_field = m.objects.create(is_up=True,selectfield=select_field)
-    #     g = setattr(select_field, text, the_field)
-    #     g.save()
-    #     return True
-    # except RegisterAPIChosen.DoesNotExist:
-    #     print(False)
     return True
 
 @hooks.register('before_delete_snippet')
@@ -132,6 +102,8 @@ def after_snippet_delete(request, instances):
             points.delete()
             if r.api_type != 'OSM':
                 data_lines.delete()
+            RegisterAPIChosen.objects.filter(register_api_foreign__pk=r.pk).delete()
+            RegisterAPIChosen.objects.filter(register_api__pk=r.pk).delete()
 
 class RegisterAPITemplate(SnippetViewSet):
     model = RegisterAPI

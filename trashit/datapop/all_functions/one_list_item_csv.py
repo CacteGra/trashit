@@ -7,8 +7,18 @@ def main(register_api_pk):
 
     all_api = RegisterAPI.objects.get(pk=register_api_pk)
     url = all_api.api_endpoint
-    response = urllib.request.urlopen(url)
+    n = 0
+    while True:
+        n += 1
+        try:
+            response = urllib.request.urlopen(url)
+            break
+        except urllib.error.URLError:
+            if n == 5:
+                return False
+            sleep(1)
     content = response.read().decode("utf-8")
+    all_api.register_file.save('json_file.csv', File(content))
     csv_reader = csv.reader(content.splitlines())
     header = next(csv_reader)
     chosen_list = []

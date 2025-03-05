@@ -10,12 +10,10 @@ from datapop.models import RegisterAPI, RegisterAPIChosen, DataLine
 def main(register_api_pk, cluster_id_list):
 
     all_api = RegisterAPI.objects.get(pk=register_api_pk)
-    content = all_api.register_file.open('r')
-    csv_reader = csv.reader(content.splitlines())
-    header = next(csv_reader)
-    csv_reader = csv.DictReader(content.splitlines())
+    json_file = all_api.register_file.open('r')
+    json_file = json.load(json_file)
     registerapichosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
-    for row in csv_reader:
+    for row in json_file:
         check_new_data = []
         for registerapichosen in registerapichosens:
             field_name = registerapichosen.field_type

@@ -159,16 +159,7 @@ class Command(BaseCommand):
                 if all_api.the_time < timezone.now() - timedelta(hours=24) or all_api.first:
                     if all_api.api_type == "OSM":
                         osm_call.main()
-                    elif all_api.api_type == "CSV":
-                        if cluster_id_list:
-                            register_api_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, field_type__isnull=True)
-                            if register_api_chosens:
-                                continue
-                            else:
-                                get_csv_data.main(all_api.pk, cluster_id_list)
-                                all_api.first = False
-                                all_api.save()
-                    else:
+                    elif not all_api.api_type:
                         for i, j in enumerate(c[1]):
                             o = c[1][j]
                             r = o.the_chosen.choosing.get(register_api__isnull=False)
@@ -267,6 +258,18 @@ class Command(BaseCommand):
                             if all_api.first:
                                 all_api.first = False
                             all_api.save()
+                    else:
+                        if cluster_id_list:
+                            register_api_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, field_type__isnull=True)
+                            if register_api_chosens:
+                                continue
+                            else:
+                                if all_api.api_type == "CSV":
+                                    get_csv_data.main(all_api.pk, cluster_id_list)
+                                elif all_api.api_type in ["JSON", "KML"]:
+                                    get_json_data.main(all_api.pk, cluster_id_list)
+                                all_api.first = False
+                                all_api.save()
                 other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
                 no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True)
                 if other_chosens and not no_operated:
