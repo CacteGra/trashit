@@ -492,17 +492,6 @@ class RegisterAPI(ClusterableModel):
         null=True, blank=True
     )
 
-    TRASH_CHOICES = [
-        ("TRASHSPECIFICITIES", "TRASHSPECIFICITIES"),
-        ("COLLECTAREA", "COLLECTAREA"),
-    ]
-
-    api_trash = models.CharField(
-        max_length=20,
-        choices=TRASH_CHOICES,
-        null=True, blank=True
-    )
-
     is_dumb = models.BooleanField(default=False)
     first = models.BooleanField(default=True)
     the_time = models.DateTimeField(auto_now=True)
@@ -517,5 +506,18 @@ class RegisterAPI(ClusterableModel):
     where_line = models.PositiveIntegerField(default=0)
     until_line = models.PositiveIntegerField(blank=True, null=True)
     register_file = models.FileField(storage=private_storage, blank=True, null=True)
+
+
+    TRASH_CHOICES = [
+        ("TRASHSPECIFICITIES", "TRASHSPECIFICITIES"),
+        ("COLLECTAREA", "COLLECTAREA"),
+    ]
+
+    api_trash = models.CharField(
+        max_length=20,
+        choices=TRASH_CHOICES,
+        null=True, blank=True
+    )
+
     def __str__(self):
         return "%s" % (self.api_title)
