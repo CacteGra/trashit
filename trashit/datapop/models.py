@@ -498,7 +498,7 @@ class RegisterAPI(ClusterableModel):
     ]
 
     api_trash = models.CharField(
-        max_length=10,
+        max_length=20,
         choices=TRASH_CHOICES,
         null=True, blank=True
     )
