@@ -90,6 +90,7 @@ class CollectArea(models.Model):
     raw_data = models.CharField(max_length=10000, null=True, blank=True)
     quarter = models.CharField(max_length=50, null=True, blank=True)
     polygon_field = models.OneToOneField(Polygonfield, on_delete=models.CASCADE, null=True, blank=True)
+    description = models.CharField(max_length=200, null=True, blank=True)
 
     def __str__(self):
         return "%s" % (self.quarter)

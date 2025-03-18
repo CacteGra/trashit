@@ -26,6 +26,15 @@ def hierarchy(struct, path=None):
     else:
         return [path]
 
+def spec_polygon(using_dict):
+    for list_id, i in enumerate(using_dict):
+        if '[][][]' in i:
+            del using_dict[list_id]
+            del using_dict[list_id-1]
+            using_dict[list_id-2] = i[:-6]
+            break
+    return using_dict
+
 def only_one_item(using_dict, l, pk, hierarchy_level, parent):
     api = RegisterAPI.objects.get(pk=pk)
     list_dict = []
@@ -36,6 +45,7 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
     dict_level = l
     dict_numbered = hierarchy_level
     dict_numbered = hierarchy_level * 10 + 1
+    using_dict = spec_polygon(using_dict)
     for i in using_dict:
         follow_list_dict = {'id': dict_numbered }
         if '[]' in i:
@@ -51,30 +61,32 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
                 has_list = {'in list': True, 'name': k}
                 dict_level = dict_level[k.replace('[0]', '')]
                 follow_list_dict['title'] = k.replace('[0]', '')
-                chosen = Chosen.objects.create(text_chosen=k)
+                chosen = Chosen.objects.create(text_chosen=k[:200])
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True )
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], k, dict_numbered, child)
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
                 follow_list_dict['title'] = k
                 try:
-                    chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
+                    chosen = Chosen.objects.create(text_chosen=k[:200], value_example=str(dict_level[k])[:200])
                 except DataError:
-                    chosen = Chosen.objects.create(text_chosen=k, value_example="data")
+                    chosen = Chosen.objects.create(text_chosen=k[:200], value_example="data")
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[k])), dict_level[k], pk, dict_numbered, child)
             else:
                 follow_list_dict['title'] = k
                 follow_list_dict['value'] = str(dict_level[k])
-                chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
+                chosen = Chosen.objects.create(text_chosen=k[:200], value_example=str(dict_level[k])[:200])
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
             list_dict.append(follow_list_dict)
+            print(list_dict)
             dict_numbered += 1
     return list_dict
 
 def main(l, pk):
     api = RegisterAPI.objects.get(pk=pk)
     one_list_dict = {}
+    # Establish data hierarchy
     s = sorted(hierarchy(l))
     using_dict = [root for root in s if root != '$.']
     using_dict = [root for root in s if root != '$']
@@ -86,6 +98,8 @@ def main(l, pk):
     one_list_dict['id'] = 0
     chosen = Chosen.objects.create(text_chosen="root")
     parent = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=0, children_of=None)
+    # Bypass list when value is polygon (which displays as [][][])
+    using_dict = spec_polygon(using_dict)
     for i in using_dict:
         follow_list_dict = {'id': dict_numbered }
         if '[]' in i:
@@ -104,20 +118,20 @@ def main(l, pk):
                 has_list = {'in list': True, 'name': k}
                 dict_level = dict_level[k.replace('[0]', '')]
                 follow_list_dict['title'] = k.replace('[0]', '')
-                chosen = Chosen.objects.create(text_chosen=k)
+                chosen = Chosen.objects.create(text_chosen=k[:200])
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], pk, dict_numbered, child)
                 print('liste {}'.format(follow_list_dict['children']))
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
                 follow_list_dict['title'] = k
-                chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
+                chosen = Chosen.objects.create(text_chosen=k[:200], value_example=str(dict_level[k])[:200])
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
                 follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[k])), dict_level[k], pk, dict_numbered, child)
             else:
                 follow_list_dict['title'] = k
                 follow_list_dict['value'] = str(dict_level[k])
-                chosen = Chosen.objects.create(text_chosen=k, value_example=str(dict_level[k]))
+                chosen = Chosen.objects.create(text_chosen=k[:200], value_example=str(dict_level[k])[:200])
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent)
             one_list_dict['children'].append(follow_list_dict)
             dict_numbered += 1

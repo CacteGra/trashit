@@ -21,7 +21,7 @@ from wagtailgeowidget.panels import LeafletPanel
 
 from .all_functions import unique_get_data, one_list_item, str_to_coords, one_list_item_csv, one_list_item_json
 
-from .models import RegisterAPI, RegisterAPIChosen, OperatedField, Pointfield, Polygonfield, DataLine
+from .models import RegisterAPI, RegisterAPIChosen, Chosen, OperatedField, Pointfield, Polygonfield, DataLine
 
 from trash.models import CollectArea, TrashType, TheType, TypeLocale, TrashSpecificities
 
@@ -102,8 +102,12 @@ def after_snippet_delete(request, instances):
             points.delete()
             if r.api_type != 'OSM':
                 data_lines.delete()
-            RegisterAPIChosen.objects.filter(register_api_foreign__pk=r.pk).delete()
-            RegisterAPIChosen.objects.filter(register_api__pk=r.pk).delete()
+            register_api_chosen = RegisterAPIChosen.objects.filter(register_api_foreign__pk=r.pk)
+            Chosen.objects.filter(choosing__in=register_api_chosen).delete()
+            register_api_chosen.delete()
+            register_api_chosen = RegisterAPIChosen.objects.filter(register_api__pk=r.pk)
+            Chosen.objects.filter(choosing__in=register_api_chosen).delete()
+            register_api_chosen.delete()
 
 class RegisterAPITemplate(SnippetViewSet):
     model = RegisterAPI
@@ -200,6 +204,7 @@ class RegisterAPIChosenTemplate(SnippetViewSet):
         FieldPanel("field_type"),
         FieldPanel('field_name'),
         NoSameField("line_id", widget_class=Select),
+        FieldPanel('json_list'),
     ]
 
 

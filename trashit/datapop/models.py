@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
-
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
 from wagtail.snippets.views.snippets import SnippetViewSet, IndexView, EditView
 
@@ -367,7 +368,7 @@ class RegisterAPIChosen(Orderable, models.Model):
     the_chosen = models.ForeignKey(
         "Chosen", related_name="choosing", on_delete=models.CASCADE, null=True, blank=True
     )
-    ticked = models.BooleanField(default=False)
+    json_list = models.BooleanField(default=False)
     is_list = models.BooleanField(default=False)
 
     FIELD_CHOICES = [
@@ -467,6 +468,7 @@ class OperatedField(ClusterableModel):
         null=True, blank=True
     )
 
+private_storage = FileSystemStorage(location=settings.PRIVATE_STORAGE_ROOT)
 
 class RegisterAPI(ClusterableModel):
     id = models.AutoField(primary_key=True, editable=False)
@@ -489,6 +491,18 @@ class RegisterAPI(ClusterableModel):
         choices=TYPE_CHOICES,
         null=True, blank=True
     )
+
+    TRASH_CHOICES = [
+        ("TRASHSPECIFICITIES", "TRASHSPECIFICITIES"),
+        ("COLLECTAREA", "COLLECTAREA"),
+    ]
+
+    api_trash = models.CharField(
+        max_length=10,
+        choices=TRASH_CHOICES,
+        null=True, blank=True
+    )
+
     is_dumb = models.BooleanField(default=False)
     first = models.BooleanField(default=True)
     the_time = models.DateTimeField(auto_now=True)
@@ -502,6 +516,6 @@ class RegisterAPI(ClusterableModel):
     results = models.CharField(max_length=100, null=True)
     where_line = models.PositiveIntegerField(default=0)
     until_line = models.PositiveIntegerField(blank=True, null=True)
-    register_file = models.FileField(blank=True, null=True)
+    register_file = models.FileField(storage=private_storage, blank=True, null=True)
     def __str__(self):
         return "%s" % (self.api_title)

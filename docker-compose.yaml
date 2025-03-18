@@ -21,6 +21,7 @@ services:
     volumes: 
       - static:/app/static
       - media:/app/media
+      - private:/app/private
       - ssl:/etc/porkcron:ro
     depends_on:
       - porkcron
@@ -66,6 +67,7 @@ services:
     volumes: 
       - static:/app/static
       - media:/app/media
+      - private:/app/private
     depends_on:
       - backend
   backend:
@@ -97,6 +99,7 @@ services:
     volumes: 
       - static:/app/static
       - media:/app/media
+      - private:/app/private
     depends_on:
       - db 
   db:
@@ -117,6 +120,8 @@ volumes:
     static:
       driver: local
     media:
+      driver: local
+    private:
       driver: local
     shared:
       driver: local

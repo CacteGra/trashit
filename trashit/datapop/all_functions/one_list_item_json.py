@@ -1,6 +1,8 @@
+import os
 import urllib.request, urllib.error
 import json
 from time import sleep
+import uuid
 
 from django.core.files import File
 import kml2geojson
@@ -15,6 +17,9 @@ def main(register_api_pk):
     all_api = RegisterAPI.objects.get(pk=register_api_pk)
     url = all_api.api_endpoint
     n = 0
+    PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
+    PROJECT_DIR = os.path.dirname(PROJECT_DIR)
+    DATAPOP_DIR = PROJECT_DIR + "/datapop-files"
     while True:
         n += 1
         try:
@@ -28,5 +33,13 @@ def main(register_api_pk):
         json_response = kml2geojson.main.convert(response)
     else:
         json_response = json.load(response)
-    all_api.register_file.save('json_file.json', File(json_response))
-    one_list_item.main(json_response, register_api_pk)
+    if type(json_response) is list:
+        json_response = json_response[0]
+    with open('{}/data.json'.format(DATAPOP_DIR), 'w') as f:
+        json.dump(json_response, f)
+    with open('{}/data.json'.format(DATAPOP_DIR), 'r') as f:
+        filename = str(uuid.uuid4())
+        all_api.register_file.save('{}.json'.format(filename), File(f))
+    all_api = RegisterAPI.objects.get(pk=register_api_pk)
+    l = json.loads(all_api.register_file.read())
+    one_list_item.main(l, register_api_pk)
