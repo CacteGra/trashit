@@ -6,7 +6,8 @@ import ast
 from django.db.models import Q
 from django.contrib.gis.measure import D
 from django.core.management.base import BaseCommand, CommandError
-from datapop.models import RegisterAPI, RegisterAPIChosen, OperatedField, DataLine, Polygonfield
+from datapop.models import RegisterAPI, RegisterAPIChosen, OperatedField, DataLine, Polygonfield, Textfield
+from trash.models import CollectArea
 from django.contrib.gis.geos import Point, GEOSGeometry, Polygon, MultiPolygon
 from django.utils.module_loading import import_string
 from django.utils import timezone
@@ -50,47 +51,24 @@ class Command(BaseCommand):
             if (type(path_id) is list):
                 check_new_data = []
                 for data_id in path_id:
-                    print(data_id)
                     base_r = RegisterAPIChosen.objects.get(id=data_id)
-                    print(base_r.the_chosen.text_chosen)
+                    print(base_r.pk)
                     # base_r_line = RegisterAPIChosen.objects.filter(the_chosen__text_chosen=base_r.line_id.the_chosen.text_chosen,the_chosen__value_example=base_r.line_id.the_chosen.value_example,children_of__isnull=False)
                     # base_r_line = base_r_line[0]
                     data = l_copy[(base_r.the_chosen.text_chosen).replace('[0]', '')]
                     field_name = base_r.field_type
                     field_name = field_name[0].upper() + field_name[1:]
                     m = import_string('datapop.models.{}'.format(field_name))
+                    print(field_name)
                     if field_name == 'Pointfield':
                         data = Point(data[0], data[1], srid=4326)
                     elif field_name == 'Polygonfield':
-                        print(data)
                         data = Polygon(data[0])
                     the_field, created = m.objects.get_or_create(is_up=True,register_api_chosen=base_r,o_field=data)
                     check_new_data.append(the_field)
                 # Query new data line and hook each data to see if new, same or not relevant
                 if not check_new_data:
                     continue
-                all_api = RegisterAPI.objects.get(pk=all_api_pk)
-                current_model = check_new_data[0]
-                field_name = current_model._meta.model.__name__
-                query = Q(**{field_name.lower(): current_model})
-                query_to_create = Q(**{field_name.lower(): current_model})
-                data_line = DataLine.objects.filter(register_api=all_api)
-                data_line = data_line.filter(query)
-                for t in range(1, len(check_new_data)):
-                    current_model = check_new_data[t]
-                    field_name = current_model._meta.model.__name__
-                    query = Q(**{field_name.lower(): current_model})
-                    data_line = data_line.filter(query)
-                    query_to_create = query_to_create & Q(**{field_name.lower(): current_model})
-                print("data line result")
-                print(data_line)
-                if not data_line:
-                    d = DataLine.objects.create(register_api=all_api)
-                    for i in query_to_create.children:
-                        g = getattr(d, "{}_set".format(i[0]))
-                        g.add(i[1])
-                else:
-                    data_line.update(the_time=timezone.now())
                 # try:
                 #     DataLine.objects.get(Q(register_api=all_api) & query)
                 # except DataLine.DoesNotExist:
@@ -120,7 +98,7 @@ class Command(BaseCommand):
                 #         g.add(i[1])
                 #         print('object {}'.format(i[1].o_field))
                 #     print(d.textfield_set.count())
-                return True
+                return True, check_new_data
             else:
                 r = RegisterAPIChosen.objects.get(id=path_id)
                 if r.is_list:
@@ -133,19 +111,46 @@ class Command(BaseCommand):
                         except NameError:
                             pass
                     if i:
-                        print("Returning True")
                         try:
                             r = RegisterAPI.objects.get(pk=all_api_pk)
                             r.where_line += where_line
                             r.save()
-                            return True
+                            return True, None
                         except NameError:
-                            return True
+                            return True, None
                     else:
-                        return False
+                        return False, None
                 else:
                     l_copy_line_id = l_copy
                     l_copy = l_copy[(r.the_chosen.text_chosen).replace('[0]', '')]
+
+    def check_or_create_data(self, all_api_pk, check_new_data):
+        all_api = RegisterAPI.objects.get(pk=all_api_pk)
+        current_model = check_new_data[0]
+        print(current_model.id)
+        print('after current model')
+        field_name = current_model._meta.model.__name__
+        query = Q(**{field_name.lower(): current_model})
+        query_to_create = Q(**{field_name.lower(): current_model})
+        data_line = DataLine.objects.filter(register_api=all_api)
+        data_line = data_line.filter(query)
+        for t in range(1, len(check_new_data)):
+            current_model = check_new_data[t]
+            field_name = current_model._meta.model.__name__
+            print(field_name)
+            query = Q(**{field_name.lower(): current_model})
+            data_line = data_line.filter(query)
+            query_to_create = query_to_create & Q(**{field_name.lower(): current_model})
+        if not data_line:
+            print('not data line')
+            print(query_to_create.children)
+            d = DataLine.objects.create(register_api=all_api)
+            for i in query_to_create.children:
+                g = getattr(d, "{}_set".format(i[0]))
+                g.add(i[1])
+        else:
+            data_line.update(the_time=timezone.now())
+        return True
 
     def handle(self, *args, **options):
         while True:
@@ -167,94 +172,114 @@ class Command(BaseCommand):
                     if not o.json_list:
                         cluster_id_list.append(register_api_chosen_id.id)
                     else:
-                        json_list_object =  o.the_chosen.choosing.get(register_api_foreign__isnull=False)
-                        json_list = json_list_object.pk
+                        json_list =  register_api_chosen_id.pk
                 if all_api.the_time < timezone.now() - timedelta(hours=24) or all_api.first:
                     if all_api.api_type == "OSM":
                         osm_call.main()
                     elif all_api.api_type in ["KML", "JSON"] or not all_api.api_type:
-                        other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
-                        # Checking if register api chosen has children and returning list of children
-                        for other_chosen in other_chosens:
-                            has_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
-                            if has_children.count() > 0:
-                                children_id_list.append(self.iterate_child(other_chosen.pk, []))
-                            else:
-                                children_id_list.append([other_chosen.pk])
+                        for i, j in enumerate(c[1]):
+                            o = c[1][j]
+                            r = o.the_chosen.choosing.get(register_api_foreign__isnull=False)
+                            if not r.field_type:
+                                continue
+                            other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
+                            id_list = list(other_chosens.values_list('id', flat=True))
+                            if id_list and not id_list in children_id_list:
+                                children_id_list.append(list(other_chosens.values_list('id', flat=True)))
+                            other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
+                            # Checking if register api chosen has children and returning list of children
+                            for other_chosen in other_chosens:
+                                has_field = False
+                                for f in RegisterAPIChosen._meta.get_fields()[3:]:
+                                    field = f.name
+                                    if 'field' in field and field != ['operatedfield', 'field_type']:
+                                        try:
+                                            g = getattr(other_chosen, field)
+                                            has_field = True
+                                        except AttributeError:
+                                            continue
+                                    if not has_field:
+                                        continue
+                                other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
+                                if other_children.count() > 0:
+                                    children_id_list[0].remove(other_chosen.id)
+                                    if not children_id_list[0]:
+                                        children_id_list.remove(children_id_list[0])
+                                children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
+                                if children.count() > 0:
+                                    self.iterate_child(the_chosen_id, children_id_list)
                         if other_chosens:
                             empty_type_chosens = other_chosens.filter(field_type__isnull=True)
                         else:
                             empty_type_chosens = None
-                        print("BEFORE IF OTHER")
-                        print(children_id_list)
                         if other_chosens and not empty_type_chosens:
-                            print("AFTER IF OTHER")
+                            path_list = []
                             if not all_api.api_type: 
                                 waiting = False
                                 page_number = all_api.pagination_number
                                 all_api.where_line = 0
                                 all_api.save()
-                                for same_level_list in children_id_list:
-                                    if waiting:
-                                        break
-                                    # First we get the path (in list of lists form) to each data point we want 
-                                    path_list = self.get_path(same_level_list[0], [same_level_list], True)
-                                    while True:
-                                        print('page {}'.format(page_number))
-                                        try:
-                                            if all_api.is_dumb:
-                                                print("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
-                                                response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page), timeout=10)
-                                            else:
-                                                params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
-                                                response = requests.get("{}".format(all_api.api_endpoint), params=params, timeout=10)
-                                        except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
-                                            waiting = True
-                                            break
-                                        if response.status_code == '404':
-                                            break
-                                        d = json.dumps(response.json(), sort_keys=True, indent=4)
-                                        l = json.loads(d)
-                                        if all_api.json_limit:
-                                            try:
-                                                l[all_api.json_limit]
-                                                if not l[all_api.json_limit]:
-                                                    break
-                                            except KeyError:
-                                                break
+                                if waiting:
+                                    break
+                                while True:
+                                    print('page {}'.format(page_number))
+                                    try:
+                                        if all_api.is_dumb:
+                                            print("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
+                                            response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page), timeout=10)
                                         else:
-                                            r = RegisterAPI.objects.get(pk=all_api.pk)
-                                            print(r.where_line)
-                                            if all_api.until_line and all_api.until_line <= r.where_line:
+                                            params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
+                                            response = requests.get("{}".format(all_api.api_endpoint), params=params, timeout=10)
+                                    except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
+                                        waiting = True
+                                        break
+                                    if response.status_code == '404':
+                                        break
+                                    d = json.dumps(response.json(), sort_keys=True, indent=4)
+                                    l = json.loads(d)
+                                    if all_api.json_limit:
+                                        try:
+                                            l[all_api.json_limit]
+                                            if not l[all_api.json_limit]:
                                                 break
-                                            elif not all_api.until_line:
-                                                if int(l[all_api.results]) < r.where_line:
-                                                    break
-                                            # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()
-                                            # if int(l[all_api.results]) < counting:
-                                            #     print(l[all_api.results])
-                                            #     break
-                                        l_copy = l
-                                        iterated = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
-                                        page_number += 1
-                                        print('next page {}'.format(page_number))
-                                        if all_api.sleep:
-                                            sleep(all_api.sleep)
+                                        except KeyError:
                                             break
+                                    else:
+                                        r = RegisterAPI.objects.get(pk=all_api.pk)
+                                        print(r.where_line)
+                                        if all_api.until_line and all_api.until_line <= r.where_line:
+                                            break
+                                        elif not all_api.until_line:
+                                            if int(l[all_api.results]) < r.where_line:
+                                                break
+                                        # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()
+                                        # if int(l[all_api.results]) < counting:
+                                        #     print(l[all_api.results])
+                                        #     break
+                                    l_copy = l
+                                    data_object_list = []
+                                    for same_level_list in children_id_list:
+                                        # First we get the path (in list of lists form) to each data point we want 
+                                        path_list = self.get_path(same_level_list[0], [same_level_list], True)
+                                        iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
+                                        data_object_list.extend(same_level_data)
+                                    self.check_new_data(all_api.pk, data_object_list)
+                                    page_number += 1
+                                    print('next page {}'.format(page_number))
+                                    if all_api.sleep:
+                                        sleep(all_api.sleep)
+                                        break
                                 if not waiting:
                                     all_api.pagination_number = 0
                                 else:
                                     all_api.pagination_number = page_number
-                            elif all_api.api_type in ["KML", "JSON"]:
+                            elif all_api.api_type in ["KML", "JSON"] and json_list:
+                                page_number = 0
                                 json_file = json.loads(all_api.register_file.read())
-                                path_list = []
-                                print(json_list)
                                 # Get path to json file list of data
                                 path_list = self.get_path(json_list, [[json_list]], True)
                                 # Iterate through json file using path to get to list of data
                                 for path in path_list:
-                                    print(path_list)
-                                    print(path)
                                     if type(path) is list:
                                         path_object = RegisterAPIChosen.objects.get(id=path[0])
                                     else:
@@ -263,17 +288,24 @@ class Command(BaseCommand):
                                     if '[0]' in path_name:
                                         path_name = path_name.replace('[0]', '')
                                     json_file = json_file[path_name]
-                                for same_level_list in children_id_list:
-                                    path_list = self.get_path(same_level_list[0], [same_level_list], True)
-                                    print(path_list)
-                                    try:
+                                # for same_level_list in children_id_list:
+                                #     path_list.append(self.get_path(same_level_list[0], [same_level_list], True))
+                                #     try:
+                                #         path_list.remove(json_list)
+                                #     except ValueError:
+                                #         pass
+                                for l_copy in json_file:
+                                    data_object_list = []
+                                    print(children_id_list)
+                                    for same_level_list in children_id_list:
+                                        path_list = self.get_path(same_level_list[0], [same_level_list], True)
                                         path_list.remove(json_list)
-                                    except ValueError:
-                                        pass
-                                    print(path_list)
-                                    for l_copy in json_file:
-                                        print(l_copy)
-                                        iterated = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, 0)
+                                        print(path_list)
+                                        iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
+                                        data_object_list.extend(same_level_data)
+                                    print(data_object_list)
+                                    self.check_or_create_data(all_api.pk, data_object_list)
+                                    page_number += 1
                             if all_api.first:
                                 all_api.first = False
                             all_api.save()
@@ -289,7 +321,7 @@ class Command(BaseCommand):
                                 all_api.first = False
                                 all_api.save()
                 other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
-                no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True)
+                no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True, json_list=False)
                 if other_chosens and not no_operated:
                     data_lines = DataLine.objects.all()
                     linked_pointfield = data_lines.values("pointfield__pk").filter(pointfield__pk__isnull=False)
@@ -356,7 +388,7 @@ class Command(BaseCommand):
                                             trash.save()
                             elif all_api.api_trash == "COLLECTAREA":
                                 polygon_field = Polygonfield.objects.get(data_line=data_line)
-                                collect_area = CollectArea.objects.get_or_create(polygon_field=g_object)
+                                collect_area = CollectArea.objects.get_or_create(polygon_field=polygon_field)
                                 desciption = Textfield.objects.get(data_line=data_line)
                                 collect_area.description = desciption
                                 collect_area.save()

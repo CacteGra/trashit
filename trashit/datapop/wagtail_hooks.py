@@ -88,7 +88,11 @@ def after_snippet_delete(request, instances):
             else:
                 data_lines = DataLine.objects.filter(register_api=r)
                 points = Pointfield.objects.filter(data_line__in=data_lines).exclude(data_line__in=other_data_lines)
+                polygon_fields = Polygonfield.objects.filter(data_line__in=data_lines).exclude(data_line__in=other_data_lines)
                 trash_specificities = TrashSpecificities.objects.filter(point_field__in=points)
+                CollectArea.objects.filter(polygon_field__in=polygon_fields).delete()
+                points.delete()
+                polygon_fields.delete()
             trash_types = TrashType.objects.filter(trashspecificities__in=trash_specificities)
             c = r.copy_cluster()
             cluster_id_list = []
@@ -99,7 +103,6 @@ def after_snippet_delete(request, instances):
             OperatedField.objects.filter(id__in=cluster_id_list).delete()
             trash_types.delete()
             trash_specificities.delete()
-            points.delete()
             if r.api_type != 'OSM':
                 data_lines.delete()
             register_api_chosen = RegisterAPIChosen.objects.filter(register_api_foreign__pk=r.pk)
@@ -118,6 +121,7 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('city'),
         FieldPanel('country'),
         FieldPanel('api_type'),
+        FieldPanel('api_trash'),
         FieldPanel('is_dumb'),
         FieldPanel('pagination'),
         FieldPanel('pagination_number'),
@@ -189,10 +193,13 @@ class NoSameField(FieldPanel):
             if self.panel.typed_choice_field:
                 self.form.fields[self.field_name].__class__.__name__ = 'typed_choice_field'
             pass
-
+        # Filter line_id foreignkey field objects 
         @property
         def choice_list(self):
+            #displayed_object = RegisterAPIChosen.objects.get(pk=self.instance.id)
+            self.form.fields[self.field_name].queryset = self.form.fields[self.field_name].queryset.filter(register_api_foreign__pk=self.instance.register_api.pk)
             self.form.fields[self.field_name].queryset = self.form.fields[self.field_name].queryset.exclude(pk=self.instance.id)
+            self.form.fields[self.field_name].queryset = self.form.fields[self.field_name].queryset.exclude(register_api__isnull=False)
             choices = ModelChoiceIterator(self.form.fields[self.field_name])
             return choices
 
@@ -249,7 +256,11 @@ class TypedOnlyPanel(FieldPanel):
 
         @property
         def choice_list(self):
-            self.form.fields[self.field_name].queryset = self.form.fields[self.field_name].queryset.filter(field_type__isnull=False)
+            register_api_chosen = self.form.fields[self.field_name].queryset
+            register_api_chosen = list(register_api_chosen.filter(json_list=False, register_api__isnull=False).values_list('pk', flat=True))
+            print(register_api_chosen)
+            print(self.form.fields[self.field_name].queryset)
+            self.form.fields[self.field_name].queryset = self.form.fields[self.field_name].queryset.filter(field_type__isnull=False, register_api_foreign__isnull=False, the_chosen__choosing__pk__in=register_api_chosen)
             choices = ModelChoiceIterator(self.form.fields[self.field_name])
             return choices
 
