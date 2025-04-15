@@ -325,7 +325,8 @@ class Command(BaseCommand):
                 if other_chosens and not no_operated:
                     data_lines = DataLine.objects.all()
                     linked_pointfield = data_lines.values("pointfield__pk").filter(pointfield__pk__isnull=False)
-                    if all_api.the_time < timezone.now() - timedelta(hours=24) or not linked_pointfield:
+                    linked_polygonfield = data_lines.values("polygonfield__pk").filter(polygonfield__pk__isnull=False)
+                    if all_api.the_time < timezone.now() - timedelta(hours=24) or not (linked_pointfield and linked_polygonfield):
                         for data_line in data_lines:
                             if all_api.api_trash == "TRASHSPECIFICITIES":
                                 field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
@@ -388,7 +389,7 @@ class Command(BaseCommand):
                                             trash.save()
                             elif all_api.api_trash == "COLLECTAREA":
                                 polygon_field = Polygonfield.objects.get(data_line=data_line)
-                                collect_area = CollectArea.objects.get_or_create(polygon_field=polygon_field)
-                                desciption = Textfield.objects.get(data_line=data_line)
-                                collect_area.description = desciption
+                                collect_area, created = CollectArea.objects.get_or_create(polygon_field=polygon_field)
+                                description = Textfield.objects.get(data_line=data_line)
+                                collect_area.description = description
                                 collect_area.save()

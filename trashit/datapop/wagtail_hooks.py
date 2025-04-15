@@ -122,6 +122,7 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('country'),
         FieldPanel('api_type'),
         FieldPanel('api_trash'),
+        FieldPanel('api_trash'),
         FieldPanel('is_dumb'),
         FieldPanel('pagination'),
         FieldPanel('pagination_number'),

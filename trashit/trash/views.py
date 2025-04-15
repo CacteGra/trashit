@@ -91,11 +91,10 @@ class GarbageCollection(LoginRequiredMixin, ListView):
         except CollectArea.DoesNotExist:
             collection_area = None
         print(collection_area)
-        print(collection_area.trashtype_set.all().count())
         if collection_area:
-            html = render_to_string('trash/collection-days.html', {'collections': collection_area.trashtype_set.all()}, request=request)
+            html = render_to_string('trash/collection-days.html', {'collection': collection_area}, request=request)
         else:
-            html = render_to_string('trash/zero-collection-days.html', {'collections': collection_area.trashtype_set.all()}, request=request)
+            html = render_to_string('trash/zero-collection-days.html', {'collection': collection_area}, request=request)
         print(html)
         return JsonResponse([{'html': html}], safe=False)
 

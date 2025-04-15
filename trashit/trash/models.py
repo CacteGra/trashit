@@ -2,7 +2,7 @@ from modelcluster.models import ClusterableModel
 from wagtail.models import Orderable
 from wagtail.admin.panels import FieldPanel
 from django.contrib.gis.db import models
-from datapop.models import Pointfield, Polygonfield
+from datapop.models import Pointfield, Polygonfield, Textfield
 from modelcluster.fields import ParentalKey
 
 # Create your models here.
@@ -90,7 +90,7 @@ class CollectArea(models.Model):
     raw_data = models.CharField(max_length=10000, null=True, blank=True)
     quarter = models.CharField(max_length=50, null=True, blank=True)
     polygon_field = models.OneToOneField(Polygonfield, on_delete=models.CASCADE, null=True, blank=True)
-    description = models.CharField(max_length=200, null=True, blank=True)
+    description = models.ForeignKey('Textfield', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return "%s" % (self.quarter)
