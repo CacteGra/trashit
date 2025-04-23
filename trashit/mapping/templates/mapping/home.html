@@ -177,7 +177,7 @@
         //attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
         //}).addTo(map);
         options = {
-          layers: L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' }),
+          layers: L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', { maxZoom: 17, attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' }),
           zoomControl: false,
         };
         map.removeControl(map.zoomControl);
@@ -201,7 +201,7 @@
         var old_latlng = null;
         var trash_percentage = null;
         var user_marker = null;
-        var found = false;
+        var locFound = false;
         var scanning = false;
         var userIcon = L.icon({
           iconUrl: "{% static 'icons/dot-circle.png' %}",
@@ -255,7 +255,7 @@
             //});
             trash = document.getElementById('trashList');
             if (old_latlng == null || old_latlng.lat != e.latlng.lat || old_latlng.lng != e.latlng.lng ) {
-              if (markers.length == 0 && checking == false) {
+              if (true) {
                 checking = true;
                 $.when($.ajax({
                     url: "{% url 'get_first_load' %}",
@@ -327,20 +327,26 @@
                 })
               }
             }
-             old_latlng = e.latlng;
+            old_latlng = e.latlng;
+            return old_latlng
           }
           map.on('locationfound', onLocationFound);
           function onLocationError(e) {
-              if (found == false) {
-                found = true;
-                map.locate({setView: true, maxZoom: 19})
+              if (locFound == false) {
+                locFound = true;
+                map.locate({setView: true, maxZoom: 17})
               }
           }
           map.on('locationerror', onLocationError);
           function dyn_locate() {
-              if (found == false) {
-                found = true;
-                map.locate({setView: true, maxZoom: 19})
+              if (locFound == false) {
+                locFound = true;
+                map.locate({setView: true, maxZoom: 17})
+                    .on('locationfound', onLocationFound);
+              }
+              else {
+                map.locate();
+                map.on('locationfound', onLocationFound);
               }
           }
           setInterval(dyn_locate, 3000);
