@@ -11,7 +11,7 @@ def main():
     overpass = Overpass()
     print("osm")
     for register_api in register_apis:
-        areaId = nominatim.query('{}, {}'.format(register_api.city, register_api.country)).areaId()
+        areaId = nominatim.query('{}, {}, {}'.format(register_api.city, register_api.state, register_api.country)).areaId()
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_basket"', out='body')
         result = overpass.query(query)
         r = result.elements()
