@@ -1,0 +1,10 @@
+Django>=4.2,<4.3
+wagtail>=6.2.0,<6.2.1
+#psycopg2
+wagtail-metadata==4.0.3
+django-crontab==0.7.1 
+django-leaflet==0.29.0
+OSMPythonTools==0.3.5
+wagtailgeowidget==8.1.1
+django-modeltranslation==0.19.3
+kml2geojson==5.1.0
