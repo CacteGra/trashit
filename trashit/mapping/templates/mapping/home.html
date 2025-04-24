@@ -276,7 +276,7 @@
                     buttNode.setAttribute("class", "dropdown-item filter");
                     buttNode.id = "filter " + theType;
                     buttNode.name = theType;
-                    buttNode.onclick = filterTrash;
+                    buttNode.onclick = function (e) { filterTrash(e); };
                     node.appendChild(buttNode);
                     filteringMenu.appendChild(buttNode);
                   };
@@ -664,10 +664,12 @@
               }
              });
           };
-         function filterTrash() {
+         function filterTrash(e) {
           var lat = old_latlng.lat;
           var lng = old_latlng.lng;
-          trash_type = this.name;
+          console.log(e);
+          trash_type = e.originalTarget.name;
+          console.log(trash_type);
           //markers.clearLayers();
           //circles.clearLayers();
           markersLayer.clearLayers();
@@ -799,12 +801,14 @@
   </div>
 </div>
 <div class="dropup-filter">
-  <button type="button" class="btn btn-light shadow fw-bold rounded-circle" id="add-filter" data-bs-toggle="dropdown" aria-expanded="false">
-    <i class="bi bi-funnel" style="font-size: 35px;"></i>
-  </button>
-  <ul class="filtering dropdown-menu">
-    <li><button class="dropdown-item filter" id="filter all" name="all">All</button></li>
-  </ul>
+  <div class="dropup">
+    <button type="button" class="btn btn-light shadow fw-bold rounded-circle" id="add-filter" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-funnel" style="font-size: 35px;"></i>
+    </button>
+    <ul class="filtering dropdown-menu">
+      <li><button class="dropdown-item filter" id="filter all" name="all">All</button></li>
+    </ul>
+  </div>
 </div>
 <hr class="my-4">
 <div class="modal fade" id="callProfile" tabindex="-1" role="dialog" aria-labelledby="callProfileTitle" style="display: none;" aria-hidden="true">
