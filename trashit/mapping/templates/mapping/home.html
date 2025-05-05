@@ -255,7 +255,7 @@
             //});
             trash = document.getElementById('trashList');
             if (old_latlng == null || old_latlng.lat != e.latlng.lat || old_latlng.lng != e.latlng.lng ) {
-              if (true) {
+              if (checking == false) {
                 checking = true;
                 $.when($.ajax({
                     url: "{% url 'get_first_load' %}",
@@ -308,23 +308,44 @@
                       }
                     }
                   })
-                } else if (markers.length > 0 && checking == false) {
-                  checking = true;
+                } else {
+                  trash_type = document.getElementById("iconType");
+                  markersLayer.clearLayers();
+                  circlesLayer.clearLayers();
+                  trash_type = trash_type.getAttribute("name");
                   $.when($.ajax({
-                      url: "{% url 'get_first_load' %}",
-                      data: { 'lat': lat, 'lng': lng, 'same_session': true},
-                      type:'GET',
-                  })).then(function(all_data) {
-                    for (data0 of all_data) {
-                      if (data0.reload) {
-                        $('.reload').html(data0.reload);
+                    url: "{% url 'filter_type' %}",
+                    data: { 'lat': lat, 'lng': lng, 'type': trash_type},
+                    type:'GET',
+                  })).then(function(response) {
+                    for (all_data of response) {
+                      var latlng = L.latLng(all_data.lat, all_data.lng);
+                      circle = L.circle(latlng, all_data.radius);
+                      circlesLayer.addLayer(circle);
+                      circles.push(circle);
+                      for (data0 of all_data.data_list) {
+                        if (data0.reload) {
+                          $('.reload').html(data0.reload);
+                        }
+                        if (data0.lat) {
+                          var latlng = L.latLng(data0.lat, data0.lng);
+                        }
+                        var iconName;
+                        if (data0.trash_icon){
+                          iconName = data0.trash_icon;
+                        } else {
+                          iconName = 'trash-icon';
+                        }
+                        var trashIcon = new selectedIcon({
+                          iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
+                        });
+                        the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
+                        document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                        markersLayer.addLayer(the_trash);
+                        markers.push(the_trash);
+                        }
                       }
-                      if (data0.lat) {
-                        var latlng = L.latLng(data0.lat, data0.lng);
-                      }
-                    }
-                checking = false;
-                })
+                  })
               }
             }
             old_latlng = e.latlng;
@@ -670,8 +691,6 @@
           console.log(e);
           trash_type = e.originalTarget.name;
           console.log(trash_type);
-          //markers.clearLayers();
-          //circles.clearLayers();
           markersLayer.clearLayers();
           circlesLayer.clearLayers();
           $.when($.ajax({
@@ -679,6 +698,7 @@
             data: { 'lat': lat, 'lng': lng, 'type': trash_type},
             type:'GET',
           })).then(function(response) {
+            document.getElementByClassId("add-filter")[0].innerHTML = '<i class="bi bi-' + trash_type +'" style="font-size: 35px;"></i>';
             for (all_data of response) {
               var latlng = L.latLng(all_data.lat, all_data.lng);
               circle = L.circle(latlng, all_data.radius);
@@ -803,7 +823,7 @@
 <div class="dropup-filter">
   <div class="dropup">
     <button type="button" class="btn btn-light shadow fw-bold rounded-circle" id="add-filter" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-funnel" style="font-size: 35px;"></i>
+      <i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>
     </button>
     <ul class="filtering dropdown-menu">
       <li><button class="dropdown-item filter" id="filter all" name="all">All</button></li>
