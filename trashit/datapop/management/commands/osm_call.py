@@ -22,7 +22,7 @@ def main():
             try:
                 waste_type = d['waste']
             except KeyError:    
-                waste_type = "waste"
+                waste_type = "trash"
             the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
             if created:
                 if not any(x in waste_type for x in ['waste', 'trash']):
@@ -46,7 +46,7 @@ def main():
             try:
                 waste_type = d['waste']
             except KeyError:
-                waste_type = "waste"
+                waste_type = "trash"
             the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
             if created:
                 if not any(x in waste_type for x in ['waste', 'trash']):
