@@ -262,6 +262,10 @@
                     data: { 'lat': lat, 'lng': lng, 'same_session': false},
                     type:'GET',
                 })).then(function(response) {
+                  if (response == null) {
+                    var noData = document.getElementById("noData");
+                    $(noData).modal('toggle');
+                  }
                   var filteringMenu = document.getElementsByClassName("filtering dropdown-menu")[0];
                   for (theType of response.all_types) {
                     const dividerNode = document.createElement("li");
@@ -731,6 +735,18 @@
           document.getElementById("scan-wrapper").onclick = scanWrapper;
           document.getElementById("garbage-collection").onclick = garbageCollect;
           document.getElementById('filter all').onclick = filterTrash;
+          $(document).on('click', '#reauest-local', function () {
+            var lat = old_latlng.lat;
+            var lng = old_latlng.lng;
+            $.when($.ajax({
+                    url: "{% url 'request_local' %}",
+                    data: { 'lat': lat, 'lng': lng},
+                    type:'GET',
+                })).then(function(response) {
+                  requestContent = document.getElementById('request-content');
+                  requestContent.html("Done!");
+                }
+          };
        document.getElementById("add-menu").onclick = function() {
          var dumpNotif = document.getElementById("dumping-notif");
          theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
@@ -864,6 +880,23 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="noData" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="request-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">No local data</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Request to add local waste disposal.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-warning" id="request-local" data-bs-dismiss="modal">Request</button>
       </div>
     </div>
   </div>

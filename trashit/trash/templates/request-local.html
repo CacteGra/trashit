@@ -1,0 +1,9 @@
+<form action="/" method="post">
+    {% csrf_token %}
+        <br>
+     <div>
+         <input  type="hidden" id="coordinates" name="coordinates" value={{ coordinates }}>
+     </div> <br>
+        {{form.captcha}}
+        <button type="submit">Submit</button>
+</form>

@@ -95,6 +95,8 @@ class FirstLoad(LoginRequiredMixin, ListView):
         from datapop.models import OperatedField, Pointfield
         from trash.models import TrashSpecificities, TrashType, TheType
 
+        from .forms import RequestLocalForm
+
         lat = float(request.GET['lat'])
         lng = float(request.GET['lng'])
         print(lat)
@@ -147,7 +149,10 @@ class FirstLoad(LoginRequiredMixin, ListView):
         all_types = list(TheType.objects.filter(pk__in=all_types).values_list('the_type', flat=True))    
         response_types.extend(list(TheType.objects.filter(pk__in=local_types).values_list('the_type', flat=True)))
         whole_response = {'response': whole_response, 'all_types': response_types}
-        return JsonResponse(whole_response, safe=False)
+        if not whole_response:
+            return [render_to_string('trash/request-local.html', { 'form': RequestLocalForm(request.POST), 'coordinates': point}]
+        else:
+            return JsonResponse(whole_response, safe=False)
 
 class FilterType(LoginRequiredMixin, ListView):
     from datapop.models import Pointfield
@@ -266,3 +271,10 @@ class FilterType(LoginRequiredMixin, ListView):
                 ts = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=m)),trash_type__in=trash_types)
             whole_response, types = self.iterate_points(ts, all_types, request)
         return JsonResponse(whole_response, safe=False)
+
+
+class RequestLocal(LoginRequiredMixin, FormView):
+    from datapop.models import RequestLocalWaste
+    model = RequestLocalWaste
+    login_url = '/admin/'
+    redirect_field_name = 'redirect_to'

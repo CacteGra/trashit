@@ -29,6 +29,10 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     libproj-dev \
     cron \
     gettext \
+    libz-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    python-dev \
  && rm -rf /var/lib/apt/lists/*
 
 RUN touch /var/log/cron.log

@@ -2,6 +2,9 @@ from django.contrib.gis.db import models
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 
+from captcha.serializers import CaptchaModelSerializer
+from rest_framework import serializers
+
 from wagtail.snippets.views.snippets import SnippetViewSet, IndexView, EditView
 
 from wagtail.models import Page, Orderable
@@ -469,6 +472,12 @@ class OperatedField(ClusterableModel):
     )
 
 private_storage = FileSystemStorage(location=settings.PRIVATE_STORAGE_ROOT)
+
+
+class RequestLocalWaste(models.Mpdel):
+    coordinates = models.PointField(null=True, blank=True)
+    register_api = models.ForeignKey('RegisterAPI', on_delete=models.SET_NULL, null=True, blank=True)
+
 
 class RegisterAPI(ClusterableModel):
     id = models.AutoField(primary_key=True, editable=False)
