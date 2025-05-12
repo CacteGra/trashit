@@ -262,10 +262,12 @@
                     data: { 'lat': lat, 'lng': lng, 'same_session': false},
                     type:'GET',
                 })).then(function(response) {
-                  if (response == null) {
+                  if ('request-local' in response) {
+                    var requestLocal = document.getElementById("requestLocalForm");  
+                    requestLocal.html(response.request-local);
                     var noData = document.getElementById("noData");
                     $(noData).modal('toggle');
-                  }
+                  } else {
                   var filteringMenu = document.getElementsByClassName("filtering dropdown-menu")[0];
                   for (theType of response.all_types) {
                     const dividerNode = document.createElement("li");
@@ -311,6 +313,7 @@
                       markers.push(the_trash);
                       }
                     }
+                  }
                   })
                 } else {
                   trash_type = document.getElementById("iconType");
@@ -892,8 +895,7 @@
         <h1 class="modal-title fs-5">No local data</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        <p>Request to add local waste disposal.
+      <div class="modal-body" id="requestLocalForm">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-warning" id="request-local" data-bs-dismiss="modal">Request</button>

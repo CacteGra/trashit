@@ -474,7 +474,7 @@ class OperatedField(ClusterableModel):
 private_storage = FileSystemStorage(location=settings.PRIVATE_STORAGE_ROOT)
 
 
-class RequestLocalWaste(models.Mpdel):
+class RequestLocalWaste(models.Model):
     coordinates = models.PointField(null=True, blank=True)
     register_api = models.ForeignKey('RegisterAPI', on_delete=models.SET_NULL, null=True, blank=True)
 
