@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.http import JsonResponse
 from django.core.serializers import serialize
 from django.views.generic import TemplateView, ListView
+from django.views.generic.edit import FormView
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -149,7 +150,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         all_types = list(TheType.objects.filter(pk__in=all_types).values_list('the_type', flat=True))    
         response_types.extend(list(TheType.objects.filter(pk__in=local_types).values_list('the_type', flat=True)))
         if not whole_response:
-            return {'request-local': render_to_string('trash/request-local.html', { 'form': RequestLocalForm(request.POST), 'coordinates': point}, 'all_types': None}
+            return {'request-local': render_to_string('trash/request-local.html', { 'form': RequestLocalForm(request.POST), 'coordinates': point})}
         else:
             whole_response = {'response': whole_response, 'all_types': response_types}
         return JsonResponse(whole_response, safe=False)
