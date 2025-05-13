@@ -12,8 +12,12 @@ class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'mapping/home.html'
     def get_context_data(self, **kwargs):
         from trash.models import TheType
+
+        from .forms import RequestLocalForm
+
         context = super(MainPageView, self).get_context_data(**kwargs)
         context['trash_types'] = TheType.objects.values_list('the_type', flat=True).distinct()
+        context['form'] = RequestLocalForm()
         return context
 
 
@@ -150,7 +154,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         all_types = list(TheType.objects.filter(pk__in=all_types).values_list('the_type', flat=True))    
         response_types.extend(list(TheType.objects.filter(pk__in=local_types).values_list('the_type', flat=True)))
         if not whole_response:
-            return {'request-local': render_to_string('trash/request-local.html', { 'form': RequestLocalForm(request.POST), 'coordinates': point})}
+            whole_response = {'requestlocal': render_to_string('trash/request-local.html', { 'form': RequestLocalForm(request.POST), 'coordinates': point}, request=request)}
         else:
             whole_response = {'response': whole_response, 'all_types': response_types}
         return JsonResponse(whole_response, safe=False)
@@ -275,7 +279,19 @@ class FilterType(LoginRequiredMixin, ListView):
 
 
 class RequestLocal(LoginRequiredMixin, FormView):
-    from datapop.models import RequestLocalWaste
-    model = RequestLocalWaste
-    login_url = '/admin/'
-    redirect_field_name = 'redirect_to'
+    from .forms import RequestLocalForm
+
+    template_name = "trash/request-local.html"
+    form_class = RequestLocalForm
+    success_url = "/"
+
+    def form_valid(self, form):
+        from datapop.models import RequestLocalWaste
+        print(form.cleaned_data)
+        RequestLocalWaste.objects.get_or_create(coordinates=form.cleaned_data['coordinates'])
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        from django.http import HttpResponseRedirect
+        print("FAILED")
+        return HttpResponseRedirect('/')

@@ -21,7 +21,7 @@ from wagtailgeowidget.panels import LeafletPanel
 
 from .all_functions import unique_get_data, one_list_item, str_to_coords, one_list_item_csv, one_list_item_json
 
-from .models import RegisterAPI, RegisterAPIChosen, Chosen, OperatedField, Pointfield, Polygonfield, DataLine
+from .models import RegisterAPI, RegisterAPIChosen, Chosen, OperatedField, Pointfield, Polygonfield, DataLine, RequestLocalWaste
 
 from trash.models import CollectArea, TrashType, TheType, TypeLocale, TrashSpecificities
 
@@ -406,6 +406,13 @@ class PointfieldTemplate(SnippetViewSet):
         LeafletPanel("o_field"),
     ]
 
+class RequestLocalTemplate(SnippetViewSet):
+    model = RequestLocalWaste
+
+    panels = [
+        LeafletPanel("coordinates"),
+    ]
+
 register_snippet(RegisterAPITemplate)
 
 register_snippet(RegisterAPIChosenTemplate)
@@ -423,3 +430,5 @@ register_snippet(TrashTypeTemplate)
 register_snippet(PolygonfieldTemplate)
 
 register_snippet(PointfieldTemplate)
+
+register_snippet(RequestLocalWaste)

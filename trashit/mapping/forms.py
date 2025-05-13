@@ -4,8 +4,8 @@ import re
 from django.contrib.gis import forms
 from django.contrib.gis.geos import Point
 from django.core.exceptions import ValidationError
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 
 
 class SimplePointField(forms.Field):
@@ -27,7 +27,7 @@ class SimplePointField(forms.Field):
         if value in self.empty_values:
             return None
         try:
-            m = self.re_point.match(force_text(value))
+            m = self.re_point.match(force_str(value))
             if not m:
                 raise ValueError()
             value = Point(float(m.group(1)), float(m.group(2)))

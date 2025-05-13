@@ -1,0 +1,17 @@
+<div class="modal-header">
+    <h1 class="modal-title fs-5">No local data</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body" id="request-local-form">
+    <p>Request to add local waste disposal.</p>
+    <form action="{% url 'request_local' %}" method="post">
+        {% csrf_token %}
+        <br>
+        <div>
+            <input  type="hidden" id="coordinates" name="coordinates" value='{{ coordinates }}'>
+        </div>
+        <br>
+        {{form.captcha}}
+        <button type="submit" class="btn btn-warning" id="request-local" data-bs-dismiss="modal">Request</button>
+    </form>
+</div>
