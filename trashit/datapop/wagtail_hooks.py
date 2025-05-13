@@ -72,11 +72,11 @@ def first_connection(request, instance):
 #     return True
 
 @hooks.register('after_edit_snippet')
-def first_connection(request, connection_object):
+def first_connection(request, instance):
     from OSMPythonTools.nominatim import Nominatim
     if isinstance(instance, RequestLocalWaste):
         r = RequestLocalWaste.objects.get(pk=instance.pk)
-        if r.allow_request and not r.register_api:
+        if r.allow_requested and not r.register_api:
             latlng = r.coordinates
             lat = latlng.y
             lng = latlng.x
@@ -84,10 +84,17 @@ def first_connection(request, connection_object):
             h = nominatim.query(lat, lng, reverse=True, zoom=10)
             if h.address():
                 d = h.address()
-                if d['town']:
-                    register_api = RegisterAPI.objects.get_or_create(city=d['town'],state=d['state'],country=d['country'])
-                    r.register_api = register_api
-                    r.save()
+                print(d)
+                try:
+                    city = d['village']
+                except KeyError:
+                    try:
+                        city = d['town']
+                    except KeyError:
+                        city = None
+                register_api, created = RegisterAPI.objects.get_or_create(city=city,state=d['state'],country=d['country'],api_type='OSM',pagination='none',rows_name='none',rows_per_page=0)
+                r.register_api = register_api
+                r.save()
     return True
 
 @hooks.register('before_delete_snippet')
@@ -411,6 +418,7 @@ class RequestLocalTemplate(SnippetViewSet):
 
     panels = [
         LeafletPanel("coordinates"),
+        FieldPanel("allow_requested"),
     ]
 
 register_snippet(RegisterAPITemplate)

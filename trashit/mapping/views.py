@@ -97,7 +97,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
         import random
         from pytz import utc
 
-        from datapop.models import OperatedField, Pointfield
+        from datapop.models import OperatedField, Pointfield, RequestLocalWaste
         from trash.models import TrashSpecificities, TrashType, TheType
 
         from .forms import RequestLocalForm
@@ -154,7 +154,11 @@ class FirstLoad(LoginRequiredMixin, ListView):
         all_types = list(TheType.objects.filter(pk__in=all_types).values_list('the_type', flat=True))    
         response_types.extend(list(TheType.objects.filter(pk__in=local_types).values_list('the_type', flat=True)))
         if not whole_response:
-            whole_response = {'requestlocal': render_to_string('trash/request-local.html', { 'form': RequestLocalForm(request.POST), 'coordinates': point}, request=request)}
+            r = RequestLocalWaste.objects.filter(coordinates__distance_lte=(point,D(m=2000)))
+            if r:
+                whole_response = {'requestlocal': render_to_string('trash/request-local-no-data.html', request=request)}
+            else:
+                whole_response = {'requestlocal': render_to_string('trash/request-local.html', { 'form': RequestLocalForm(request.POST), 'coordinates': point}, request=request)}
         else:
             whole_response = {'response': whole_response, 'all_types': response_types}
         return JsonResponse(whole_response, safe=False)
