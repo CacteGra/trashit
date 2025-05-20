@@ -10,10 +10,9 @@ from datapop.models import RegisterAPI, RegisterAPIChosen, DataLine
 def main(register_api_pk, cluster_id_list):
 
     all_api = RegisterAPI.objects.get(pk=register_api_pk)
-    content = all_api.register_file.open('r')
-    csv_reader = csv.reader(content.splitlines())
-    header = next(csv_reader)
-    csv_reader = csv.DictReader(content.splitlines())
+    f = all_api.register_file.open('r')
+    csv_reader = csv.DictReader(f)
+    header = csv_reader.fieldnames
     registerapichosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
     for row in csv_reader:
         check_new_data = []

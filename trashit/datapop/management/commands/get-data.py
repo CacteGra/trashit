@@ -180,6 +180,11 @@ class Command(BaseCommand):
                         for i, j in enumerate(c[1]):
                             o = c[1][j]
                             r = o.the_chosen.choosing.get(register_api_foreign__isnull=False)
+                            r.field_type = o.field_type
+                            r.field_name = o.field_name
+                            r.line_id = o.line_id
+                            r.json_list = o.json_list
+                            r.save()
                             if not r.field_type:
                                 continue
                             other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
@@ -310,6 +315,14 @@ class Command(BaseCommand):
                                 all_api.first = False
                             all_api.save()
                     else:
+                        for i, j in enumerate(c[1]):
+                            o = c[1][j]
+                            r = o.the_chosen.choosing.get(register_api_foreign__isnull=False)
+                            r.field_type = o.field_type
+                            r.field_name = o.field_name
+                            r.line_id = o.line_id
+                            r.json_list = o.json_list
+                            r.save()
                         print('in file else')
                         if cluster_id_list:
                             register_api_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, field_type__isnull=True)
@@ -351,6 +364,7 @@ class Command(BaseCommand):
                                             else:
                                                 if created:
                                                     continue
+                                                # Three choices for the pointfield: either a list, a string or integers be combined
                                                 elif field_type == 'Pointfield' and not operated.operation:
                                                     if type(o_field) is list:
                                                         lat = o_field[0]
@@ -362,12 +376,17 @@ class Command(BaseCommand):
                                                         lng = s[1]
                                                         point = Point(lng,lat)
                                                 elif field_type == 'Pointfield' and operated.operation == 'COMBINE':
-                                                    chosens = operated.register_api_chosen.filter(field_name='lat')
-                                                    m = import_string('datapop.models.{}'.format(field_type))
-                                                    lat = m.objects.get(data_line__in=[data_line],register_api_chosen__in=chosens)
+                                                    chosen = operated.register_api_chosen.get(field_name='lat')
+                                                    data_chosen = chosen.the_chosen.choosing.filter(register_api_foreign__isnull=False)
+                                                    chosen_field_type = chosen.field_type
+                                                    m = import_string('datapop.models.{}'.format(chosen_field_type))
+                                                    lat = m.objects.get(data_line__in=[data_line],register_api_chosen__in=data_chosen)
                                                     lat = lat.o_field
-                                                    chosens = operated.register_api_chosen.filter(field_name='lng')
-                                                    lng = m.objects.get(data_line__in=[data_line],register_api_chosen__in=chosens)
+                                                    chosen = operated.register_api_chosen.get(field_name='lng')
+                                                    data_chosen = chosen.the_chosen.choosing.filter(register_api_foreign__isnull=False)
+                                                    chosen_field_type = chosen.field_type
+                                                    m = import_string('datapop.models.{}'.format(chosen_field_type))
+                                                    lng = m.objects.get(data_line__in=[data_line],register_api_chosen__in=data_chosen)
                                                     lng = lng.o_field
                                                     point = Point(lng,lat)
                                                 m = import_string('datapop.models.{}'.format(field_type))

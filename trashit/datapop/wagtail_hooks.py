@@ -92,7 +92,7 @@ def first_connection(request, instance):
                         city = d['town']
                     except KeyError:
                         city = None
-                register_api, created = RegisterAPI.objects.get_or_create(city=city,state=d['state'],country=d['country'],api_type='OSM',pagination='none',rows_name='none',rows_per_page=0)
+                register_api, created = RegisterAPI.objects.get_or_create(api_title="{}, {}, {}, OSM".format(city, d['state'], d['country']),city=city,state=d['state'],country=d['country'],api_type='OSM',pagination='none',rows_name='none',rows_per_page=0)
                 r.register_api = register_api
                 r.save()
     return True
@@ -107,6 +107,7 @@ def after_snippet_delete(request, instances):
             if r.api_type == 'OSM':
                 trash_specificities = TrashSpecificities.objects.filter(from_local_api=False)
                 points = Pointfield.objects.filter(trashspecificities__in=trash_specificities).exclude(data_line__in=other_data_lines)
+                points.delete()
             else:
                 data_lines = DataLine.objects.filter(register_api=r)
                 points = Pointfield.objects.filter(data_line__in=data_lines).exclude(data_line__in=other_data_lines)
@@ -120,6 +121,7 @@ def after_snippet_delete(request, instances):
             cluster_id_list = []
             for i, j in enumerate(c[1]):
                 o = c[1][j]
+                OperatedField.objects.filter(register_api_chosen=o).delete()
                 register_api_chosen_id = o.the_chosen.choosing.get(register_api__isnull=False)
                 cluster_id_list.append(register_api_chosen_id.id)
             OperatedField.objects.filter(id__in=cluster_id_list).delete()
@@ -128,9 +130,11 @@ def after_snippet_delete(request, instances):
             if r.api_type != 'OSM':
                 data_lines.delete()
             register_api_chosen = RegisterAPIChosen.objects.filter(register_api_foreign__pk=r.pk)
+            OperatedField.objects.filter(register_api_chosen__in=cluster_id_list).delete()
             Chosen.objects.filter(choosing__in=register_api_chosen).delete()
             register_api_chosen.delete()
             register_api_chosen = RegisterAPIChosen.objects.filter(register_api__pk=r.pk)
+            OperatedField.objects.filter(register_api_chosen__in=cluster_id_list).delete()
             Chosen.objects.filter(choosing__in=register_api_chosen).delete()
             register_api_chosen.delete()
 
