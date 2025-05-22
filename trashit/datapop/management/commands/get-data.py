@@ -343,10 +343,10 @@ class Command(BaseCommand):
                         for data_line in data_lines:
                             if all_api.api_trash == "TRASHSPECIFICITIES":
                                 field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
+                                the_type = None
+                                trash_type = None
+                                trash = None
                                 for field_type in field_types:
-                                    the_type = None
-                                    trash_type = None
-                                    trash = None
                                     g = getattr(data_line, "{}_set".format(field_type))
                                     if g.all().count() == 0:
                                         continue
@@ -401,7 +401,7 @@ class Command(BaseCommand):
                                                     point_field.data_line.add(data_line)
                                                 trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
                                                 # Find closest OSM trash points and hook them to local API trashes
-                                                close_osms = m.objects.filter(o_field__distance_lte=(point,D(m=5))).exclude(pk=point_field.pk)
+                                                close_osms = m.objects.filter(o_field__distance_lte=(point,D(m=20))).exclude(pk=point_field.pk)
                                                 trash.osm_trash_spec.add(*close_osms)
                                         if trash_type and trash:
                                             trash.trash_type.add(trash_type)

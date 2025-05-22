@@ -124,7 +124,7 @@ def after_snippet_delete(request, instances):
                 OperatedField.objects.filter(register_api_chosen=o).delete()
                 register_api_chosen_id = o.the_chosen.choosing.get(register_api__isnull=False)
                 cluster_id_list.append(register_api_chosen_id.id)
-            OperatedField.objects.filter(id__in=cluster_id_list).delete()
+            OperatedField.objects.filter(register_api_chosen__id__in=cluster_id_list).delete()
             trash_types.delete()
             trash_specificities.delete()
             if r.api_type != 'OSM':
