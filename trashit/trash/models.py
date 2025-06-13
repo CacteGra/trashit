@@ -61,20 +61,20 @@ class TheType(ClusterableModel):
     
     ICON_CHOICES = [
         ("cardboard", "Cardboard"),
-        ("glass-bottle", "Glass"),
+        ("glassbottle", "Glass"),
         ("can", "Can"),
         ("paper", "Paper"),
-        ("plastic-bottle", "Plastic"),
+        ("plasticbottle", "Plastic"),
         ("recycle", "Recycling material"),
-        ("special-bin", "Special waste"),
-        ("trash-icon", "General trash"),
+        ("specialbin", "Special waste"),
+        ("trashicon", "General trash"),
         ("shirt", "Clothes"),
     ]
 
     icon = models.CharField(
         max_length=23,
         choices=ICON_CHOICES,
-        default='trash-icon'
+        default='trashicon'
     )
 
     def __str__(self):

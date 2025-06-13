@@ -17,6 +17,7 @@ class MainPageView(LoginRequiredMixin, TemplateView):
 
         context = super(MainPageView, self).get_context_data(**kwargs)
         context['trash_types'] = TheType.objects.values_list('the_type', flat=True).distinct()
+        context['all_icons'] = [c[0] for c in TheType.icon.field.choices]
         context['form'] = RequestLocalForm()
         return context
 
@@ -160,7 +161,7 @@ class FirstLoad(LoginRequiredMixin, ListView):
             else:
                 whole_response = {'requestlocal': render_to_string('trash/request-local.html', { 'form': RequestLocalForm(request.POST), 'coordinates': point}, request=request)}
         else:
-            whole_response = {'response': whole_response, 'all_types': response_types}
+            whole_response = {'response': whole_response, 'all_types': response_types, 'all_icons': [c[0] for c in TheType.icon.field.choices]}
         return JsonResponse(whole_response, safe=False)
 
 class FilterType(LoginRequiredMixin, ListView):
