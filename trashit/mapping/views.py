@@ -286,8 +286,8 @@ class FilterType(LoginRequiredMixin, ListView):
             whole_response.extend(response)
             # Get trashes with rest of types within x km that are left osm trashes
             tt.union(TrashType.objects.filter(the_type__pk__in=types))
-            osm_linked_trashes = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=2000)),osm_trash_spec__isnull=False,from_local_api=True)
-            ts = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=1000)),osm_trash_spec__isnull=True,from_local_api=False).exclude(pk__in=list(osm_linked_trashes.values_list('osm_trash_spec__pk', flat=True))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
+            osm_linked_trashes = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=10000)),osm_trash_spec__isnull=False,from_local_api=True)
+            ts = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=10000)),osm_trash_spec__isnull=True,from_local_api=False).exclude(pk__in=list(osm_linked_trashes.values_list('osm_trash_spec__pk', flat=True))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
             ts = ts.exclude(trash_type__pk__in=tt.values_list('pk', flat=True))
             tt.union(ts)
             the_types = TheType.objects.filter(pk__in=all_types)
@@ -300,10 +300,7 @@ class FilterType(LoginRequiredMixin, ListView):
         else:
             the_type = TheType.objects.get(the_type=get_type)
             trash_types = TrashType.objects.filter(the_type__in=[the_type])
-            ts = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=m)),trash_type__in=trash_types).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
-            while not ts and m < 2000:
-                m += 250
-                ts = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=m)),trash_type__in=trash_types).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
+            ts = TrashSpecificities.objects.filter(point_field__o_field__distance_lte=(point,D(m=10000)),trash_type__in=trash_types).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
             whole_response, types, not_local_type = self.iterate_points(ts, all_types, not_local_type, request)
         return JsonResponse(whole_response, safe=False)
 

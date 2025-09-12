@@ -239,19 +239,6 @@
             popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
           }
         });
-        {% for all_icon in all_icons %}
-          var {{ all_icon }} = L.icon({
-            iconUrl: "{% static 'icons/' %}{{ all_icon }}.svg",
-            shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
-
-            iconSize:     [25, 41], // size of the icon
-            shadowSize:   [50, 64], // size of the shadow
-            iconAnchor:   [12, 41], // point of the icon which will correspond to marker's location
-            shadowAnchor: [14, 65],  // the same for the shadow
-            popupAnchor:  [-3, -76], // point from which the popup should open relative to the iconAnchor
-            className: 'iconSize'
-          });
-        {% endfor %}
         containers = document.querySelectorAll(".leaflet-control-container:not(.leaflet-control-container.custom)")
         $(containers).remove()
         function onLocationFound(e) {
@@ -285,57 +272,69 @@
                     var noData = document.getElementById("noData");
                     $(noData).modal('toggle');
                   } else {
-                  var filteringMenu = document.getElementsByClassName("filtering dropdown-menu")[0];
-                  // var iconTypes = {};
-                  // for (var i = 0; i < response.all_icons.length; i++) {
-                  //   var thisIcon = response.all_icons[i];
-                  //   var svg = "{% static 'icons/' %}" + thisIcon + '.svg';
-                  //   var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
-                  //   // var trashIcon = new selectedIcon({
-                  //   //   iconUrl: iconUrl,
-                  //   // });
-                  //   var trashIcon = new selectedIcon({
-                  //     iconUrl: svg,
-                  //   });
-                  //   iconTypes[thisIcon] = trashIcon;
-                  // }
-                  for (theType of response.all_types) {
-                    const dividerNode = document.createElement("li");
-                    const hrNode = document.createElement("hr");
-                    hrNode.class = "dropdown-divider";
-                    dividerNode.appendChild(hrNode);
-                    filteringMenu.appendChild(dividerNode);
-                    const node = document.createElement("li");
-                    const buttNode = document.createElement("button");
-                    const buttTextNode = document.createTextNode(theType);
-                    buttNode.appendChild(buttTextNode);
-                    buttNode.setAttribute("class", "dropdown-item filter");
-                    buttNode.id = "filter " + theType;
-                    buttNode.name = theType;
-                    buttNode.onclick = function (e) { filterTrash(e); };
-                    node.appendChild(buttNode);
-                    filteringMenu.appendChild(buttNode);
-                  };
-                  for (all_data of response.response) {
-                    var latlng = L.latLng(all_data.lat, all_data.lng);
-                    circle = L.circle(latlng, all_data.radius);
-                    circlesLayer.addLayer(circle);
-                    //circles.push(circle);
-                    for (data0 of all_data.data_list) {
-                      if (data0.reload) {
-                        $('.reload').html(data0.reload);
-                      }
-                      if (data0.lat) {
-                        var latlng = L.latLng(data0.lat, data0.lng);
-                      }
-                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: window[data0.trash_icon]}).on('click', highlightTrash);
-                      document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
-                      markersLayer.addLayer(the_trash);
-                      //markers.push(the_trash);
+                    var filteringMenu = document.getElementsByClassName("filtering dropdown-menu")[0];
+                    // var iconTypes = {};
+                    // for (var i = 0; i < response.all_icons.length; i++) {
+                    //   var thisIcon = response.all_icons[i];
+                    //   var svg = "{% static 'icons/' %}" + thisIcon + '.svg';
+                    //   var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
+                    //   // var trashIcon = new selectedIcon({
+                    //   //   iconUrl: iconUrl,
+                    //   // });
+                    //   var trashIcon = new selectedIcon({
+                    //     iconUrl: svg,
+                    //   });
+                    //   iconTypes[thisIcon] = trashIcon;
+                    // }
+                    for (theType of response.all_types) {
+                      const dividerNode = document.createElement("li");
+                      const hrNode = document.createElement("hr");
+                      hrNode.class = "dropdown-divider";
+                      dividerNode.appendChild(hrNode);
+                      filteringMenu.appendChild(dividerNode);
+                      const node = document.createElement("li");
+                      const buttNode = document.createElement("button");
+                      const buttTextNode = document.createTextNode(theType);
+                      buttNode.appendChild(buttTextNode);
+                      buttNode.setAttribute("class", "dropdown-item filter");
+                      buttNode.id = "filter " + theType;
+                      buttNode.name = theType;
+                      buttNode.onclick = function (e) { filterTrash(e); };
+                      node.appendChild(buttNode);
+                      filteringMenu.appendChild(buttNode);
+                    };
+                    var trashHTML = '';
+                    for (all_data of response.response) {
+                      var latlng = L.latLng(all_data.lat, all_data.lng);
+                      circle = L.circle(latlng, all_data.radius);
+                      circlesLayer.addLayer(circle);
+                      //circles.push(circle);
+                      for (data0 of all_data.data_list) {
+                        if (data0.reload) {
+                          $('.reload').html(data0.reload);
+                        }
+                        if (data0.lat) {
+                          var latlng = L.latLng(data0.lat, data0.lng);
+                        }
+                        var iconName;
+                        if (data0.trash_icon){
+                          iconName = data0.trash_icon;
+                        } else {
+                          iconName = 'trash-icon';
+                        }
+                        var trashIcon = new selectedIcon({
+                          iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
+                        });
+                        the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
+                        //document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                        trashHTML += data0.html;
+                        markersLayer.addLayer(the_trash);
+                        //markers.push(the_trash);
                       }
                     }
+                    document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
                   }
-                  })
+                })
                 } else {
                   trash_type = document.getElementById("iconType");
                   markersLayer.clearLayers();
@@ -352,13 +351,14 @@
                       // var trashIcon = new selectedIcon({
                       //   iconUrl: iconUrl,
                       // });
-                      var trashIcon = new selectedIcon({
-                        iconUrl: svg,
-                      });
+                      // var trashIcon = new selectedIcon({
+                      //   iconUrl: svg,
+                      // });
                       var latlng = L.latLng(all_data.lat, all_data.lng);
                       circle = L.circle(latlng, all_data.radius);
                       circlesLayer.addLayer(circle);
                       circles.push(circle);
+                      var trashHTML = '';
                       for (data0 of all_data.data_list) {
                         if (data0.reload) {
                           $('.reload').html(data0.reload);
@@ -366,12 +366,24 @@
                         if (data0.lat) {
                           var latlng = L.latLng(data0.lat, data0.lng);
                         }
+                        var iconName;
+                        if (data0.trash_icon){
+                          iconName = data0.trash_icon;
+                        } else {
+                          iconName = 'trashicon';
+                        }
+                        var trashIcon = new selectedIcon({
+                          iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
+                        });
                         the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
-                        document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                        console.log(the_trash);
+                        trashHTML += data0.html;
+                        console.log(trashHTML);
                         markersLayer.addLayer(the_trash);
                         markers.push(the_trash);
-                        }
                       }
+                      document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
+                    }
                   })
               }
             }
@@ -725,6 +737,7 @@
             data: { 'lat': lat, 'lng': lng, 'type': trash_type},
             type:'GET',
           })).then(function(response) {
+            var trashHTML = '';
             for (all_data of response) {
               var latlng = L.latLng(all_data.lat, all_data.lng);
               circle = L.circle(latlng, all_data.radius);
@@ -753,29 +766,30 @@
                   document.getElementById("add-filter").innerHTML = '<i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>';
                 }
                 the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
-                document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                trashHTML += data0.html;
                 markersLayer.addLayer(the_trash);
                 markers.push(the_trash);
-                }
               }
-           })
-          };
-          document.getElementById("scan-wrapper").onclick = scanWrapper;
-          document.getElementById("garbage-collection").onclick = garbageCollect;
-          document.getElementById('filter all').onclick = filterTrash;
-          $(document).on('click', '#request-local', function () {
-            var lat = old_latlng.lat;
-            var lng = old_latlng.lng;
-          });
-       document.getElementById("add-menu").onclick = function() {
-         var dumpNotif = document.getElementById("dumping-notif");
-         theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
-         theHref = theHref.replace(/lat/g, old_latlng.lat);
-         theHref = theHref.replace(/lng/g, old_latlng.lng);
-         dumpNotif.setAttribute('href',theHref);
-         var addModal = document.getElementById("add-trash-modal");
-         $(addModal).modal('toggle');
-       };
+            }
+            document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
+          })
+        };
+        document.getElementById("scan-wrapper").onclick = scanWrapper;
+        document.getElementById("garbage-collection").onclick = garbageCollect;
+        document.getElementById('filter all').onclick = filterTrash;
+        $(document).on('click', '#request-local', function () {
+          var lat = old_latlng.lat;
+          var lng = old_latlng.lng;
+        });
+        document.getElementById("add-menu").onclick = function() {
+          var dumpNotif = document.getElementById("dumping-notif");
+          theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
+          theHref = theHref.replace(/lat/g, old_latlng.lat);
+          theHref = theHref.replace(/lng/g, old_latlng.lng);
+          dumpNotif.setAttribute('href',theHref);
+          var addModal = document.getElementById("add-trash-modal");
+          $(addModal).modal('toggle');
+        };
       function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== "") {
