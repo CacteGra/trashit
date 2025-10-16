@@ -1,6 +1,6 @@
 # About TrashIt
 
-![TrashIt Home Page](https://github.com/CacteGra/trashit/blob/master/trashit-examples/iphone-app-940.png?raw=true)
+![TrashIt Home Page](https://github.com/CacteGra/trashit/blob/origin/trashit-examples/iphone-app-940.png?raw=true)
   
 Harnessing the power of open data to help users find the right spot to take out their trash by mapping their direct environment, improve recycling with choosing the right garbage can and reduce unauthorized waste dumping by redirecting to closest trashes and reporting local issues.  
 ### Mapping
