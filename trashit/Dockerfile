@@ -1,5 +1,5 @@
 # Use an official Python runtime based on Debian 10 "buster" as a parent image.
-FROM python:3.8.1-slim-buster
+FROM debian:bookworm
 
 # Add user that will be used in the container.
 RUN useradd wagtail
@@ -18,7 +18,8 @@ ENV PYTHONUNBUFFERED=1 \
 RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-recommends \
     build-essential \
     libpq-dev \
-    libmariadbclient-dev \
+    libmariadb-dev-compat \
+    libmariadb-dev \
     libjpeg62-turbo-dev \
     zlib1g-dev \
     libwebp-dev \
@@ -32,13 +33,20 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     libz-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    python-dev \
+    python-dev-is-python3 \
+    python3-pip \
+    python3.11-venv \
  && rm -rf /var/lib/apt/lists/*
 
 RUN touch /var/log/cron.log
 
 # RUN echo "wagtail" >> /etc/cron.allow
 # RUN echo "wagtail" >> /etc/at.allow
+
+
+RUN python -m venv /opt/venv
+# Enable venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Install the application server.
 RUN pip install "gunicorn==20.0.4"
