@@ -1,7 +1,5 @@
 FROM nginx:1.19.6-alpine
 
-ARG DOMAIN DOMAINWWW API_KEY SECRET_KEY API_URL CERTIFICATE_PATH PRIVATE_KEY_PATH
-
 RUN mkdir /etc/nginx/ssl
 RUN mkdir /etc/nginx/ssl/live
 RUN mkdir /etc/nginx/ssl/live/$env:DOMAIN
@@ -13,4 +11,5 @@ RUN mkdir /etc/nginx/templates
 COPY default.conf.template /etc/nginx/templates
 
 COPY wait-for-ssl.sh /docker-entrypoint.d/
+RUN --mount=type=secret,id=.env target=$HOME/trashit/.env > /tmp/secret_output
 RUN chmod +x /docker-entrypoint.d/wait-for-ssl.sh
