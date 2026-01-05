@@ -20,113 +20,110 @@
   <script src="{% static 'node_modules/@ericblade/quagga2/dist/quagga.js' %}"></script>
   {% endblock %}
 
-  {% block content %}
+{% block content %}
   {% leaflet_map "map" callback="mapInit" %}
 
-
-    <div class="trashList">
-      <div class="reload">
-      </div>
-    </div>
-    <div class="modal fade" id="wrapperModal" tabindex="-1" role="dialog" aria-labelledby="scan-wrapper" style="display: none;" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="">Scan wrapper</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </button>
-          </div>
-          <div class="modal-body">
-            <div id="scan-viewport">
-            </div>
-            <div id="scan-result">
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  <div class="modal fade" id="collectionModal" tabindex="-1" role="dialog" aria-labelledby="collectionModal" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content" id="replaceCollection">
-      </div>
-    </div>
-  </div>
+  <!-- Map Controls -->
   <div class="leaflet-control-container custom">
     <div class="leaflet-top leaflet-right">
       <button class="btn btn-light shadow fw-bold buttons-wrap" id="garbage-collection">
-        <i class="bi bi-calendar-week"></i>
-        &nbsp;{% trans "Garbage collection" %}
-          </button>
+        <i class="bi bi-calendar-week"></i> {% trans "Garbage collection" %}
+      </button>
       <button class="btn btn-light shadow fw-bold buttons-wrap" id="scan-wrapper">
-        <i class="bi bi-upc-scan"></i>
-        &nbsp;{% trans "Scan wrapper" %}
+        <i class="bi bi-upc-scan"></i> {% trans "Scan wrapper" %}
       </button>
       <button type="button" class="btn btn-light shadow fw-bold rounded-circle buttons-wrap" id="add-menu">
         <i class="bi bi-exclamation-triangle" style="font-size: 35px;"></i>
       </button>
+
+      <!-- Zoom Controls -->
       <div class="leaflet-control-zoom leaflet-bar leaflet-control control">
-        <!-- Trigger Modal -->
-        <a class="u-link text-center d-block" data-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static 'profileFilled.png' %});' href='#callProfile'>
-        </a>
-        <!-- End Trigger Modal -->
+        <a class="leaflet-control-zoom-in" id="in" href="#" title="{% trans 'Zoom in' %}">+</a>
+        <a class="leaflet-control-zoom-out" id="out" href="#" title="{% trans 'Zoom out' %}">−</a>
       </div>
+
+      <!-- Recenter Button -->
       <div class="leaflet-control-zoom leaflet-bar leaflet-control control">
-        <a class="leaflet-control-zoom-in" id='in' href="#" title="Zoom in" role="button" aria-label="Zoom in">+</a>
-        <a class="leaflet-control-zoom-out" id='out' href="#" title="Zoom out" role="button" aria-label="Zoom out">−</a>
+        <a class="leaflet-control-zoom leaflet-bar-part" id="recenter" href="#" title="{% trans 'Recenter view' %}" style="background-image: url(&quot;/static/leaflet/images/reset-view.png&quot;);"></a>
       </div>
-      <div class="leaflet-control-zoom leaflet-bar leaflet-control control">
-        <a class="leaflet-control-zoom leaflet-bar-part" id='recenter' href="#" title="Recenter view" style="background-image: url(&quot;/static/leaflet/images/reset-view.png&quot;);">
-        </a>
-      </div>
+
+      <!-- Profile Info Trigger -->
+      <a class="u-link text-center d-block" data-bs-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static "profileFilled.png" %});' href='#callProfile'></a>
     </div>
   </div>
+
+  <!-- Filter Dropdown -->
   <div class="dropup-filter">
     <div class="dropup">
       <button type="button" class="btn btn-light shadow fw-bold rounded-circle" id="add-filter" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>
       </button>
       <ul class="filtering dropdown-menu">
-        <li><button class="dropdown-item filter" id="filter all" name="all">All</button></li>
+        <li><button class="dropdown-item filter" id="filter all" name="all">{% trans "All" %}</button></li>
       </ul>
     </div>
   </div>
-  <hr class="my-4">
-  <div class="modal fade" id="callProfile" tabindex="-1" role="dialog" aria-labelledby="callProfileTitle" style="display: none;" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+
+  <!-- Modals -->
+  <div class="modal fade" id="wrapperModal" tabindex="-1" aria-labelledby="scan-wrapper" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="callProfileLongTitle">Information</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
+          <h5 class="modal-title">{% trans "Scan wrapper" %}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <button type="button" class="btn btn-primary" onclick="window.location.href = #settings;">Go to Profile Settings</button>
+          <div id="scan-viewport"></div>
+          <div id="scan-result"></div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
         </div>
       </div>
     </div>
   </div>
-  <div class="getModal">
+
+  <div class="modal fade" id="collectionModal" tabindex="-1" aria-labelledby="collectionModal" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content" id="replaceCollection"></div>
+    </div>
+  </div>
+
+  <div class="trashList">
+    <div class="reload">
+    </div>
+  </div>
+
+  <div class="modal fade" id="callProfile" tabindex="-1" aria-labelledby="callProfileTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{% trans "Information" %}</h5>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="modal fade" id="add-trash-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5">Unauthorized waste dumping notification</h1>
+          <h1 class="modal-title fs-5">{% trans "Unauthorized waste dumping notification" %}</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p><a id="dumping-notif" href="">Write an email to notify of an unauthorized dumping.</a></p>
+          <p><a id="dumping-notif" href="">{% trans "Write an email to notify of an unauthorized dumping." %}</a></p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
         </div>
       </div>
     </div>
@@ -134,9 +131,13 @@
 
   <div class="modal fade" id="noData" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content" id="request-local-form">
-      </div>
+      <div class="modal-content" id="request-local-form"></div>
     </div>
+  </div>
+
+  <!-- Trash List -->
+  <div class="trashList">
+    <div class="reload"></div>
   </div>
 
   <script>
