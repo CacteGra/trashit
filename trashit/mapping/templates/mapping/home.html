@@ -140,7 +140,26 @@
     <div class="reload"></div>
   </div>
 
+  <!-- Script: Modern, efficient, clean -->
   <script>
+    // CSRF Helper
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + "=")) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    };
+
+    // Main Map Init Function
     function mapInit(map, options) {
         //L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
         //L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiY2FjdGVncmEiLCJhIjoiY2xwY256MHZ2MHJ3ajJrczludnJjaG96bSJ9.Of5KxdOT9Czr5u3hVpbduw', {
@@ -753,21 +772,6 @@
           var addModal = document.getElementById("add-trash-modal");
           $(addModal).modal('toggle');
         };
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-          const cookies = document.cookie.split(";");
-          for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + "=")) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-            }
-          }
-        }
-        return cookieValue;
-      };
     };
 
   </script>
