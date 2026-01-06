@@ -627,17 +627,10 @@
       document.getElementById('scan-wrapper').onclick = scanWrapper;
       document.getElementById('filter all').onclick = filterTrash;
 
-        // zoom in function
-        document.getElementById("in").onclick = function() {
-          map.setZoom(map.getZoom() + 1)
-        };
-        // zoom out function
-        document.getElementById("out").onclick = function() {
-          map.setZoom(map.getZoom() - 1)
-        };
-        document.getElementById("recenter").onclick = function() {
-          map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
-        };
+      // Set up zoom controls
+      document.getElementById('in').onclick = () => map.setZoom(map.getZoom() + 1);
+      document.getElementById('out').onclick = () => map.setZoom(map.getZoom() - 1);
+      document.getElementById('recenter').onclick = () => map.setView(old_latlng, 19);
 
         $(document).on('click', '.trashSelect', function () {
           var id = this.options.alt;
@@ -662,9 +655,7 @@
             }
           }
         });
-      document.getElementById("scan-wrapper").onclick = scanWrapper;
-      document.getElementById("garbage-collection").onclick = garbageCollect;
-      document.getElementById('filter all').onclick = filterTrash;
+
       $(document).on('click', '#request-local', function () {
         var lat = old_latlng.lat;
         var lng = old_latlng.lng;
