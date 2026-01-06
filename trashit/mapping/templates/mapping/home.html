@@ -600,6 +600,33 @@
           });
       }
 
+      // Event Delegation
+      document.addEventListener('click', (e) => {
+        const id = e.target.id;
+        if (id.startsWith('report ')) {
+          const targetId = id.replace('report ', '');
+          initPhotoModal(targetId);
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        const id = e.target.id;
+        if (id.startsWith('filter ')) {
+          filterTrash(e);
+        }
+      });
+
+      // Attach Handlers
+      document.getElementById('add-menu').onclick = () => {
+        const href = `mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at ${old_latlng.lat}, ${old_latlng.lng}`;
+        document.getElementById('dumping-notif').href = href;
+        $('#add-trash-modal').modal('toggle');
+      };
+
+      document.getElementById('garbage-collection').onclick = garbageCollect;
+      document.getElementById('scan-wrapper').onclick = scanWrapper;
+      document.getElementById('filter all').onclick = filterTrash;
+
         // zoom in function
         document.getElementById("in").onclick = function() {
           map.setZoom(map.getZoom() + 1)
