@@ -340,7 +340,7 @@
         });
       }
 
-            // Filter Trash by type
+      // Filter Trash by type
       function filterTrash(e) {
         const lat = old_latlng.lat;
         const lng = old_latlng.lng;
@@ -391,6 +391,15 @@
         });
       }
 
+      // Highlight Trash Modal
+      function highlightTrash(e) {
+        const id = e.target.options.alt;
+        const modal = document.getElementById(`${id} modal`);
+        const report = document.getElementById(`${id} report`);
+        $(modal).modal('toggle');
+        report.style.display = 'block';
+      }
+
         // zoom in function
         document.getElementById("in").onclick = function() {
           map.setZoom(map.getZoom() + 1)
@@ -401,16 +410,6 @@
         };
         document.getElementById("recenter").onclick = function() {
           map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
-        };
-        function highlightTrash(e) {
-        console.log(e);
-        var id = e.target.options.alt;
-        console.log(id);
-        var targetTrash = document.getElementById(id+" modal");
-        $(targetTrash).modal('toggle');
-        var reportIssue = document.getElementById(id+" report");
-        console.log(reportIssue);
-        reportIssue.style.display = "block";
         };
         $(document).on('click', '.modal-button', function () {
         var id = this.id.replace(" report", "");
