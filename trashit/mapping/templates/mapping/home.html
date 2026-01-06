@@ -232,175 +232,114 @@
       var trash_percentage = null;
       containers = document.querySelectorAll(".leaflet-control-container:not(.leaflet-control-container.custom)")
       $(containers).remove()
+      
+      // Event: Location Found
       function onLocationFound(e) {
-          var lat = e.latlng.lat;
-          var lng = e.latlng.lng;
-          if (user_marker == null) {
-            user_marker = L.marker(e.latlng, {icon: userIcon})
-            user_marker.addTo(map)
-          } else {
-            if (old_latlng != null) {
-              user_marker.setLatLng(old_latlng)
-            }
-          }
-          //map.eachLayer(function (layer) {
-          //    if (layer.options.name === 'XXXXX') {
-          //        layer.setLatLng([newLat,newLon])
-          //    }
-          //});
-          trash = document.getElementById('trashList');
-          if (old_latlng == null || old_latlng.lat != e.latlng.lat || old_latlng.lng != e.latlng.lng ) {
-            if (checking == false) {
-              checking = true;
-              $.when($.ajax({
-                  url: "{% url 'get_first_load' %}",
-                  data: { 'lat': lat, 'lng': lng, 'same_session': false},
-                  type:'GET',
-              })).then(function(response) {
-                if ('requestlocal' in response) {
-                  console.log(response.requestlocal);  
-                  $("#request-local-form").html(response.requestlocal);
-                  var noData = document.getElementById("noData");
-                  $(noData).modal('toggle');
-                } else {
-                  var filteringMenu = document.getElementsByClassName("filtering dropdown-menu")[0];
-                  // var iconTypes = {};
-                  // for (var i = 0; i < response.all_icons.length; i++) {
-                  //   var thisIcon = response.all_icons[i];
-                  //   var svg = "{% static 'icons/' %}" + thisIcon + '.svg';
-                  //   var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
-                  //   // var trashIcon = new selectedIcon({
-                  //   //   iconUrl: iconUrl,
-                  //   // });
-                  //   var trashIcon = new selectedIcon({
-                  //     iconUrl: svg,
-                  //   });
-                  //   iconTypes[thisIcon] = trashIcon;
-                  // }
-                  for (theType of response.all_types) {
-                    const dividerNode = document.createElement("li");
-                    const hrNode = document.createElement("hr");
-                    hrNode.class = "dropdown-divider";
-                    dividerNode.appendChild(hrNode);
-                    filteringMenu.appendChild(dividerNode);
-                    const node = document.createElement("li");
-                    const buttNode = document.createElement("button");
-                    const buttTextNode = document.createTextNode(theType);
-                    buttNode.appendChild(buttTextNode);
-                    buttNode.setAttribute("class", "dropdown-item filter");
-                    buttNode.id = "filter " + theType;
-                    buttNode.name = theType;
-                    buttNode.onclick = function (e) { filterTrash(e); };
-                    node.appendChild(buttNode);
-                    filteringMenu.appendChild(buttNode);
-                  };
-                  var trashHTML = '';
-                  for (all_data of response.response) {
-                    var latlng = L.latLng(all_data.lat, all_data.lng);
-                    circle = L.circle(latlng, all_data.radius);
-                    circlesLayer.addLayer(circle);
-                    //circles.push(circle);
-                    for (data0 of all_data.data_list) {
-                      if (data0.reload) {
-                        $('.reload').html(data0.reload);
-                      }
-                      if (data0.lat) {
-                        var latlng = L.latLng(data0.lat, data0.lng);
-                      }
-                      var iconName;
-                      if (data0.trash_icon){
-                        iconName = data0.trash_icon;
-                      } else {
-                        iconName = 'trash-icon';
-                      }
-                      var trashIcon = new selectedIcon({
-                        iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
-                      });
-                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
-                      //document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
-                      trashHTML += data0.html;
-                      markersLayer.addLayer(the_trash);
-                      //markers.push(the_trash);
-                    }
-                  }
-                  document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
-                }
-              })
-              } else {
-                trash_type = document.getElementById("iconType");
-                markersLayer.clearLayers();
-                circlesLayer.clearLayers();
-                trash_type = trash_type.getAttribute("name");
-                $.when($.ajax({
-                  url: "{% url 'filter_type' %}",
-                  data: { 'lat': lat, 'lng': lng, 'type': trash_type},
-                  type:'GET',
-                })).then(function(response) {
-                  for (all_data of response) {
-                    var svg = "{% static 'icons/' %}" + all_data[0].trash_icon + '.svg';
-                    var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
-                    // var trashIcon = new selectedIcon({
-                    //   iconUrl: iconUrl,
-                    // });
-                    // var trashIcon = new selectedIcon({
-                    //   iconUrl: svg,
-                    // });
-                    var latlng = L.latLng(all_data.lat, all_data.lng);
-                    circle = L.circle(latlng, all_data.radius);
-                    circlesLayer.addLayer(circle);
-                    circles.push(circle);
-                    var trashHTML = '';
-                    for (data0 of all_data.data_list) {
-                      if (data0.reload) {
-                        $('.reload').html(data0.reload);
-                      }
-                      if (data0.lat) {
-                        var latlng = L.latLng(data0.lat, data0.lng);
-                      }
-                      var iconName;
-                      if (data0.trash_icon){
-                        iconName = data0.trash_icon;
-                      } else {
-                        iconName = 'trashicon';
-                      }
-                      var trashIcon = new selectedIcon({
-                        iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
-                      });
-                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
-                      console.log(the_trash);
-                      trashHTML += data0.html;
-                      console.log(trashHTML);
-                      markersLayer.addLayer(the_trash);
-                      markers.push(the_trash);
-                    }
-                    document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
-                  }
-                })
-            }
-          }
-          old_latlng = e.latlng;
-          return old_latlng
+        const lat = e.latlng.lat;
+        const lng = e.latlng.lng;
+
+        if (user_marker == null) {
+          user_marker = L.marker(e.latlng, { icon: userIcon }).addTo(map);
+        } else {
+          user_marker.setLatLng(e.latlng);
         }
-        map.on('locationfound', onLocationFound);
-        function onLocationError(e) {
-            if (locFound == false) {
-              locFound = true;
-              map.locate({setView: true, maxZoom: 17})
+
+        old_latlng = e.latlng;
+
+        if (!checking) {
+          checking = true;
+          $.ajax({
+            url: "{% url 'get_first_load' %}",
+            data: { lat, lng, same_session: false },
+            type: 'GET'
+          }).done(function (response) {
+            if (response.requestlocal) {
+              $requestLocalForm.innerHTML = response.requestlocal;
+              $('#noData').modal('toggle');
+            } else {
+              const menu = document.querySelector('.filtering.dropdown-menu');
+              menu.innerHTML = '';
+              for (const type of response.all_types) {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.className = 'dropdown-item filter';
+                btn.id = `filter ${type}`;
+                btn.name = type;
+                btn.textContent = type;
+                btn.onclick = (e) => filterTrash(e);
+                li.appendChild(btn);
+                menu.appendChild(li);
+              }
+
+              renderTrashMarkers(response.response);
             }
+            checking = false;
+          }).fail(() => {
+            checking = false;
+          });
         }
-        map.on('locationerror', onLocationError);
-        function dyn_locate() {
-            if (locFound == false) {
-              locFound = true;
-              map.locate({setView: true, maxZoom: 17})
-                  .on('locationfound', onLocationFound);
-            }
-            else {
-              map.locate();
-              map.on('locationfound', onLocationFound);
-            }
+      }
+
+      // Event: Location Error
+      function onLocationError(e) {
+        if (!locFound) {
+          locFound = true;
+          map.locate({ setView: true, maxZoom: 17 });
         }
-        setInterval(dyn_locate, 3000);
+      }
+
+      // Re-locate every 3s
+      setInterval(() => {
+        if (!locFound) {
+          map.locate({ setView: true, maxZoom: 17 }).on('locationfound', onLocationFound);
+        } else {
+          map.locate().on('locationfound', onLocationFound);
+        }
+      }, 3000);
+
+      // Zoom Controls
+      document.getElementById('in').onclick = () => map.setZoom(map.getZoom() + 1);
+      document.getElementById('out').onclick = () => map.setZoom(map.getZoom() - 1);
+      document.getElementById('recenter').onclick = () => map.setView(old_latlng, 19);
+
+      // Initialize map
+      map.addLayer(tileLayer);
+      map.on('locationfound', onLocationFound);
+      map.on('locationerror', onLocationError);
+
+      // Render Trash Markers
+      function renderTrashMarkers(data) {
+        markersLayer.clearLayers();
+        circlesLayer.clearLayers();
+        const html = data.map(item => item.html).join('');
+        $trashList.innerHTML += html;
+
+        data.forEach(item => {
+          const latlng = L.latLng(item.lat, item.lng);
+          const circle = L.circle(latlng, item.radius);
+          circlesLayer.addLayer(circle);
+
+          item.data_list.forEach(d => {
+            if (d.reload) {
+              $reload.innerHTML = d.reload;
+            }
+
+            const latlng = L.latLng(d.lat, d.lng);
+            const iconName = d.trash_icon || 'trash-icon';
+            const iconUrl = `{% static 'icons/' %}${iconName}.svg`;
+            const trashIcon = new selectedIcon({ iconUrl });
+
+            const marker = L.marker(latlng, {
+              title: d.trash_type,
+              alt: `${d.trash_id} ${d.trash_type}`,
+              icon: trashIcon
+            }).on('click', highlightTrash);
+
+            markersLayer.addLayer(marker);
+          });
+        });
+      }
+
         // zoom in function
         document.getElementById("in").onclick = function() {
           map.setZoom(map.getZoom() + 1)
