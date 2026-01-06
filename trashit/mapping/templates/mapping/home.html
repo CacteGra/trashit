@@ -161,617 +161,612 @@
 
     // Main Map Init Function
     function mapInit(map, options) {
-        //L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', {
-        //L.tileLayer('https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiY2FjdGVncmEiLCJhIjoiY2xwY256MHZ2MHJ3ajJrczludnJjaG96bSJ9.Of5KxdOT9Czr5u3hVpbduw', {
-        //maxZoom: 19,
-        //attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        //attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
-        //}).addTo(map);
-        options = {
-          layers: L.tileLayer('https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png', { maxZoom: 17, attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>' }),
-          zoomControl: false,
-        };
-        map.removeControl(map.zoomControl);
-        var checking = false;
-        var markers = [];
-        var circles = [];
-        var markersLayer = new L.LayerGroup();
-        var circlesLayer = new L.LayerGroup();
-        var polygonsLayer = new L.LayerGroup();
-        polygonsLayer.addTo(map);
-        markersLayer.addTo(map);
-        circlesLayer.addTo(map);
-        layerGroups = {};
-        circleGroups = {};
-        var old_latlng = null;
-        var trash_percentage = null;
-        var user_marker = null;
-        var locFound = false;
-        var scanning = false;
-        var userIcon = L.icon({
-          iconUrl: "{% static 'icons/dot-circle.png' %}",
-          //shadowUrl: "{% static 'user-tag-shadow.png' %}",
+      const tileLayer = L.tileLayer(
+        'https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
+        {
+          maxZoom: 17,
+          attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+        }
+      );
 
-          iconSize:     [40, 40], // size of the icon
-          shadowSize:   [50, 64], // size of the shadow
-          iconAnchor:   [0, 0], // point of the icon which will correspond to marker's location
-          shadowAnchor: [0, 65],  // the same for the shadow
-          popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-        });
-        var defaultIcon = L.icon({
-          iconUrl: "{% static 'leaflet/images/marker-icon.png' %}",
-          shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
+      const defaultIcon = L.icon({
+        iconUrl: "{% static 'leaflet/images/marker-icon.png' %}",
+        shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
+        iconSize: [25, 41],
+        shadowSize: [50, 64],
+        iconAnchor: [12, 41],
+        shadowAnchor: [14, 65],
+        popupAnchor: [-3, -76],
+        className: 'iconSize'
+      });
 
-          iconSize:     [25, 41], // size of the icon
-          shadowSize:   [50, 64], // size of the shadow
-          iconAnchor:   [12, 41], // point of the icon which will correspond to marker's location
-          shadowAnchor: [14, 65],  // the same for the shadow
-          popupAnchor:  [-3, -76], // point from which the popup should open relative to the iconAnchor
-          className: 'iconSize'
-        });
-        var selectedIcon = L.Icon.extend({
-          options: {
-            //iconUrl: "{% static 'icons/trash-icon.svg' %}",
-            //shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
+      const userIcon = L.icon({
+        iconUrl: "{% static 'icons/dot-circle.png' %}",
+        iconSize: [40, 40],
+        shadowSize: [50, 64],
+        iconAnchor: [0, 0],
+        shadowAnchor: [0, 65],
+        popupAnchor: [-3, -76]
+      });
 
-            iconSize:     [25, 41], // size of the icon
-            shadowSize:   [50, 64], // size of the shadow
-            iconAnchor:   [13, 20], // point of the icon which will correspond to marker's location
-            shadowAnchor: [14, 65],  // the same for the shadow
-            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-          }
-        });
-        containers = document.querySelectorAll(".leaflet-control-container:not(.leaflet-control-container.custom)")
-        $(containers).remove()
-        function onLocationFound(e) {
-            var lat = e.latlng.lat;
-            var lng = e.latlng.lng;
-            if (user_marker == null) {
-              user_marker = L.marker(e.latlng, {icon: userIcon})
-              user_marker.addTo(map)
-            } else {
-              if (old_latlng != null) {
-                user_marker.setLatLng(old_latlng)
-              }
+      const selectedIcon = L.Icon.extend({
+        options: {
+          iconSize: [25, 41],
+          shadowSize: [50, 64],
+          iconAnchor: [13, 20],
+          shadowAnchor: [14, 65],
+          popupAnchor: [-3, -76]
+        }
+      });
+
+      map.removeControl(map.zoomControl);
+      var checking = false;
+      var markers = [];
+      var circles = [];
+      var markersLayer = new L.LayerGroup();
+      var circlesLayer = new L.LayerGroup();
+      var polygonsLayer = new L.LayerGroup();
+      polygonsLayer.addTo(map);
+      markersLayer.addTo(map);
+      circlesLayer.addTo(map);
+      layerGroups = {};
+      circleGroups = {};
+      var old_latlng = null;
+      var trash_percentage = null;
+      var user_marker = null;
+      var locFound = false;
+      var scanning = false;
+      containers = document.querySelectorAll(".leaflet-control-container:not(.leaflet-control-container.custom)")
+      $(containers).remove()
+      function onLocationFound(e) {
+          var lat = e.latlng.lat;
+          var lng = e.latlng.lng;
+          if (user_marker == null) {
+            user_marker = L.marker(e.latlng, {icon: userIcon})
+            user_marker.addTo(map)
+          } else {
+            if (old_latlng != null) {
+              user_marker.setLatLng(old_latlng)
             }
-            //map.eachLayer(function (layer) {
-            //    if (layer.options.name === 'XXXXX') {
-            //        layer.setLatLng([newLat,newLon])
-            //    }
-            //});
-            trash = document.getElementById('trashList');
-            if (old_latlng == null || old_latlng.lat != e.latlng.lat || old_latlng.lng != e.latlng.lng ) {
-              if (checking == false) {
-                checking = true;
-                $.when($.ajax({
-                    url: "{% url 'get_first_load' %}",
-                    data: { 'lat': lat, 'lng': lng, 'same_session': false},
-                    type:'GET',
-                })).then(function(response) {
-                  if ('requestlocal' in response) {
-                    console.log(response.requestlocal);  
-                    $("#request-local-form").html(response.requestlocal);
-                    var noData = document.getElementById("noData");
-                    $(noData).modal('toggle');
-                  } else {
-                    var filteringMenu = document.getElementsByClassName("filtering dropdown-menu")[0];
-                    // var iconTypes = {};
-                    // for (var i = 0; i < response.all_icons.length; i++) {
-                    //   var thisIcon = response.all_icons[i];
-                    //   var svg = "{% static 'icons/' %}" + thisIcon + '.svg';
-                    //   var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
-                    //   // var trashIcon = new selectedIcon({
-                    //   //   iconUrl: iconUrl,
-                    //   // });
-                    //   var trashIcon = new selectedIcon({
-                    //     iconUrl: svg,
-                    //   });
-                    //   iconTypes[thisIcon] = trashIcon;
-                    // }
-                    for (theType of response.all_types) {
-                      const dividerNode = document.createElement("li");
-                      const hrNode = document.createElement("hr");
-                      hrNode.class = "dropdown-divider";
-                      dividerNode.appendChild(hrNode);
-                      filteringMenu.appendChild(dividerNode);
-                      const node = document.createElement("li");
-                      const buttNode = document.createElement("button");
-                      const buttTextNode = document.createTextNode(theType);
-                      buttNode.appendChild(buttTextNode);
-                      buttNode.setAttribute("class", "dropdown-item filter");
-                      buttNode.id = "filter " + theType;
-                      buttNode.name = theType;
-                      buttNode.onclick = function (e) { filterTrash(e); };
-                      node.appendChild(buttNode);
-                      filteringMenu.appendChild(buttNode);
-                    };
-                    var trashHTML = '';
-                    for (all_data of response.response) {
-                      var latlng = L.latLng(all_data.lat, all_data.lng);
-                      circle = L.circle(latlng, all_data.radius);
-                      circlesLayer.addLayer(circle);
-                      //circles.push(circle);
-                      for (data0 of all_data.data_list) {
-                        if (data0.reload) {
-                          $('.reload').html(data0.reload);
-                        }
-                        if (data0.lat) {
-                          var latlng = L.latLng(data0.lat, data0.lng);
-                        }
-                        var iconName;
-                        if (data0.trash_icon){
-                          iconName = data0.trash_icon;
-                        } else {
-                          iconName = 'trash-icon';
-                        }
-                        var trashIcon = new selectedIcon({
-                          iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
-                        });
-                        the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
-                        //document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
-                        trashHTML += data0.html;
-                        markersLayer.addLayer(the_trash);
-                        //markers.push(the_trash);
+          }
+          //map.eachLayer(function (layer) {
+          //    if (layer.options.name === 'XXXXX') {
+          //        layer.setLatLng([newLat,newLon])
+          //    }
+          //});
+          trash = document.getElementById('trashList');
+          if (old_latlng == null || old_latlng.lat != e.latlng.lat || old_latlng.lng != e.latlng.lng ) {
+            if (checking == false) {
+              checking = true;
+              $.when($.ajax({
+                  url: "{% url 'get_first_load' %}",
+                  data: { 'lat': lat, 'lng': lng, 'same_session': false},
+                  type:'GET',
+              })).then(function(response) {
+                if ('requestlocal' in response) {
+                  console.log(response.requestlocal);  
+                  $("#request-local-form").html(response.requestlocal);
+                  var noData = document.getElementById("noData");
+                  $(noData).modal('toggle');
+                } else {
+                  var filteringMenu = document.getElementsByClassName("filtering dropdown-menu")[0];
+                  // var iconTypes = {};
+                  // for (var i = 0; i < response.all_icons.length; i++) {
+                  //   var thisIcon = response.all_icons[i];
+                  //   var svg = "{% static 'icons/' %}" + thisIcon + '.svg';
+                  //   var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
+                  //   // var trashIcon = new selectedIcon({
+                  //   //   iconUrl: iconUrl,
+                  //   // });
+                  //   var trashIcon = new selectedIcon({
+                  //     iconUrl: svg,
+                  //   });
+                  //   iconTypes[thisIcon] = trashIcon;
+                  // }
+                  for (theType of response.all_types) {
+                    const dividerNode = document.createElement("li");
+                    const hrNode = document.createElement("hr");
+                    hrNode.class = "dropdown-divider";
+                    dividerNode.appendChild(hrNode);
+                    filteringMenu.appendChild(dividerNode);
+                    const node = document.createElement("li");
+                    const buttNode = document.createElement("button");
+                    const buttTextNode = document.createTextNode(theType);
+                    buttNode.appendChild(buttTextNode);
+                    buttNode.setAttribute("class", "dropdown-item filter");
+                    buttNode.id = "filter " + theType;
+                    buttNode.name = theType;
+                    buttNode.onclick = function (e) { filterTrash(e); };
+                    node.appendChild(buttNode);
+                    filteringMenu.appendChild(buttNode);
+                  };
+                  var trashHTML = '';
+                  for (all_data of response.response) {
+                    var latlng = L.latLng(all_data.lat, all_data.lng);
+                    circle = L.circle(latlng, all_data.radius);
+                    circlesLayer.addLayer(circle);
+                    //circles.push(circle);
+                    for (data0 of all_data.data_list) {
+                      if (data0.reload) {
+                        $('.reload').html(data0.reload);
                       }
+                      if (data0.lat) {
+                        var latlng = L.latLng(data0.lat, data0.lng);
+                      }
+                      var iconName;
+                      if (data0.trash_icon){
+                        iconName = data0.trash_icon;
+                      } else {
+                        iconName = 'trash-icon';
+                      }
+                      var trashIcon = new selectedIcon({
+                        iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
+                      });
+                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
+                      //document.getElementsByClassName("trashList")[0].innerHTML += (data0.html);
+                      trashHTML += data0.html;
+                      markersLayer.addLayer(the_trash);
+                      //markers.push(the_trash);
+                    }
+                  }
+                  document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
+                }
+              })
+              } else {
+                trash_type = document.getElementById("iconType");
+                markersLayer.clearLayers();
+                circlesLayer.clearLayers();
+                trash_type = trash_type.getAttribute("name");
+                $.when($.ajax({
+                  url: "{% url 'filter_type' %}",
+                  data: { 'lat': lat, 'lng': lng, 'type': trash_type},
+                  type:'GET',
+                })).then(function(response) {
+                  for (all_data of response) {
+                    var svg = "{% static 'icons/' %}" + all_data[0].trash_icon + '.svg';
+                    var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
+                    // var trashIcon = new selectedIcon({
+                    //   iconUrl: iconUrl,
+                    // });
+                    // var trashIcon = new selectedIcon({
+                    //   iconUrl: svg,
+                    // });
+                    var latlng = L.latLng(all_data.lat, all_data.lng);
+                    circle = L.circle(latlng, all_data.radius);
+                    circlesLayer.addLayer(circle);
+                    circles.push(circle);
+                    var trashHTML = '';
+                    for (data0 of all_data.data_list) {
+                      if (data0.reload) {
+                        $('.reload').html(data0.reload);
+                      }
+                      if (data0.lat) {
+                        var latlng = L.latLng(data0.lat, data0.lng);
+                      }
+                      var iconName;
+                      if (data0.trash_icon){
+                        iconName = data0.trash_icon;
+                      } else {
+                        iconName = 'trashicon';
+                      }
+                      var trashIcon = new selectedIcon({
+                        iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
+                      });
+                      the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
+                      console.log(the_trash);
+                      trashHTML += data0.html;
+                      console.log(trashHTML);
+                      markersLayer.addLayer(the_trash);
+                      markers.push(the_trash);
                     }
                     document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
                   }
                 })
-                } else {
-                  trash_type = document.getElementById("iconType");
-                  markersLayer.clearLayers();
-                  circlesLayer.clearLayers();
-                  trash_type = trash_type.getAttribute("name");
-                  $.when($.ajax({
-                    url: "{% url 'filter_type' %}",
-                    data: { 'lat': lat, 'lng': lng, 'type': trash_type},
-                    type:'GET',
-                  })).then(function(response) {
-                    for (all_data of response) {
-                      var svg = "{% static 'icons/' %}" + all_data[0].trash_icon + '.svg';
-                      var iconUrl = 'data:image/svg+xml;base64,' + btoa(svg);
-                      // var trashIcon = new selectedIcon({
-                      //   iconUrl: iconUrl,
-                      // });
-                      // var trashIcon = new selectedIcon({
-                      //   iconUrl: svg,
-                      // });
-                      var latlng = L.latLng(all_data.lat, all_data.lng);
-                      circle = L.circle(latlng, all_data.radius);
-                      circlesLayer.addLayer(circle);
-                      circles.push(circle);
-                      var trashHTML = '';
-                      for (data0 of all_data.data_list) {
-                        if (data0.reload) {
-                          $('.reload').html(data0.reload);
-                        }
-                        if (data0.lat) {
-                          var latlng = L.latLng(data0.lat, data0.lng);
-                        }
-                        var iconName;
-                        if (data0.trash_icon){
-                          iconName = data0.trash_icon;
-                        } else {
-                          iconName = 'trashicon';
-                        }
-                        var trashIcon = new selectedIcon({
-                          iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
-                        });
-                        the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
-                        console.log(the_trash);
-                        trashHTML += data0.html;
-                        console.log(trashHTML);
-                        markersLayer.addLayer(the_trash);
-                        markers.push(the_trash);
-                      }
-                      document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
-                    }
-                  })
-              }
             }
-            old_latlng = e.latlng;
-            return old_latlng
           }
-          map.on('locationfound', onLocationFound);
-          function onLocationError(e) {
-              if (locFound == false) {
-                locFound = true;
-                map.locate({setView: true, maxZoom: 17})
-              }
-          }
-          map.on('locationerror', onLocationError);
-          function dyn_locate() {
-              if (locFound == false) {
-                locFound = true;
-                map.locate({setView: true, maxZoom: 17})
-                    .on('locationfound', onLocationFound);
-              }
-              else {
-                map.locate();
-                map.on('locationfound', onLocationFound);
-              }
-          }
-          setInterval(dyn_locate, 3000);
-          // zoom in function
-          document.getElementById("in").onclick = function() {
-            map.setZoom(map.getZoom() + 1)
-          };
-          // zoom out function
-          document.getElementById("out").onclick = function() {
-            map.setZoom(map.getZoom() - 1)
-          };
-          document.getElementById("recenter").onclick = function() {
-            map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
-          };
-         function highlightTrash(e) {
-          console.log(e);
-          var id = e.target.options.alt;
-          console.log(id);
-          var targetTrash = document.getElementById(id+" modal");
-          $(targetTrash).modal('toggle');
-          var reportIssue = document.getElementById(id+" report");
-          console.log(reportIssue);
-          reportIssue.style.display = "block";
-         };
-         $(document).on('click', '.modal-button', function () {
-          var id = this.id.replace(" report", "");
-          this.style.display = "none";
-          photoModal = document.getElementById(id+" photo-modal");
-          photoModal.style.display = "block";
-          // The width and height of the captured photo. We will set the
-          // width to the value defined here, but the height will be
-          // calculated based on the aspect ratio of the input stream.
+          old_latlng = e.latlng;
+          return old_latlng
+        }
+        map.on('locationfound', onLocationFound);
+        function onLocationError(e) {
+            if (locFound == false) {
+              locFound = true;
+              map.locate({setView: true, maxZoom: 17})
+            }
+        }
+        map.on('locationerror', onLocationError);
+        function dyn_locate() {
+            if (locFound == false) {
+              locFound = true;
+              map.locate({setView: true, maxZoom: 17})
+                  .on('locationfound', onLocationFound);
+            }
+            else {
+              map.locate();
+              map.on('locationfound', onLocationFound);
+            }
+        }
+        setInterval(dyn_locate, 3000);
+        // zoom in function
+        document.getElementById("in").onclick = function() {
+          map.setZoom(map.getZoom() + 1)
+        };
+        // zoom out function
+        document.getElementById("out").onclick = function() {
+          map.setZoom(map.getZoom() - 1)
+        };
+        document.getElementById("recenter").onclick = function() {
+          map.setView(new L.LatLng(old_latlng.lat, old_latlng.lng), 19);
+        };
+        function highlightTrash(e) {
+        console.log(e);
+        var id = e.target.options.alt;
+        console.log(id);
+        var targetTrash = document.getElementById(id+" modal");
+        $(targetTrash).modal('toggle');
+        var reportIssue = document.getElementById(id+" report");
+        console.log(reportIssue);
+        reportIssue.style.display = "block";
+        };
+        $(document).on('click', '.modal-button', function () {
+        var id = this.id.replace(" report", "");
+        this.style.display = "none";
+        photoModal = document.getElementById(id+" photo-modal");
+        photoModal.style.display = "block";
+        // The width and height of the captured photo. We will set the
+        // width to the value defined here, but the height will be
+        // calculated based on the aspect ratio of the input stream.
+      
+        const width = 475; // We will scale the photo width to this
+        let height = 0; // This will be computed based on the input stream
+      
+        // |streaming| indicates whether or not we're currently streaming
+        // video from the camera. Obviously, we start at false.
+      
+        let streaming = false;
+      
+        // The various HTML elements we need to configure or control. These
+        // will be set by the startup() function.
+      
+        var modalContent = document.getElementById("modal content "+id);
+        var video = document.getElementById(id+"video");
+        var canvas = document.getElementById(id+" canvas");
+        var photo = document.getElementById(id+" photo");
+        var camera = document.getElementById("camera "+id);
+        var output = document.getElementById("output "+id);
+        var startbutton = document.getElementById(id+" startbutton");
+        var retakebutton = document.getElementById(id+" retake picture");
+        var reportbutton = document.getElementById(id+" report trash");
+        var closebutton = document.getElementById(id+" close");
+        camera.style.display = "block";
+        output.style.display = "none";
+        clearphoto();
+        function gettingMedia() {
+          navigator.mediaDevices
+            .getUserMedia({ video: true, audio: false })
+            .then(function (stream) {
+              let genders = Object.keys(stream);
+              console.log(genders);
+              window.stream = stream;
+              video.srcObject = stream;
+              video.play();
+            })
+            .catch(function (err) {
+              console.error(`An error occurred: ${err}`);
+            });
+      
+            video.addEventListener(
+              "canplay",
+              (ev) => {
+                if (!streaming) {
+                  height = video.videoHeight / (video.videoWidth / width);
         
-          const width = 475; // We will scale the photo width to this
-          let height = 0; // This will be computed based on the input stream
+                  // Firefox currently has a bug where the height can't be read from
+                  // the video, so we will make assumptions if this happens.
         
-          // |streaming| indicates whether or not we're currently streaming
-          // video from the camera. Obviously, we start at false.
-        
-          let streaming = false;
-        
-          // The various HTML elements we need to configure or control. These
-          // will be set by the startup() function.
-        
-          var modalContent = document.getElementById("modal content "+id);
-          var video = document.getElementById(id+"video");
-          var canvas = document.getElementById(id+" canvas");
-          var photo = document.getElementById(id+" photo");
-          var camera = document.getElementById("camera "+id);
-          var output = document.getElementById("output "+id);
-          var startbutton = document.getElementById(id+" startbutton");
-          var retakebutton = document.getElementById(id+" retake picture");
-          var reportbutton = document.getElementById(id+" report trash");
-          var closebutton = document.getElementById(id+" close");
-          camera.style.display = "block";
-          output.style.display = "none";
-          clearphoto();
-          function gettingMedia() {
-            navigator.mediaDevices
-              .getUserMedia({ video: true, audio: false })
-              .then(function (stream) {
-                let genders = Object.keys(stream);
-                console.log(genders);
-                window.stream = stream;
-                video.srcObject = stream;
-                video.play();
-              })
-              .catch(function (err) {
-                console.error(`An error occurred: ${err}`);
-              });
-        
-              video.addEventListener(
-                "canplay",
-                (ev) => {
-                  if (!streaming) {
-                    height = video.videoHeight / (video.videoWidth / width);
-          
-                    // Firefox currently has a bug where the height can't be read from
-                    // the video, so we will make assumptions if this happens.
-          
-                    if (isNaN(height)) {
-                      height = width / (4 / 3);
-                    }
-          
-                    video.setAttribute("width", width);
-                    video.setAttribute("height", height);
-                    canvas.setAttribute("width", width);
-                    canvas.setAttribute("height", height);
-                    streaming = true;
+                  if (isNaN(height)) {
+                    height = width / (4 / 3);
                   }
-                },
-                false,
-            );
+        
+                  video.setAttribute("width", width);
+                  video.setAttribute("height", height);
+                  canvas.setAttribute("width", width);
+                  canvas.setAttribute("height", height);
+                  streaming = true;
+                }
+              },
+              false,
+          );
+        }
+
+          function stoppingMedia() {
+                const stream = video.srcObject;
+                const tracks = stream.getTracks();
+                tracks.forEach((track) => {
+                  track.stop();
+                });
           }
 
-            function stoppingMedia() {
-                  const stream = video.srcObject;
-                  const tracks = stream.getTracks();
-                  tracks.forEach((track) => {
-                    track.stop();
-                  });
-            }
+          gettingMedia();
 
-            gettingMedia();
+          document.getElementById(id+" startbutton").onclick = function(ev) {
+            takepicture();
+            ev.preventDefault();
+          };
+            
+          document.getElementById(id+" retake picture").onclick = function(ev) {
+            retakepicture();
+            ev.preventDefault();
+          };
 
-            document.getElementById(id+" startbutton").onclick = function(ev) {
-              takepicture();
-              ev.preventDefault();
-            };
-              
-            document.getElementById(id+" retake picture").onclick = function(ev) {
-              retakepicture();
-              ev.preventDefault();
-            };
+          document.getElementById(id+" report trash").onclick = function(ev) {
+            sendpicture();
+            ev.preventDefault();
+          };
 
-            document.getElementById(id+" report trash").onclick = function(ev) {
-              sendpicture();
-              ev.preventDefault();
-            };
+          var closeTrash = document.getElementsByClassName("close-trash")
+          closeTrash[0].onclick = function(ev) {
+            stoppingMedia();
+            ev.preventDefault();
+          };
 
-            var closeTrash = document.getElementsByClassName("close-trash")
-	          closeTrash[0].onclick = function(ev) {
-              stoppingMedia();
-              ev.preventDefault();
-            };
-
-            // Fill the photo with an indication that none has been
-            // captured.
-          
-            function clearphoto() {
-              const context = canvas.getContext("2d");
-              context.fillStyle = "#AAA";
-              context.fillRect(0, 0, canvas.width, canvas.height);
-          
+          // Fill the photo with an indication that none has been
+          // captured.
+        
+          function clearphoto() {
+            const context = canvas.getContext("2d");
+            context.fillStyle = "#AAA";
+            context.fillRect(0, 0, canvas.width, canvas.height);
+        
+            const data = canvas.toDataURL("image/png");
+            photo.setAttribute("src", data);
+          }
+        
+          // Capture a photo by fetching the current contents of the video
+          // and drawing it into a canvas, then converting that to a PNG
+          // format data URL. By drawing it on an offscreen canvas and then
+          // drawing that to the screen, we can change its size and/or apply
+          // other changes before drawing it.
+        
+          function takepicture() {
+            const context = canvas.getContext("2d");
+            stoppingMedia();
+            camera.style.display = "none";
+            output.style.display = "block";
+            if (width && height) {
+              canvas.width = width;
+              canvas.height = height;
+              context.drawImage(video, 0, 0, width, height);
+        
               const data = canvas.toDataURL("image/png");
               photo.setAttribute("src", data);
-            }
-          
-            // Capture a photo by fetching the current contents of the video
-            // and drawing it into a canvas, then converting that to a PNG
-            // format data URL. By drawing it on an offscreen canvas and then
-            // drawing that to the screen, we can change its size and/or apply
-            // other changes before drawing it.
-          
-            function takepicture() {
-              const context = canvas.getContext("2d");
-              stoppingMedia();
-              camera.style.display = "none";
-              output.style.display = "block";
-              if (width && height) {
-                canvas.width = width;
-                canvas.height = height;
-                context.drawImage(video, 0, 0, width, height);
-          
-                const data = canvas.toDataURL("image/png");
-                photo.setAttribute("src", data);
-              } else {
-                clearphoto();
-              }
-            }
-
-            function retakepicture() {
-              camera.style.display = "block";
-              output.style.display = "none";
+            } else {
               clearphoto();
-              gettingMedia();
             }
+          }
 
-            function sendpicture() {
-              var patch = '{% url "report_trash" %}';
-              var post_data = canvas.toDataURL("image/png");
-              console.log(post_data);
-              $.ajax({
-                method: "POST",
-                url: patch,
-                data: {'imageBase64': post_data, 'id': id},
-                              headers: {
-                                "X-Requested-With": "XMLHttpRequest",
-                                "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
-                              },
-              success: function(data){
-                photoModal.innerHTML = data.status;
-              }
-              });
+          function retakepicture() {
+            camera.style.display = "block";
+            output.style.display = "none";
+            clearphoto();
+            gettingMedia();
+          }
+
+          function sendpicture() {
+            var patch = '{% url "report_trash" %}';
+            var post_data = canvas.toDataURL("image/png");
+            console.log(post_data);
+            $.ajax({
+              method: "POST",
+              url: patch,
+              data: {'imageBase64': post_data, 'id': id},
+                            headers: {
+                              "X-Requested-With": "XMLHttpRequest",
+                              "X-CSRFToken": getCookie("csrftoken"),  // don't forget to include the 'getCookie' function
+                            },
+            success: function(data){
+              photoModal.innerHTML = data.status;
             }
-
-           for (marker of markers) {
-             if (marker.options.alt == id) {
-               marker.setIcon(defaultIcon);
-              } else {
-               marker.setIcon(selectedIcon);
-              }
-           }
-           elements = document.getElementsByClassName('trashSelect');
-           for (element of elements) {
-             if (element.id == id) {
-               element.style.background = "#e0dfdf";
-               $('.trashList').prepend(element);
-             } else {
-               element.style.background = "#fff";
-             }
-           }
-         });
-         $(document).on('click', '.trashSelect', function () {
-           var id = this.options.alt;
-           var targetTrash = document.getElementById(id+" modal");
-           $(targetTrash).modal('toggle');
-           for (marker of markers) {
-             if (marker.options.alt == id) {
-               marker.setIcon(selectedIcon);
-               map.panTo(marker.getLatLng());
-             }
-             else {
-               marker.setIcon(defaultIcon);
-             }
-           }
-           elements = document.getElementsByClassName('trashSelect');
-           for (element of elements) {
-             if (element.id == id) {
-               element.style.background = "#e0dfdf";
-               $('.trashList').prepend(element);
-             } else {
-               element.style.background = "#fff";
-             }
-           }
-         });
-         function scanWrapper () {
-          var scanModal = document.getElementById("wrapperModal");
-          $(scanModal).modal('toggle');
-          Quagga.init(
-            {
-              inputStream: {
-                name: "Live",
-                type: "LiveStream",
-                target: document.querySelector("#scan-viewport")
-              },
-              decoder: {
-                readers: ["ean_reader"]
-              }
-            },
-            function (err) {
-              if (err) {
-                console.log(err);
-                return;
-              }
-              console.log("Initialization finished. Ready to start");
-              Quagga.start();
-            }
-            );
-            var codes = [];
-            Quagga.onDetected(function (result) {
-              var code = result.codeResult.code;
-              codes.push(code);
-              console.log(code);
-              console.log(codes);
-              function getRecurringValues(codes) {
-                return codes.reduce((acc, current) => {
-                  let found = false;
-                  for (let i = 0; i < acc.length; i++) {
-                    if (acc[i][0] === current) {
-                      acc[i][1]++;
-                      found = true;
-                      break;
-                    }
-                  }
-                  if (!found) {
-                    acc.push([current, 1]);
-                  }
-                  return acc;
-                }, []).filter(([v, c]) => c > 1).sort((a, b) => b[1] - a[1]);;
-              }
-              const recurring = getRecurringValues(codes);
-
-              console.log(recurring); // Output: { "2": 2, "3": 2, "4": 2, "5": 2 } (most common is 2, 3, 4, and 5)
-              if (recurring.length == 0) {
-                itemNumber = 1;
-              } else {
-                itemNumber = recurring[0][1];
-              }
-              if (itemNumber >= 5 && !scanning) {
-                scanning = true;
-                $.ajax({
-                  url: "{% url 'scan_wrapper' %}",
-                  data: { 'code': recurring[0][0] },
-                  type:'GET',
-                  success:function(all_data) {
-                  for (data0 of all_data) {
-                    $('#scan-result').html(data0.html);
-                    console.log("here");
-                    console.log(data0.html);
-                    console.log('after');
-                    scanning = false;
-                  }
-                  }
-                });            
-              }
             });
           }
-         function garbageCollect() {
-            var lat = old_latlng.lat;
-            var lng = old_latlng.lng;
-            $.ajax({
-              url: "{% url 'garbage_collection' %}",
-              data: { 'lat': lat, 'lng': lng},
-              type:'GET',
-              success:function(all_data) {
-              for (data0 of all_data) {
-                $('#replaceCollection').html(data0.html);
-                console.log("here");
-                console.log(data0.html);
-                console.log('after');
-                var collectionModal = document.getElementById("collectionModal");
-                $(collectionModal).modal('toggle');
-              }
-              }
-             });
-          };
-         function filterTrash(e) {
-          var lat = old_latlng.lat;
-          var lng = old_latlng.lng;
-          console.log(e);
-          trash_type = e.originalTarget.name;
-          console.log(trash_type);
-          markersLayer.clearLayers();
-          circlesLayer.clearLayers();
-          $.when($.ajax({
-            url: "{% url 'filter_type' %}",
-            data: { 'lat': lat, 'lng': lng, 'type': trash_type},
-            type:'GET',
-          })).then(function(response) {
-            var trashHTML = '';
-            for (all_data of response) {
-              var latlng = L.latLng(all_data.lat, all_data.lng);
-              circle = L.circle(latlng, all_data.radius);
-              circlesLayer.addLayer(circle);
-              circles.push(circle);
-              for (data0 of all_data.data_list) {
-                if (data0.reload) {
-                  $('.reload').html(data0.reload);
-                }
-                if (data0.lat) {
-                  var latlng = L.latLng(data0.lat, data0.lng);
-                }
-                var iconName;
-                if (data0.trash_icon){
-                  iconName = data0.trash_icon;
-                } else {
-                  iconName = 'trash-icon';
-                }
-                var trashIcon = new selectedIcon({
-                  iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
-                });
-                if (data0.trash_type == trash_type) {
-                  filterIcon = "{% static 'icons/' %}" + iconName + '.svg',
-                  document.getElementById("add-filter").innerHTML = '<img class="imgFilter" src=' + filterIcon + '></i>';
-                } else if (trash_type == 'all') {
-                  document.getElementById("add-filter").innerHTML = '<i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>';
-                }
-                the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
-                trashHTML += data0.html;
-                markersLayer.addLayer(the_trash);
-                markers.push(the_trash);
-              }
+
+          for (marker of markers) {
+            if (marker.options.alt == id) {
+              marker.setIcon(defaultIcon);
+            } else {
+              marker.setIcon(selectedIcon);
             }
-            document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
-          })
-        };
-        document.getElementById("scan-wrapper").onclick = scanWrapper;
-        document.getElementById("garbage-collection").onclick = garbageCollect;
-        document.getElementById('filter all').onclick = filterTrash;
-        $(document).on('click', '#request-local', function () {
+          }
+          elements = document.getElementsByClassName('trashSelect');
+          for (element of elements) {
+            if (element.id == id) {
+              element.style.background = "#e0dfdf";
+              $('.trashList').prepend(element);
+            } else {
+              element.style.background = "#fff";
+            }
+          }
+        });
+        $(document).on('click', '.trashSelect', function () {
+          var id = this.options.alt;
+          var targetTrash = document.getElementById(id+" modal");
+          $(targetTrash).modal('toggle');
+          for (marker of markers) {
+            if (marker.options.alt == id) {
+              marker.setIcon(selectedIcon);
+              map.panTo(marker.getLatLng());
+            }
+            else {
+              marker.setIcon(defaultIcon);
+            }
+          }
+          elements = document.getElementsByClassName('trashSelect');
+          for (element of elements) {
+            if (element.id == id) {
+              element.style.background = "#e0dfdf";
+              $('.trashList').prepend(element);
+            } else {
+              element.style.background = "#fff";
+            }
+          }
+        });
+        function scanWrapper () {
+        var scanModal = document.getElementById("wrapperModal");
+        $(scanModal).modal('toggle');
+        Quagga.init(
+          {
+            inputStream: {
+              name: "Live",
+              type: "LiveStream",
+              target: document.querySelector("#scan-viewport")
+            },
+            decoder: {
+              readers: ["ean_reader"]
+            }
+          },
+          function (err) {
+            if (err) {
+              console.log(err);
+              return;
+            }
+            console.log("Initialization finished. Ready to start");
+            Quagga.start();
+          }
+          );
+          var codes = [];
+          Quagga.onDetected(function (result) {
+            var code = result.codeResult.code;
+            codes.push(code);
+            console.log(code);
+            console.log(codes);
+            function getRecurringValues(codes) {
+              return codes.reduce((acc, current) => {
+                let found = false;
+                for (let i = 0; i < acc.length; i++) {
+                  if (acc[i][0] === current) {
+                    acc[i][1]++;
+                    found = true;
+                    break;
+                  }
+                }
+                if (!found) {
+                  acc.push([current, 1]);
+                }
+                return acc;
+              }, []).filter(([v, c]) => c > 1).sort((a, b) => b[1] - a[1]);;
+            }
+            const recurring = getRecurringValues(codes);
+
+            console.log(recurring); // Output: { "2": 2, "3": 2, "4": 2, "5": 2 } (most common is 2, 3, 4, and 5)
+            if (recurring.length == 0) {
+              itemNumber = 1;
+            } else {
+              itemNumber = recurring[0][1];
+            }
+            if (itemNumber >= 5 && !scanning) {
+              scanning = true;
+              $.ajax({
+                url: "{% url 'scan_wrapper' %}",
+                data: { 'code': recurring[0][0] },
+                type:'GET',
+                success:function(all_data) {
+                for (data0 of all_data) {
+                  $('#scan-result').html(data0.html);
+                  console.log("here");
+                  console.log(data0.html);
+                  console.log('after');
+                  scanning = false;
+                }
+                }
+              });            
+            }
+          });
+        }
+        function garbageCollect() {
           var lat = old_latlng.lat;
           var lng = old_latlng.lng;
-        });
-        document.getElementById("add-menu").onclick = function() {
-          var dumpNotif = document.getElementById("dumping-notif");
-          theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
-          theHref = theHref.replace(/lat/g, old_latlng.lat);
-          theHref = theHref.replace(/lng/g, old_latlng.lng);
-          dumpNotif.setAttribute('href',theHref);
-          var addModal = document.getElementById("add-trash-modal");
-          $(addModal).modal('toggle');
+          $.ajax({
+            url: "{% url 'garbage_collection' %}",
+            data: { 'lat': lat, 'lng': lng},
+            type:'GET',
+            success:function(all_data) {
+            for (data0 of all_data) {
+              $('#replaceCollection').html(data0.html);
+              console.log("here");
+              console.log(data0.html);
+              console.log('after');
+              var collectionModal = document.getElementById("collectionModal");
+              $(collectionModal).modal('toggle');
+            }
+            }
+            });
         };
+        function filterTrash(e) {
+        var lat = old_latlng.lat;
+        var lng = old_latlng.lng;
+        console.log(e);
+        trash_type = e.originalTarget.name;
+        console.log(trash_type);
+        markersLayer.clearLayers();
+        circlesLayer.clearLayers();
+        $.when($.ajax({
+          url: "{% url 'filter_type' %}",
+          data: { 'lat': lat, 'lng': lng, 'type': trash_type},
+          type:'GET',
+        })).then(function(response) {
+          var trashHTML = '';
+          for (all_data of response) {
+            var latlng = L.latLng(all_data.lat, all_data.lng);
+            circle = L.circle(latlng, all_data.radius);
+            circlesLayer.addLayer(circle);
+            circles.push(circle);
+            for (data0 of all_data.data_list) {
+              if (data0.reload) {
+                $('.reload').html(data0.reload);
+              }
+              if (data0.lat) {
+                var latlng = L.latLng(data0.lat, data0.lng);
+              }
+              var iconName;
+              if (data0.trash_icon){
+                iconName = data0.trash_icon;
+              } else {
+                iconName = 'trash-icon';
+              }
+              var trashIcon = new selectedIcon({
+                iconUrl:"{% static 'icons/' %}" + iconName + '.svg',
+              });
+              if (data0.trash_type == trash_type) {
+                filterIcon = "{% static 'icons/' %}" + iconName + '.svg',
+                document.getElementById("add-filter").innerHTML = '<img class="imgFilter" src=' + filterIcon + '></i>';
+              } else if (trash_type == 'all') {
+                document.getElementById("add-filter").innerHTML = '<i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>';
+              }
+              the_trash = L.marker(latlng, {title: data0.trash_type, alt: data0.trash_id + " " + data0.trash_type, icon: trashIcon}).on('click', highlightTrash);
+              trashHTML += data0.html;
+              markersLayer.addLayer(the_trash);
+              markers.push(the_trash);
+            }
+          }
+          document.getElementsByClassName("trashList")[0].innerHTML += trashHTML;
+        })
+      };
+      document.getElementById("scan-wrapper").onclick = scanWrapper;
+      document.getElementById("garbage-collection").onclick = garbageCollect;
+      document.getElementById('filter all').onclick = filterTrash;
+      $(document).on('click', '#request-local', function () {
+        var lat = old_latlng.lat;
+        var lng = old_latlng.lng;
+      });
+      document.getElementById("add-menu").onclick = function() {
+        var dumpNotif = document.getElementById("dumping-notif");
+        theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
+        theHref = theHref.replace(/lat/g, old_latlng.lat);
+        theHref = theHref.replace(/lng/g, old_latlng.lng);
+        dumpNotif.setAttribute('href',theHref);
+        var addModal = document.getElementById("add-trash-modal");
+        $(addModal).modal('toggle');
+      };
     };
 
   </script>
