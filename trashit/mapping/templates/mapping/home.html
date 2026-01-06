@@ -218,7 +218,13 @@
       let scanning = false;
       let checking = false;
 
-      var checking = false;
+      // Cache DOM elements
+      const $trashList = document.querySelector('.trashList');
+      const $reload = document.querySelector('.reload');
+      const $scanResult = document.getElementById('scan-result');
+      const $replaceCollection = document.getElementById('replaceCollection');
+      const $requestLocalForm = document.getElementById('request-local-form');
+
       var markers = [];
       var circles = [];
       layerGroups = {};
