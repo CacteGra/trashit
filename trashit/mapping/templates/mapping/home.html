@@ -199,23 +199,31 @@
         }
       });
 
+      // Initialize Layers
+      const markersLayer = L.layerGroup();
+      const circlesLayer = L.layerGroup();
+      const polygonsLayer = L.layerGroup();
+
+      markersLayer.addTo(map);
+      circlesLayer.addTo(map);
+      polygonsLayer.addTo(map);
+
+      // Remove default zoom control
       map.removeControl(map.zoomControl);
+
+      // State variables
+      let old_latlng = null;
+      let user_marker = null;
+      let locFound = false;
+      let scanning = false;
+      let checking = false;
+
       var checking = false;
       var markers = [];
       var circles = [];
-      var markersLayer = new L.LayerGroup();
-      var circlesLayer = new L.LayerGroup();
-      var polygonsLayer = new L.LayerGroup();
-      polygonsLayer.addTo(map);
-      markersLayer.addTo(map);
-      circlesLayer.addTo(map);
       layerGroups = {};
       circleGroups = {};
-      var old_latlng = null;
       var trash_percentage = null;
-      var user_marker = null;
-      var locFound = false;
-      var scanning = false;
       containers = document.querySelectorAll(".leaflet-control-container:not(.leaflet-control-container.custom)")
       $(containers).remove()
       function onLocationFound(e) {
