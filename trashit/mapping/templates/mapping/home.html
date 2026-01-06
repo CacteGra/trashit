@@ -588,6 +588,18 @@
         });
       }
 
+      // Garbage Collection
+      function garbageCollect() {
+        const lat = old_latlng.lat;
+        const lng = old_latlng.lng;
+
+        $.get("{% url 'garbage_collection' %}", { lat, lng })
+          .done(function (response) {
+            $replaceCollection.innerHTML = response.map(r => r.html).join('');
+            $('#collectionModal').modal('toggle');
+          });
+      }
+
         // zoom in function
         document.getElementById("in").onclick = function() {
           map.setZoom(map.getZoom() + 1)
@@ -623,25 +635,6 @@
             }
           }
         });
-        function garbageCollect() {
-          var lat = old_latlng.lat;
-          var lng = old_latlng.lng;
-          $.ajax({
-            url: "{% url 'garbage_collection' %}",
-            data: { 'lat': lat, 'lng': lng},
-            type:'GET',
-            success:function(all_data) {
-            for (data0 of all_data) {
-              $('#replaceCollection').html(data0.html);
-              console.log("here");
-              console.log(data0.html);
-              console.log('after');
-              var collectionModal = document.getElementById("collectionModal");
-              $(collectionModal).modal('toggle');
-            }
-            }
-            });
-        };
       document.getElementById("scan-wrapper").onclick = scanWrapper;
       document.getElementById("garbage-collection").onclick = garbageCollect;
       document.getElementById('filter all').onclick = filterTrash;
