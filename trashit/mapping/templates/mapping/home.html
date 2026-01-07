@@ -225,14 +225,6 @@
       const $replaceCollection = document.getElementById('replaceCollection');
       const $requestLocalForm = document.getElementById('request-local-form');
 
-      var markers = [];
-      var circles = [];
-      layerGroups = {};
-      circleGroups = {};
-      var trash_percentage = null;
-      containers = document.querySelectorAll(".leaflet-control-container:not(.leaflet-control-container.custom)")
-      $(containers).remove()
-      
       // Event: Location Found
       function onLocationFound(e) {
         const lat = e.latlng.lat;
@@ -622,7 +614,7 @@
         document.getElementById('dumping-notif').href = href;
         $('#add-trash-modal').modal('toggle');
       };
-      
+
     };
 
   </script>
