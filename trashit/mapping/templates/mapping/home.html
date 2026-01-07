@@ -623,53 +623,5 @@
         $('#add-trash-modal').modal('toggle');
       };
 
-      document.getElementById('garbage-collection').onclick = garbageCollect;
-      document.getElementById('scan-wrapper').onclick = scanWrapper;
-      document.getElementById('filter all').onclick = filterTrash;
-
-      // Set up zoom controls
-      document.getElementById('in').onclick = () => map.setZoom(map.getZoom() + 1);
-      document.getElementById('out').onclick = () => map.setZoom(map.getZoom() - 1);
-      document.getElementById('recenter').onclick = () => map.setView(old_latlng, 19);
-
-        $(document).on('click', '.trashSelect', function () {
-          var id = this.options.alt;
-          var targetTrash = document.getElementById(id+" modal");
-          $(targetTrash).modal('toggle');
-          for (marker of markers) {
-            if (marker.options.alt == id) {
-              marker.setIcon(selectedIcon);
-              map.panTo(marker.getLatLng());
-            }
-            else {
-              marker.setIcon(defaultIcon);
-            }
-          }
-          elements = document.getElementsByClassName('trashSelect');
-          for (element of elements) {
-            if (element.id == id) {
-              element.style.background = "#e0dfdf";
-              $('.trashList').prepend(element);
-            } else {
-              element.style.background = "#fff";
-            }
-          }
-        });
-
-      $(document).on('click', '#request-local', function () {
-        var lat = old_latlng.lat;
-        var lng = old_latlng.lng;
-      });
-      document.getElementById("add-menu").onclick = function() {
-        var dumpNotif = document.getElementById("dumping-notif");
-        theHref = "mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at lat, lng.";
-        theHref = theHref.replace(/lat/g, old_latlng.lat);
-        theHref = theHref.replace(/lng/g, old_latlng.lng);
-        dumpNotif.setAttribute('href',theHref);
-        var addModal = document.getElementById("add-trash-modal");
-        $(addModal).modal('toggle');
-      };
-    };
-
   </script>
 {% endblock %}
