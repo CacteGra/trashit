@@ -258,6 +258,9 @@
                 $requestLocalForm.innerHTML = response.requestlocal;
                 modalDisplayed = true;
                 $('#noData').modal('toggle');
+              } else {
+                requestCoords = document.getElementById("coordinates");
+                requestCoords.value = `SRID=4326;POINT (${lng} ${lat})`;
               }
             } else {
               const menu = document.querySelector('.filtering.dropdown-menu');
