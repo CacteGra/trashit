@@ -216,7 +216,7 @@
       let user_marker = null;
       let locFound = false;
       let scanning = false;
-      let checking = false;
+      let firstLoad = false;
       let modalDisplayed = false;
 
       // Cache DOM elements
@@ -230,17 +230,24 @@
       function onLocationFound(e) {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
+        const new_latlng = e.latlng;
 
         if (user_marker == null) {
           user_marker = L.marker(e.latlng, { icon: userIcon }).addTo(map);
         } else {
           user_marker.setLatLng(e.latlng);
         }
+        var checkLoc = old_latlng;
+        old_latlng = new_latlng;
 
-        old_latlng = e.latlng;
+        if (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(new_latlng))) {
+          console.log(Object.values(checkLoc));
+          console.log(Object.values(new_latlng));
+        }
 
-        if (!checking) {
-          checking = true;
+        if (!firstLoad || (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(new_latlng)))) {
+          console.log(checkLoc);
+          firstLoad = true;
           $.ajax({
             url: "{% url 'get_first_load' %}",
             data: { lat, lng, same_session: false },
@@ -269,11 +276,9 @@
 
               renderTrashMarkers(response.response);
             }
-            checking = false;
-          }).fail(() => {
-            checking = false;
-          });
+          })
         }
+
       }
 
       // Event: Location Error
