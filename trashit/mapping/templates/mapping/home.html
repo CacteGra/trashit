@@ -217,6 +217,7 @@
       let locFound = false;
       let scanning = false;
       let checking = false;
+      let modalDisplayed = false;
 
       // Cache DOM elements
       const $trashList = document.querySelector('.trashList');
@@ -246,8 +247,11 @@
             type: 'GET'
           }).done(function (response) {
             if (response.requestlocal) {
-              $requestLocalForm.innerHTML = response.requestlocal;
-              $('#noData').modal('toggle');
+              if (modalDisplayed === false) {
+                $requestLocalForm.innerHTML = response.requestlocal;
+                modalDisplayed = true;
+                $('#noData').modal('toggle');
+              }
             } else {
               const menu = document.querySelector('.filtering.dropdown-menu');
               menu.innerHTML = '';
