@@ -212,8 +212,8 @@
       map.removeControl(map.zoomControl);
 
       // State variables
-      let old_latlng = null;
-      let user_marker = null;
+      let oldLatLng = null;
+      let userMarker = null;
       let locFound = false;
       let scanning = false;
       let firstLoad = false;
@@ -230,22 +230,22 @@
       function onLocationFound(e) {
         const lat = e.latlng.lat;
         const lng = e.latlng.lng;
-        const new_latlng = e.latlng;
+        const newLatLng = e.latlng;
 
-        if (user_marker == null) {
-          user_marker = L.marker(e.latlng, { icon: userIcon }).addTo(map);
+        if (userMarker == null) {
+          userMarker = L.marker(e.latlng, { icon: userIcon }).addTo(map);
         } else {
-          user_marker.setLatLng(e.latlng);
+          userMarker.setLatLng(e.latlng);
         }
-        var checkLoc = old_latlng;
-        old_latlng = new_latlng;
+        var checkLoc = oldLatLng;
+        oldLatLng = newLatLng;
 
-        if (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(new_latlng))) {
+        if (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(newLatLng))) {
           console.log(Object.values(checkLoc));
-          console.log(Object.values(new_latlng));
+          console.log(Object.values(newLatLng));
         }
 
-        if (!firstLoad || (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(new_latlng)))) {
+        if (!firstLoad || (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(newLatLng)))) {
           console.log(checkLoc);
           firstLoad = true;
           $.ajax({
@@ -304,7 +304,7 @@
       // Zoom Controls
       document.getElementById('in').onclick = () => map.setZoom(map.getZoom() + 1);
       document.getElementById('out').onclick = () => map.setZoom(map.getZoom() - 1);
-      document.getElementById('recenter').onclick = () => map.setView(old_latlng, 19);
+      document.getElementById('recenter').onclick = () => map.setView(oldLatLng, 19);
 
       // Initialize map
       map.addLayer(tileLayer);
@@ -346,8 +346,8 @@
 
       // Filter Trash by type
       function filterTrash(e) {
-        const lat = old_latlng.lat;
-        const lng = old_latlng.lng;
+        const lat = oldLatLng.lat;
+        const lng = oldLatLng.lng;
         const type = e.target.name;
 
         markersLayer.clearLayers();
@@ -543,59 +543,10 @@
         });
       }
 
-      // Scan Wrapper
-      function scanWrapper() {
-        const modal = document.getElementById('wrapperModal');
-        $(modal).modal('toggle');
-
-        Quagga.init({
-          inputStream: {
-            name: 'Live',
-            type: 'LiveStream',
-            target: document.querySelector('#scan-viewport')
-          },
-          decoder: { readers: ['ean_reader'] }
-        }, function (err) {
-          if (err) return console.error(err);
-          console.log('Quagga initialized');
-          Quagga.start();
-        });
-
-        let codes = [];
-
-        Quagga.onDetected(function (result) {
-          const code = result.codeResult.code;
-          codes.push(code);
-
-          const getRecurringValues = (arr) => {
-            const counts = arr.reduce((acc, curr) => {
-              acc[curr] = (acc[curr] || 0) + 1;
-              return acc;
-            }, {});
-            return Object.entries(counts)
-              .filter(([_, count]) => count > 1)
-              .sort((a, b) => b[1] - a[1]);
-          };
-
-          const recurring = getRecurringValues(codes);
-
-          const itemNumber = recurring.length === 0 ? 1 : recurring[0][1];
-
-          if (itemNumber >= 5 && !scanning) {
-            scanning = true;
-            $.get("{% url 'scan_wrapper' %}", { code: recurring[0][0] })
-              .done(function (response) {
-                $scanResult.innerHTML = response.map(r => r.html).join('');
-                scanning = false;
-              });
-          }
-        });
-      }
-
       // Garbage Collection
       function garbageCollect() {
-        const lat = old_latlng.lat;
-        const lng = old_latlng.lng;
+        const lat = oldLatLng.lat;
+        const lng = oldLatLng.lng;
 
         $.get("{% url 'garbage_collection' %}", { lat, lng })
           .done(function (response) {
@@ -622,7 +573,7 @@
 
       // Attach Handlers
       document.getElementById('add-menu').onclick = () => {
-        const href = `mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at ${old_latlng.lat}, ${old_latlng.lng}`;
+        const href = `mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at ${oldLatLng.lat}, ${oldLatLng.lng}`;
         document.getElementById('dumping-notif').href = href;
         $('#add-trash-modal').modal('toggle');
       };
