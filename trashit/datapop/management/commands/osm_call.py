@@ -5,6 +5,12 @@ from django.contrib.gis.geos import Point
 from OSMPythonTools.nominatim import Nominatim
 from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
+import time
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
 def safe_overpass_query(query, max_retries=3, delay=5):
     """
     Execute an Overpass query with retry logic.
