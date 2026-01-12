@@ -15,6 +15,7 @@ def safe_overpass_query(query, max_retries=3, delay=5):
     """
     Execute an Overpass query with retry logic.
     """
+    overpass = Overpass()
     for attempt in range(max_retries):
         try:
             result = overpass.query(query)
@@ -29,7 +30,6 @@ def safe_overpass_query(query, max_retries=3, delay=5):
 def main():
     register_apis = RegisterAPI.objects.filter(api_type='OSM')
     nominatim = Nominatim()
-    overpass = Overpass()
     print("osm")
     for register_api in register_apis:
         waste_type = "trash"
