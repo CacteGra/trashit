@@ -5,6 +5,21 @@ from django.contrib.gis.geos import Point
 from OSMPythonTools.nominatim import Nominatim
 from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
 
+def safe_overpass_query(query, max_retries=3, delay=5):
+    """
+    Execute an Overpass query with retry logic.
+    """
+    for attempt in range(max_retries):
+        try:
+            result = overpass.query(query)
+            return result
+        except Exception as e:
+            logger.warning(f"Attempt {attempt + 1} failed: {e}")
+            if attempt < max_retries - 1:
+                time.sleep(delay)
+            else:
+                raise Exception("Failed to execute Overpass query after retries") from e
+
 def main():
     register_apis = RegisterAPI.objects.filter(api_type='OSM')
     nominatim = Nominatim()
@@ -14,7 +29,7 @@ def main():
         waste_type = "trash"
         areaId = nominatim.query('{}, {}, {}'.format(register_api.city, register_api.state, register_api.country)).areaId()
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_basket"', out='body')
-        result = overpass.query(query)
+        result = safe_overpass_query(query)
         r = result.elements()
         for i in r:
             type_list = []
@@ -53,7 +68,7 @@ def main():
                 else:
                     t.trash_type.add(trash_type)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_disposal"', out='body')
-        result = overpass.query(query)
+        result = safe_overpass_query(query)
         r = result.elements()
         for i in r:
             type_list = []
@@ -92,7 +107,7 @@ def main():
                 else:
                     t.trash_type.add(trash_type)
         query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="recycling"', out='body')
-        result = overpass.query(query)
+        result = safe_overpass_query(query)
         r = result.elements()
         for i in r:
             type_list = []
