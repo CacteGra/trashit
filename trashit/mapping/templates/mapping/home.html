@@ -240,11 +240,6 @@
         var checkLoc = oldLatLng;
         oldLatLng = newLatLng;
 
-        if (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(newLatLng))) {
-          console.log(Object.values(checkLoc));
-          console.log(Object.values(newLatLng));
-        }
-
         if (!firstLoad || (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(newLatLng)))) {
           console.log(checkLoc);
           firstLoad = true;
