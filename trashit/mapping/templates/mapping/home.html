@@ -48,7 +48,7 @@
       </div>
 
       <!-- Profile Info Trigger -->
-      <a class="u-link text-center d-block" data-bs-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static "profileFilled.png" %});' href='#callProfile'></a>
+      <a class="u-link text-center d-block" data-bs-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static "leaflet/images/marker-icon.png" %});' href='#callProfile'></a>
     </div>
   </div>
 
@@ -295,6 +295,7 @@
       // Re-locate every 3s
       setInterval(() => {
         if (!locFound) {
+	        locFound = true;
           map.locate({ setView: true, maxZoom: 17 }).on('locationfound', onLocationFound);
         } else {
           map.locate().on('locationfound', onLocationFound);
