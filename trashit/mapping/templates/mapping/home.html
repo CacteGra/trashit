@@ -142,6 +142,25 @@
 
   <!-- Script: Modern, efficient, clean -->
   <script>
+    // Preload icons to improve performance
+    const iconCache = new Map();
+    
+    function createIcon(iconUrl, size) {
+      if (iconCache.has(iconUrl)) {
+        return iconCache.get(iconUrl);
+      }
+      
+      const icon = L.icon({
+        iconUrl: iconUrl,
+        iconSize: size,
+        iconAnchor: [size[0]/2, size[1]],
+        popupAnchor: [-3, -76]
+      });
+      
+      iconCache.set(iconUrl, icon);
+      return icon;
+    }
+
     // CSRF Helper
     function getCookie(name) {
       let cookieValue = null;
@@ -168,26 +187,6 @@
           attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
         }
       );
-
-      const defaultIcon = L.icon({
-        iconUrl: "{% static 'leaflet/images/marker-icon.png' %}",
-        shadowUrl: "{% static 'leaflet/images/marker-shadow.png' %}",
-        iconSize: [25, 41],
-        shadowSize: [50, 64],
-        iconAnchor: [12, 41],
-        shadowAnchor: [14, 65],
-        popupAnchor: [-3, -76],
-        className: 'iconSize'
-      });
-
-      const userIcon = L.icon({
-        iconUrl: "{% static 'icons/dot-circle.png' %}",
-        iconSize: [40, 40],
-        shadowSize: [50, 64],
-        iconAnchor: [0, 0],
-        shadowAnchor: [0, 65],
-        popupAnchor: [-3, -76]
-      });
 
       const selectedIcon = L.Icon.extend({
         options: {
@@ -218,6 +217,10 @@
       let scanning = false;
       let firstLoad = false;
       let modalDisplayed = false;
+
+      // Define icons
+      const userIcon = createIcon("{% static 'icons/dot-circle.png' %}", [40, 40]);
+      const defaultIcon = createIcon("{% static 'leaflet/images/marker-icon.png' %}", [25, 41]);
 
       // Cache DOM elements
       const $trashList = document.querySelector('.trashList');
