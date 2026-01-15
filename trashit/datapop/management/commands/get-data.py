@@ -311,3 +311,66 @@ class Command(BaseCommand):
         return False
 
     def _process_api_data(self, all_api, page_number, children_id_list, json_list):
+        """Process API data with pagination."""
+        waiting = False
+        all_api.where_line = 0
+        all_api.save()
+        
+        if waiting:
+            return
+            
+        while True:
+            try:
+                # Make request based on API type
+                if all_api.is_dumb:
+                    response = requests.get(
+                        f"{all_api.api_endpoint}&{all_api.pagination}={page_number}&{all_api.rows_name}={all_api.rows_per_page}",
+                        timeout=10
+                    )
+                else:
+                    params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
+                    response = requests.get(all_api.api_endpoint, params=params, timeout=10)
+                    
+            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+                waiting = True
+                break
+                
+            if response.status_code == '404':
+                break
+                
+            try:
+                d = json.dumps(response.json(), sort_keys=True, indent=4)
+                l = json.loads(d)
+            except (json.JSONDecodeError, KeyError):
+                break
+                
+            # Check for limits
+            if all_api.json_limit:
+                try:
+                    if not l.get(all_api.json_limit):
+                        break
+                except KeyError:
+                    break
+            else:
+                r = RegisterAPI.objects.get(pk=all_api.pk)
+                if all_api.until_line and all_api.until_line <= r.where_line:
+                    break
+                elif not all_api.until_line:
+                    if int(l.get(all_api.results, 0)) < r.where_line:
+                        break
+                        
+            l_copy = l
+            
+            # Process data for each child list
+            for same_level_list in children_id_list:
+                path_list = self.get_path(same_level_list[0], [same_level_list], True)
+                iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
+                
+                if same_level_data:
+                    self.check_or_create_data(all_api.pk, same_level_data)
+            
+            page_number += 1
+            
+            if all_api.sleep:
+                sleep(all_api.sleep)
+            break
