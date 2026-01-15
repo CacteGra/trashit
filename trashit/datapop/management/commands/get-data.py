@@ -69,35 +69,6 @@ class Command(BaseCommand):
                 # Query new data line and hook each data to see if new, same or not relevant
                 if not check_new_data:
                     continue
-                # try:
-                #     DataLine.objects.get(Q(register_api=all_api) & query)
-                # except DataLine.DoesNotExist:
-                #     d = DataLine.objects.create(register_api=all_api)
-                #     for i in query.children:
-                #         g = getattr(d, "{}_set".format(i[0]))
-                #         print('set {}'.format(i[0]))
-                #         g.add(i[1])
-                #         print('object {}'.format(i[1].o_field))
-                # print(check_new_data)
-                # if not check_new_data:
-                #     continue
-                # for t in range(1, len(check_new_data)):
-                #     current_model = check_new_data[t]
-                #     field_name = current_model._meta.model.__name__
-                #     query = query & Q(**{field_name.lower(): current_model})
-                # try:
-                #     d = DataLine.objects.get(query)
-                #     for data_object in check_new_data:
-                #         data_object.delete()
-                #     print('exists already')
-                # except DataLine.DoesNotExist:
-                #     d = DataLine.objects.create(register_api=all_api)
-                #     for i in query.children:
-                #         g = getattr(d, "{}_set".format(i[0]))
-                #         print('set {}'.format(i[0]))
-                #         g.add(i[1])
-                #         print('object {}'.format(i[1].o_field))
-                #     print(d.textfield_set.count())
                 return True, check_new_data
             else:
                 r = RegisterAPIChosen.objects.get(id=path_id)
