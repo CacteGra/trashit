@@ -312,9 +312,11 @@
 
       // Render Trash Markers
       function renderTrashMarkers(data) {
+        console.log(data);
         markersLayer.clearLayers();
         circlesLayer.clearLayers();
-        const html = data.map(item => item.html).join('');
+        const html = data.map(listItem => listItem.data_list.map(item => item.html).join(''));
+        console.log(html);
         $trashList.innerHTML += html;
 
         data.forEach(item => {
