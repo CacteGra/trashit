@@ -134,8 +134,6 @@ class Command(BaseCommand):
                     continue
                 
                 # Get cluster data
-                other_chosens = []
-                continuing = False
                 c = all_api.copy_cluster()
                 cluster_id_list = []
                 children_id_list = []
@@ -168,7 +166,6 @@ class Command(BaseCommand):
 
                 # Process trash data
                 self._process_trash_data(all_api)
-
 
     def _process_json_kml_api(self, all_api, c, cluster_id_list, json_list):
         """Process JSON/KML API data."""
