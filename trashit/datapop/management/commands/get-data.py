@@ -290,135 +290,54 @@ class Command(BaseCommand):
                                 collect_area.save()
 
 
-def _process_json_kml_api(self, all_api, c, cluster_id_list, json_list):
-    for i, j in enumerate(c[1]):
-        o = c[1][j]
-        r = o.the_chosen.choosing.get(register_api_foreign__isnull=False)
-        r.field_type = o.field_type
-        r.field_name = o.field_name
-        r.line_id = o.line_id
-        r.json_list = o.json_list
-        r.save()
-        if not r.field_type:
-            continue
-        other_chosens = RegisterAPIChosen.objects.filter(children_of=r.children_of, id__in=cluster_id_list)
-        id_list = list(other_chosens.values_list('id', flat=True))
-        if id_list and not id_list in children_id_list:
-            children_id_list.append(list(other_chosens.values_list('id', flat=True)))
-        other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
-        # Checking if register api chosen has children and returning list of children
-        for other_chosen in other_chosens:
-            has_field = False
-            for f in RegisterAPIChosen._meta.get_fields()[3:]:
-                field = f.name
-                if 'field' in field and field != ['operatedfield', 'field_type']:
-                    try:
-                        g = getattr(other_chosen, field)
-                        has_field = True
-                    except AttributeError:
-                        continue
-                if not has_field:
+    def _process_json_kml_api(self, all_api, c, cluster_id_list, json_list):
+        """Process JSON/KML API data."""
+        other_chosens = []
+        children_id_list = []
+        
+        # Setup register API chosen
+        for i, j in enumerate(c[1]):
+            o = c[1][j]
+            r = o.the_chosen.choosing.get(register_api_foreign__isnull=False)
+            r.field_type = o.field_type
+            r.field_name = o.field_name
+            r.line_id = o.line_id
+            r.json_list = o.json_list
+            r.save()
+            
+            if not r.field_type:
+                continue
+                
+            other_chosens = RegisterAPIChosen.objects.filter(
+                children_of=r.children_of, 
+                id__in=cluster_id_list
+            )
+            id_list = list(other_chosens.values_list('id', flat=True))
+            
+            if id_list and id_list not in children_id_list:
+                children_id_list.append(id_list)
+                
+            # Handle child processing
+            other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
+            for other_chosen in other_chosens:
+                if not self._has_valid_field(other_chosen):
                     continue
-            other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
-            if other_children.count() > 0:
-                children_id_list[0].remove(other_chosen.id)
-                if not children_id_list[0]:
-                    children_id_list.remove(children_id_list[0])
+                    
+                other_children = RegisterAPIChosen.objects.filter(children_of=other_chosen)
+                if other_children.exists():
+                    children_id_list[0].remove(other_chosen.id)
+                    if not children_id_list[0]:
+                        children_id_list.remove(children_id_list[0])
+            
+            # Process children
             children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
-            if children.count() > 0:
-                self.iterate_child(the_chosen_id, children_id_list)
-    if other_chosens:
-        empty_type_chosens = other_chosens.filter(field_type__isnull=True)
-    else:
-        empty_type_chosens = None
-    if other_chosens and not empty_type_chosens:
-        path_list = []
-        if not all_api.api_type: 
-            waiting = False
-            page_number = all_api.pagination_number
-            all_api.where_line = 0
-            all_api.save()
-            if waiting:
-                break
-            while True:
-                print('page {}'.format(page_number))
-                try:
-                    if all_api.is_dumb:
-                        print("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
-                        response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page), timeout=10)
-                    else:
-                        params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
-                        response = requests.get("{}".format(all_api.api_endpoint), params=params, timeout=10)
-                except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
-                    waiting = True
-                    break
-                if response.status_code == '404':
-                    break
-                d = json.dumps(response.json(), sort_keys=True, indent=4)
-                l = json.loads(d)
-                if all_api.json_limit:
-                    try:
-                        l[all_api.json_limit]
-                        if not l[all_api.json_limit]:
-                            break
-                    except KeyError:
-                        break
-                else:
-                    r = RegisterAPI.objects.get(pk=all_api.pk)
-                    print(r.where_line)
-                    if all_api.until_line and all_api.until_line <= r.where_line:
-                        break
-                    elif not all_api.until_line:
-                        if int(l[all_api.results]) < r.where_line:
-                            break
-                    # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()
-                    # if int(l[all_api.results]) < counting:
-                    #     print(l[all_api.results])
-                    #     break
-                l_copy = l
-                data_object_list = []
-                for same_level_list in children_id_list:
-                    # First we get the path (in list of lists form) to each data point we want 
-                    path_list = self.get_path(same_level_list[0], [same_level_list], True)
-                    iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
-                    data_object_list.extend(same_level_data)
-                self.check_new_data(all_api.pk, data_object_list)
-                page_number += 1
-                print('next page {}'.format(page_number))
-                if all_api.sleep:
-                    sleep(all_api.sleep)
-                    break
-            if not waiting:
-                all_api.pagination_number = 0
-            else:
-                all_api.pagination_number = page_number
-        elif all_api.api_type in ["KML", "JSON"] and json_list:
-            page_number = 0
-            json_file = json.loads(all_api.register_file.read())
-            # Get path to json file list of data
-            path_list = self.get_path(json_list, [[json_list]], True)
-            # Iterate through json file using path to get to list of data
-            for path in path_list:
-                if type(path) is list:
-                    path_object = RegisterAPIChosen.objects.get(id=path[0])
-                else:
-                    path_object = RegisterAPIChosen.objects.get(id=path)
-                path_name = path_object.the_chosen.text_chosen
-                if '[0]' in path_name:
-                    path_name = path_name.replace('[0]', '')
-                json_file = json_file[path_name]
-            for l_copy in json_file:
-                data_object_list = []
-                print(children_id_list)
-                for same_level_list in children_id_list:
-                    path_list = self.get_path(same_level_list[0], [same_level_list], True)
-                    path_list.remove(json_list)
-                    print(path_list)
-                    iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
-                    data_object_list.extend(same_level_data)
-                print(data_object_list)
-                self.check_or_create_data(all_api.pk, data_object_list)
-                page_number += 1
-        if all_api.first:
-            all_api.first = False
-        all_api.save()
+            if children.exists():
+                self.iterate_child(other_chosen.id, children_id_list)
+        
+        # Process data if needed
+        if other_chosens:
+            empty_type_chosens = other_chosens.filter(field_type__isnull=True)
+            if not empty_type_chosens.exists():
+                # Handle pagination
+                page_number = 0
+                self._process_api_data(all_api, page_number, children_id_list, json_list)
