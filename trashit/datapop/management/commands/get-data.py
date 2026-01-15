@@ -341,3 +341,15 @@ class Command(BaseCommand):
                 # Handle pagination
                 page_number = 0
                 self._process_api_data(all_api, page_number, children_id_list, json_list)
+    
+    def _has_valid_field(self, other_chosen):
+        """Check if the chosen object has a valid field."""
+        for field in RegisterAPIChosen._meta.get_fields()[3:]:
+            field_name = field.name
+            if 'field' in field_name and field_name not in ['operatedfield', 'field_type']:
+                try:
+                    getattr(other_chosen, field_name)
+                    return True
+                except AttributeError:
+                    continue
+        return False
