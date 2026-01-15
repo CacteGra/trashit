@@ -190,25 +190,10 @@ class Command(BaseCommand):
                     osm_call.main()
                 elif all_api.api_type in ["KML", "JSON"] or not all_api.api_type:
                     self._process_json_kml_api(all_api, c, cluster_id_list, json_list)
-                else:
-                    for i, j in enumerate(c[1]):
-                        o = c[1][j]
-                        r = o.the_chosen.choosing.get(register_api_foreign__isnull=False)
-                        r.field_type = o.field_type
-                        r.field_name = o.field_name
-                        r.line_id = o.line_id
-                        r.json_list = o.json_list
-                        r.save()
-                    print('in file else')
-                    if cluster_id_list:
-                        register_api_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, field_type__isnull=True)
-                        if register_api_chosens:
-                            continue
-                        else:
-                            if all_api.api_type == "CSV":
-                                get_csv_data.main(all_api.pk, cluster_id_list)
-                            all_api.first = False
-                            all_api.save()
+                elif all_api.api_type == "CSV":
+                    get_csv_data.main(all_api.pk, cluster_id_list)
+                    all_api.first = False
+                    all_api.save()
                 other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
                 no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True, json_list=False)
                 if other_chosens and not no_operated:
@@ -353,3 +338,5 @@ class Command(BaseCommand):
                 except AttributeError:
                     continue
         return False
+
+    def _process_api_data(self, all_api, page_number, children_id_list, json_list):
