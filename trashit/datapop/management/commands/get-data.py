@@ -165,85 +165,9 @@ class Command(BaseCommand):
                     get_csv_data.main(all_api.pk, cluster_id_list)
                     all_api.first = False
                     all_api.save()
-                other_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list)
-                no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True, json_list=False)
-                if other_chosens and not no_operated:
-                    data_lines = DataLine.objects.all()
-                    linked_pointfield = data_lines.values("pointfield__pk").filter(pointfield__pk__isnull=False)
-                    linked_polygonfield = data_lines.values("polygonfield__pk").filter(polygonfield__pk__isnull=False)
-                    if all_api.the_time < timezone.now() - timedelta(hours=24) or not (linked_pointfield and linked_polygonfield):
-                        for data_line in data_lines:
-                            if all_api.api_trash == "TRASHSPECIFICITIES":
-                                field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
-                                the_type = None
-                                trash_type = None
-                                trash = None
-                                for field_type in field_types:
-                                    g = getattr(data_line, "{}_set".format(field_type))
-                                    if g.all().count() == 0:
-                                        continue
-                                    for g_object in g.all():
-                                        if not g_object.register_api_chosen:
-                                            continue
-                                        o_field = g_object.o_field
-                                        created = False
-                                        operated_fields = g_object.register_api_chosen.operatedfield_set.all()
-                                        for operated in operated_fields:
-                                            field_type = operated.field_type
-                                            if field_type == 'Textfield':
-                                                the_type, the_type_created = TheType.objects.get_or_create(the_type=o_field)
-                                                trash_type, trash_type_created = TrashType.objects.get_or_create(the_type=the_type)
-                                            else:
-                                                if created:
-                                                    continue
-                                                # Three choices for the pointfield: either a list, a string or integers be combined
-                                                elif field_type == 'Pointfield' and not operated.operation:
-                                                    if type(o_field) is list:
-                                                        lat = o_field[0]
-                                                        lng = o_field[1]
-                                                        point = Point(lng,lat)
-                                                    else:
-                                                        s = ast.literal_eval(o_field)
-                                                        lat = s[0]
-                                                        lng = s[1]
-                                                        point = Point(lng,lat)
-                                                elif field_type == 'Pointfield' and operated.operation == 'COMBINE':
-                                                    chosen = operated.register_api_chosen.get(field_name='lat')
-                                                    data_chosen = chosen.the_chosen.choosing.filter(register_api_foreign__isnull=False)
-                                                    chosen_field_type = chosen.field_type
-                                                    m = import_string('datapop.models.{}'.format(chosen_field_type))
-                                                    lat = m.objects.get(data_line__in=[data_line],register_api_chosen__in=data_chosen)
-                                                    lat = lat.o_field
-                                                    chosen = operated.register_api_chosen.get(field_name='lng')
-                                                    data_chosen = chosen.the_chosen.choosing.filter(register_api_foreign__isnull=False)
-                                                    chosen_field_type = chosen.field_type
-                                                    m = import_string('datapop.models.{}'.format(chosen_field_type))
-                                                    lng = m.objects.get(data_line__in=[data_line],register_api_chosen__in=data_chosen)
-                                                    lng = lng.o_field
-                                                    point = Point(lng,lat)
-                                                m = import_string('datapop.models.{}'.format(field_type))
-                                                try:
-                                                    # point_field = m.objects.get(o_field=point, data_line__in=[data_line])
-                                                    point_field = m.objects.get(o_field=point)
-                                                    data_line_point_field = m.objects.filter(pk=point_field.pk,data_line__in=[data_line])
-                                                    if not data_line_point_field:
-                                                        point_field.data_line.add(data_line)
-                                                except m.DoesNotExist:
-                                                    point_field = m.objects.create(o_field=point)
-                                                    point_field.data_line.add(data_line)
-                                                trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
-                                                # Find closest OSM trash points and hook them to local API trashes
-                                                close_osms = m.objects.filter(o_field__distance_lte=(point,D(m=20))).exclude(pk=point_field.pk)
-                                                trash.osm_trash_spec.add(*close_osms)
-                                        if trash_type and trash:
-                                            trash.trash_type.add(trash_type)
-                                            trash.save()
-                            elif all_api.api_trash == "COLLECTAREA":
-                                polygon_field = Polygonfield.objects.get(data_line=data_line)
-                                collect_area, created = CollectArea.objects.get_or_create(polygon_field=polygon_field)
-                                description = Textfield.objects.get(data_line=data_line)
-                                collect_area.description = description
-                                collect_area.save()
+
+                # Process trash data
+                self._process_trash_data(all_api)
 
 
     def _process_json_kml_api(self, all_api, c, cluster_id_list, json_list):
@@ -374,3 +298,89 @@ class Command(BaseCommand):
             if all_api.sleep:
                 sleep(all_api.sleep)
             break
+
+    def _process_trash_data(self, all_api):
+        """Process trash data."""
+        if all_api.the_time < timezone.now() - timedelta(hours=24):
+            return
+            
+        data_lines = DataLine.objects.all()
+        linked_pointfield = data_lines.values("pointfield__pk").filter(pointfield__pk__isnull=False)
+        linked_polygonfield = data_lines.values("polygonfield__pk").filter(polygonfield__pk__isnull=False)
+        
+        if not (linked_pointfield.exists() and linked_polygonfield.exists()):
+            return
+            
+        # Process trash specificities
+        if all_api.api_trash == "TRASHSPECIFICITIES":
+            self._process_trash_specificities(all_api, data_lines)
+        elif all_api.api_trash == "COLLECTAREA":
+            self._process_collect_areas(all_api, data_lines)
+
+    def _process_trash_specificities(self, all_api, data_lines):
+        """Process trash specificities."""
+        field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
+        
+        for data_line in data_lines:
+            for field_type in field_types:
+                g = getattr(data_line, f"{field_type}_set")
+                if g.all().count() == 0:
+                    continue
+                    
+                for g_object in g.all():
+                    if not g_object.register_api_chosen:
+                        continue
+                        
+                    o_field = g_object.o_field
+                    operated_fields = g_object.register_api_chosen.operatedfield_set.all()
+                    
+                    for operated in operated_fields:
+                        field_type = operated.field_type
+                        
+                        if field_type == 'Textfield':
+                            the_type, created = TheType.objects.get_or_create(the_type=o_field)
+                            trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
+                        elif field_type == 'Pointfield' and not operated.operation:
+                            if isinstance(o_field, list):
+                                lat, lng = o_field[0], o_field[1]
+                            else:
+                                s = ast.literal_eval(o_field)
+                                lat, lng = s[0], s[1]
+                            point = Point(lng, lat)
+                            
+                            # Create or update point field
+                            try:
+                                point_field = Polygonfield.objects.get(o_field=point)
+                                data_line_point_field = Polygonfield.objects.filter(
+                                    pk=point_field.pk, 
+                                    data_line__in=[data_line]
+                                )
+                                if not data_line_point_field.exists():
+                                    point_field.data_line.add(data_line)
+                            except Polygonfield.DoesNotExist:
+                                point_field = Polygonfield.objects.create(o_field=point)
+                                point_field.data_line.add(data_line)
+                            
+                            trash, created = TrashSpecificities.objects.get_or_create(
+                                point_field=point_field, 
+                                from_local_api=True
+                            )
+                            
+                            # Find closest OSM trash points
+                            close_osms = Polygonfield.objects.filter(
+                                o_field__distance_lte=(point, D(m=20))
+                            ).exclude(pk=point_field.pk)
+                            trash.osm_trash_spec.add(*close_osms)
+                            
+                            if 'trash_type' in locals() and trash:
+                                trash.trash_type.add(trash_type)
+                                trash.save()
+
+    def _process_collect_areas(self, all_api, data_lines):
+        """Process collect areas."""
+        for data_line in data_lines:
+            polygon_field = Polygonfield.objects.get(data_line=data_line)
+            collect_area, created = CollectArea.objects.get_or_create(polygon_field=polygon_field)
+            description = Textfield.objects.get(data_line=data_line)
+            collect_area.description = description
+            collect_area.save()
