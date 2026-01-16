@@ -210,7 +210,7 @@ class Command(BaseCommand):
                 if children.exists():
                     self.iterate_child(other_chosen.id, children_id_list)
         
-        if all_api.api_type in ["KML", "JSON"] and json_list:
+        if all_api.api_type in ["KML", "JSON"]:
             self._process_json_kml_file(all_api, c, children_id_list, json_list)
         elif not all_api.api_type:
             self._process_api_call(all_api, c, children_id_list, json_list)
