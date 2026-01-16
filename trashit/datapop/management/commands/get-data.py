@@ -149,16 +149,15 @@ class Command(BaseCommand):
                         register_api_chosen_id.field_type = o.field_type
                         register_api_chosen_id.save()
 
-                    if not o.json_list:
-                        cluster_id_list.append(register_api_chosen_id.id)
-                    else:
+                    cluster_id_list.append(register_api_chosen_id.id)
+                    if o.json_list:
                         json_list =  register_api_chosen_id.pk
 
                 # Handle API type specific operations
                 if all_api.api_type == "OSM":
                     osm_call.main()
                 elif all_api.api_type in ["KML", "JSON"] or not all_api.api_type:
-                    self._process_json_kml_api(all_api, c, cluster_id_list, json_list)
+                    self._process_api_children(all_api, c, cluster_id_list, json_list)
                 elif all_api.api_type == "CSV":
                     get_csv_data.main(all_api.pk, cluster_id_list)
                     all_api.first = False
@@ -167,7 +166,7 @@ class Command(BaseCommand):
                 # Process trash data
                 self._process_trash_data(all_api)
 
-    def _process_json_kml_api(self, all_api, c, cluster_id_list, json_list):
+    def _process_api_children(self, all_api, c, cluster_id_list, json_list):
         """Process JSON/KML API data."""
         other_chosens = []
         children_id_list = []
@@ -206,18 +205,15 @@ class Command(BaseCommand):
                     if not children_id_list[0]:
                         children_id_list.remove(children_id_list[0])
             
-            # Process children
-            children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
-            if children.exists():
-                self.iterate_child(other_chosen.id, children_id_list)
+                # Process children
+                children = RegisterAPIChosen.objects.filter(children_of=other_chosen.id)
+                if children.exists():
+                    self.iterate_child(other_chosen.id, children_id_list)
         
-        # Process data if needed
-        if other_chosens:
-            empty_type_chosens = other_chosens.filter(field_type__isnull=True)
-            if not empty_type_chosens.exists():
-                # Handle pagination
-                page_number = 0
-                self._process_api_data(all_api, page_number, children_id_list, json_list)
+        if all_api.api_type in ["KML", "JSON"] and json_list:
+            self._process_json_kml_file(all_api, c, children_id_list, json_list)
+        elif not all_api.api_type:
+            self._process_api_call(all_api, c, children_id_list, json_list)
     
     def _has_valid_field(self, other_chosen):
         """Check if the chosen object has a valid field."""
@@ -231,12 +227,41 @@ class Command(BaseCommand):
                     continue
         return False
 
-    def _process_api_data(self, all_api, page_number, children_id_list, json_list):
+    def _process_json_kml_file(self, all_api, c, children_id_list, json_list):
+        page_number = 0
+        json_file = json.loads(all_api.register_file.read())
+        # Get path to json file list of data
+        path_list = self.get_path(json_list, [[json_list]], True)
+        # Iterate through json file using path to get to list of data
+        for path in path_list:
+            if type(path) is list:
+                path_object = RegisterAPIChosen.objects.get(id=path[0])
+            else:
+                path_object = RegisterAPIChosen.objects.get(id=path)
+            path_name = path_object.the_chosen.text_chosen
+            if '[0]' in path_name:
+                path_name = path_name.replace('[0]', '')
+            if json_list:
+                json_file = json_file[path_name]
+        for l_copy in json_file:
+            data_object_list = []
+            for same_level_list in children_id_list:
+                path_list = self.get_path(same_level_list[0], [same_level_list], True)
+                path_list.remove(json_list)
+                iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
+                data_object_list.extend(same_level_data)
+            self.check_or_create_data(all_api.pk, data_object_list)
+            page_number += 1
+        if all_api.first:
+            all_api.first = False
+        all_api.save()
+
+    def _process_api_call(self, all_api, page_number, children_id_list, json_list):
         """Process API data with pagination."""
         waiting = False
         all_api.where_line = 0
         all_api.save()
-        
+
         if waiting:
             return
             
@@ -294,7 +319,6 @@ class Command(BaseCommand):
             
             if all_api.sleep:
                 sleep(all_api.sleep)
-            break
 
     def _process_trash_data(self, all_api):
         """Process trash data."""
