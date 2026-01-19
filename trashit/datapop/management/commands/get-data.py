@@ -236,25 +236,28 @@ class Command(BaseCommand):
         page_number = 0
         json_file = json.loads(all_api.register_file.read())
         # Get path to json file list of data
-        path_list = self.get_path(json_list, [[json_list]], True)
-        # Iterate through json file using path to get to list of data
-        for path in path_list:
-            if type(path) is list:
-                path_object = RegisterAPIChosen.objects.get(id=path[0])
-            else:
-                path_object = RegisterAPIChosen.objects.get(id=path)
-            path_name = path_object.the_chosen.text_chosen
-            if '[0]' in path_name:
-                path_name = path_name.replace('[0]', '')
-            # Using JSON list key to navigate to list of values
-            if json_list:
-                json_file = json_file[path_name]
+        if json_list:
+            path_list = self.get_path(json_list, [[json_list]], True)
+            # Iterate through json file using path to get to list of data
+            for path in path_list:
+                if type(path) is list:
+                    path_object = RegisterAPIChosen.objects.get(id=path[0])
+                else:
+                    path_object = RegisterAPIChosen.objects.get(id=path)
+                path_name = path_object.the_chosen.text_chosen
+                if '[0]' in path_name:
+                    path_name = path_name.replace('[0]', '')
+                # Using JSON list key to navigate to list of values
+                if json_list:
+                    json_file = json_file[path_name]
+        n = 0
         for l_copy in json_file:
             data_object_list = []
             for same_level_list in children_id_list:
                 path_list = self.get_path(same_level_list[0], [same_level_list], True)
-                # Removing JSON list key from list of values to record
-                path_list.remove(json_list)
+                if json_list:
+                    # Removing JSON list key from list of values to record
+                    path_list.remove(json_list)
                 iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
                 data_object_list.extend(same_level_data)
             self.check_or_create_data(all_api.pk, data_object_list)
