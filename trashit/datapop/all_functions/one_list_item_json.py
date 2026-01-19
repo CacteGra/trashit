@@ -33,8 +33,6 @@ def main(register_api_pk):
         json_response = kml2geojson.main.convert(response)
     else:
         json_response = json.load(response)
-    if type(json_response) is list:
-        json_response = json_response[0]
     with open('{}/data.json'.format(DATAPOP_DIR), 'w') as f:
         json.dump(json_response, f)
     with open('{}/data.json'.format(DATAPOP_DIR), 'r') as f:
@@ -42,4 +40,6 @@ def main(register_api_pk):
         all_api.register_file.save('{}.json'.format(filename), File(f))
     all_api = RegisterAPI.objects.get(pk=register_api_pk)
     l = json.loads(all_api.register_file.read())
+    if type(l) is list:
+        l = l[0]
     one_list_item.main(l, register_api_pk)
