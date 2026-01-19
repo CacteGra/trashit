@@ -148,16 +148,20 @@ class Command(BaseCommand):
                     if not register_api_chosen_id.field_type or register_api_chosen_id.field_type != o.field_type:
                         register_api_chosen_id.field_type = o.field_type
                         register_api_chosen_id.save()
-
+                    # IDs of chosen values created as new
                     cluster_id_list.append(register_api_chosen_id.id)
+                    # Key of JSON file for list of values from which to iterate
                     if o.json_list:
                         json_list =  register_api_chosen_id.pk
 
                 # Handle API type specific operations
+                # OSM API
                 if all_api.api_type == "OSM":
                     osm_call.main()
+                # KML/JSON file or common API (share same workflow with dictionary to get value)
                 elif all_api.api_type in ["KML", "JSON"] or not all_api.api_type:
                     self._process_api_children(all_api, c, cluster_id_list, json_list)
+                # CSV file
                 elif all_api.api_type == "CSV":
                     get_csv_data.main(all_api.pk, cluster_id_list)
                     all_api.first = False
@@ -168,6 +172,7 @@ class Command(BaseCommand):
 
     def _process_api_children(self, all_api, c, cluster_id_list, json_list):
         """Process JSON/KML API data."""
+        # Transfer chosen values from cluster to existing regsiter API ones
         other_chosens = []
         children_id_list = []
         
@@ -241,12 +246,14 @@ class Command(BaseCommand):
             path_name = path_object.the_chosen.text_chosen
             if '[0]' in path_name:
                 path_name = path_name.replace('[0]', '')
+            # Using JSON list key to navigate to list of values
             if json_list:
                 json_file = json_file[path_name]
         for l_copy in json_file:
             data_object_list = []
             for same_level_list in children_id_list:
                 path_list = self.get_path(same_level_list[0], [same_level_list], True)
+                # Removing JSON list key from list of values to record
                 path_list.remove(json_list)
                 iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
                 data_object_list.extend(same_level_data)
