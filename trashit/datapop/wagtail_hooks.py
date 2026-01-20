@@ -135,7 +135,7 @@ def after_snippet_delete(request, instances):
             cluster_id_list = []
             for i, j in enumerate(c[1]):
                 o = c[1][j]
-                OperatedField.objects.filter(register_api_chosen=o).delete()
+                OperatedField.objects.filter(register_api_chosen__id__in=[o.pk]).delete()
                 register_api_chosen_id = o.the_chosen.choosing.get(register_api__isnull=False)
                 cluster_id_list.append(register_api_chosen_id.id)
             OperatedField.objects.filter(register_api_chosen__id__in=cluster_id_list).delete()
