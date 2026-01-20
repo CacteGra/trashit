@@ -55,6 +55,20 @@ def first_connection(request, instance):
                 print(False)
             l = unique_get_data.main(r.api_endpoint)
             one_list_item.main(l, r.pk)
+    elif isinstance(instance, OperatedField):
+        chosen = RegisterAPIChosen.objects.filter(operatedfield=instance)[0]
+        non_foreign_chosen = chosen.the_chosen.choosing.get(register_api_foreign__isnull=True)
+        this_api = non_foreign_chosen.register_api
+        c = this_api.copy_cluster()
+        cluster_id_list = []
+        for i, j in enumerate(c[1]):
+            o = c[1][j]
+            register_api_chosen_id = o.the_chosen.choosing.get(register_api_foreign__isnull=False)
+            cluster_id_list.append(register_api_chosen_id.id)
+        no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True, json_list=False)
+        if not no_operated:
+            this_api.first = True
+            this_api.save()
     elif isinstance(instance, CollectArea):
         c = CollectArea.objects.get(pk=instance.pk)
         str_to_coords.main(instance.pk)
