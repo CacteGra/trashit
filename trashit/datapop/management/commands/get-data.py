@@ -331,22 +331,17 @@ class Command(BaseCommand):
                 sleep(all_api.sleep)
 
     def _process_trash_data(self, all_api):
-        """Process trash data."""
-        if all_api.the_time < timezone.now() - timedelta(hours=24):
-            return
-            
+        """Process trash data."""            
         data_lines = DataLine.objects.all()
         linked_pointfield = data_lines.values("pointfield__pk").filter(pointfield__pk__isnull=False)
         linked_polygonfield = data_lines.values("polygonfield__pk").filter(polygonfield__pk__isnull=False)
         
         if not (linked_pointfield.exists() and linked_polygonfield.exists()):
-            return
-            
-        # Process trash specificities
-        if all_api.api_trash == "TRASHSPECIFICITIES":
-            self._process_trash_specificities(all_api, data_lines)
-        elif all_api.api_trash == "COLLECTAREA":
-            self._process_collect_areas(all_api, data_lines)
+            # Process trash specificities
+            if all_api.api_trash == "TRASHSPECIFICITIES":
+                self._process_trash_specificities(all_api, data_lines)
+            elif all_api.api_trash == "COLLECTAREA":
+                self._process_collect_areas(all_api, data_lines)
 
     def _process_trash_specificities(self, all_api, data_lines):
         """Process trash specificities."""
