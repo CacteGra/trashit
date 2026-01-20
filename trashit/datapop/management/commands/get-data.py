@@ -154,7 +154,8 @@ class Command(BaseCommand):
                     if o.json_list:
                         json_list =  register_api_chosen_id.pk
                 
-                if not cluster_id_list:
+                empty_type_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list,field_type__isnull=True)
+                if (not cluster_id_list) or empty_type_chosens:
                     continue
 
                 # Handle API type specific operations
