@@ -153,6 +153,9 @@ class Command(BaseCommand):
                     # Key of JSON file for list of values from which to iterate
                     if o.json_list:
                         json_list =  register_api_chosen_id.pk
+                
+                if not cluster_id_list:
+                    continue
 
                 # Handle API type specific operations
                 # OSM API
@@ -215,6 +218,9 @@ class Command(BaseCommand):
                 if children.exists():
                     self.iterate_child(other_chosen.id, children_id_list)
         
+        if not children_id_list:
+            return
+
         if all_api.api_type in ["KML", "JSON"]:
             self._process_json_kml_file(all_api, c, children_id_list, json_list)
         elif not all_api.api_type:
