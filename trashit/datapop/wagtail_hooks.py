@@ -11,6 +11,8 @@ from wagtail.admin.panels import FieldPanel, MultipleChooserPanel, InlinePanel, 
 
 from wagtail.admin.filters import WagtailFilterSet
 from django.utils.module_loading import import_string
+from django.urls import reverse
+from django.shortcuts import redirect
 from django import forms
 
 from wagtail.telepath import JSContext
@@ -35,6 +37,10 @@ from django.db.models import Count
 def register_viewsets():
     return [chosen_chooser_viewset]
 
+def url_to_edit_object(obj):
+  url = reverse('admin:%s_%s_change' % (obj._meta.app_label,  obj._meta.model_name),  args=[obj.id] )
+  return u'<a href="%s">Edit %s</a>' % (url,  obj.__unicode__())
+
 @hooks.register('after_create_snippet')
 def first_connection(request, instance):
     if isinstance(instance, RegisterAPI):
@@ -55,6 +61,7 @@ def first_connection(request, instance):
                 print(False)
             l = unique_get_data.main(r.api_endpoint)
             one_list_item.main(l, r.pk)
+        return redirect(url_to_edit_object(r))
     elif isinstance(instance, OperatedField):
         chosen = RegisterAPIChosen.objects.filter(operatedfield=instance)[0]
         non_foreign_chosen = chosen.the_chosen.choosing.get(register_api_foreign__isnull=True)
