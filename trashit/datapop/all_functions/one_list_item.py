@@ -28,7 +28,7 @@ def hierarchy(struct, path=None):
 
 def spec_polygon(using_dict):
     for list_id, i in enumerate(using_dict):
-        if '[][][]' in i:
+        if '[][][]' in i and (not '[][][][]' in i):
             del using_dict[list_id]
             del using_dict[list_id-1]
             using_dict[list_id-2] = i[:-6]
@@ -38,13 +38,21 @@ def spec_polygon(using_dict):
 def only_one_item(using_dict, l, pk, hierarchy_level, parent):
     api = RegisterAPI.objects.get(pk=pk)
     list_dict = []
+    print("***")
+    print(using_dict)
     using_dict = [root for root in using_dict if root != '$.']
+    print(using_dict)
     using_dict = [root for root in using_dict if root != '$']
+    print(using_dict)
+    print("***")
+    if None in using_dict:
+        return using_dict
     has_list = {'in list': False, 'name': ''}
     has_dict = {'dict_done': False, 'name': ''}
     dict_level = l
     dict_numbered = hierarchy_level
     dict_numbered = hierarchy_level * 10 + 1
+    print(using_dict)
     using_dict = spec_polygon(using_dict)
     for i in using_dict:
         follow_list_dict = {'id': dict_numbered }
@@ -60,6 +68,8 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
             if '[0]' in k:
                 has_list = {'in list': True, 'name': k}
                 dict_level = dict_level[k.replace('[0]', '')]
+                if None in dict_level:
+                    continue
                 follow_list_dict['title'] = k.replace('[0]', '')
                 chosen = Chosen.objects.create(text_chosen=k[:200])
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True )
@@ -100,6 +110,7 @@ def main(l, pk):
     parent = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=0, children_of=None)
     # Bypass list when value is polygon (which displays as [][][])
     using_dict = spec_polygon(using_dict)
+    print(using_dict)
     for i in using_dict:
         follow_list_dict = {'id': dict_numbered }
         if '[]' in i:
@@ -116,7 +127,11 @@ def main(l, pk):
             has_dict = {'dict_done': False, 'name': ''}
             if '[0]' in k:
                 has_list = {'in list': True, 'name': k}
+                print(dict_level)
                 dict_level = dict_level[k.replace('[0]', '')]
+                print(dict_level)
+                if None in dict_level:
+                    continue
                 follow_list_dict['title'] = k.replace('[0]', '')
                 chosen = Chosen.objects.create(text_chosen=k[:200])
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
