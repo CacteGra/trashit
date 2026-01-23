@@ -73,7 +73,7 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
                 follow_list_dict['title'] = k.replace('[0]', '')
                 chosen = Chosen.objects.create(text_chosen=k[:200])
                 child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True )
-                follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], k, dict_numbered, child)
+                follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], pk, dict_numbered, child)
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
                 follow_list_dict['title'] = k
