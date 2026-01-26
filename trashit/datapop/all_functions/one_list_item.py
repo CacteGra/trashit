@@ -68,12 +68,16 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
             if '[0]' in k:
                 has_list = {'in list': True, 'name': k}
                 dict_level = dict_level[k.replace('[0]', '')]
-                if None in dict_level:
-                    continue
-                follow_list_dict['title'] = k.replace('[0]', '')
-                chosen = Chosen.objects.create(text_chosen=k[:200])
-                child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True )
-                follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], pk, dict_numbered, child)
+                if set(type(item) for item in dict_level).pop() == float:
+                    follow_list_dict['title'] = k.replace('[0]', '')
+                    follow_list_dict['value'] = str(dict_level)
+                    chosen = Chosen.objects.create(text_chosen=k.replace('[0]', ''), value_example=str(dict_level))
+                    child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
+                else:
+                    follow_list_dict['title'] = k.replace('[0]', '')
+                    chosen = Chosen.objects.create(text_chosen=k[:200])
+                    child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True )
+                    follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], pk, dict_numbered, child)
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
                 follow_list_dict['title'] = k
@@ -110,7 +114,6 @@ def main(l, pk):
     parent = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=0, children_of=None)
     # Bypass list when value is polygon (which displays as [][][])
     using_dict = spec_polygon(using_dict)
-    print(using_dict)
     for i in using_dict:
         follow_list_dict = {'id': dict_numbered }
         if '[]' in i:
@@ -127,16 +130,18 @@ def main(l, pk):
             has_dict = {'dict_done': False, 'name': ''}
             if '[0]' in k:
                 has_list = {'in list': True, 'name': k}
-                print(dict_level)
                 dict_level = dict_level[k.replace('[0]', '')]
-                print(dict_level)
-                if None in dict_level:
-                    continue
-                follow_list_dict['title'] = k.replace('[0]', '')
-                chosen = Chosen.objects.create(text_chosen=k[:200])
-                child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
-                follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], pk, dict_numbered, child)
-                print('liste {}'.format(follow_list_dict['children']))
+                if set(type(item) for item in dict_level).pop() == float:
+                    follow_list_dict['title'] = k.replace('[0]', '')
+                    follow_list_dict['value'] = str(dict_level)
+                    chosen = Chosen.objects.create(text_chosen=k.replace('[0]', ''), value_example=str(dict_level))
+                    child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
+                else:
+                    follow_list_dict['title'] = k.replace('[0]', '')
+                    chosen = Chosen.objects.create(text_chosen=k[:200])
+                    child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
+                    follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], pk, dict_numbered, child)
+                    print('liste {}'.format(follow_list_dict['children']))
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
                 follow_list_dict['title'] = k
