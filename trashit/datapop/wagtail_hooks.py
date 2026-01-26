@@ -2,6 +2,8 @@ from wagtail.snippets.models import register_snippet
 from wagtail import hooks
 from wagtail import blocks
 from wagtail.snippets.views.snippets import SnippetViewSet, IndexView
+from wagtail.admin.admin_url_finder import AdminURLFinder
+
 from django.core.exceptions import ImproperlyConfigured
 from django.forms.models import ModelChoiceIterator
 from django.forms.widgets import (CheckboxSelectMultiple, RadioSelect, Select,
@@ -38,8 +40,10 @@ def register_viewsets():
     return [chosen_chooser_viewset]
 
 def url_to_edit_object(obj):
-  url = reverse('admin:%s_%s_change' % (obj._meta.app_label,  obj._meta.model_name),  args=[obj.id] )
-  return u'<a href="%s">Edit %s</a>' % (url,  obj.__unicode__())
+  finder = AdminURLFinder()
+  url = finder.get_edit_url(obj)
+  print(url)
+  return url
 
 @hooks.register('after_create_snippet')
 def first_connection(request, instance):
@@ -164,6 +168,7 @@ class RegisterAPITemplate(SnippetViewSet):
     panels = [
         FieldPanel('api_title'),
         FieldPanel('api_endpoint'),
+        FieldPanel('api_trash_type'),
         FieldPanel('first'),
         FieldPanel('city'),
         FieldPanel('state'),
