@@ -58,6 +58,8 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
         follow_list_dict = {'id': dict_numbered }
         if '[]' in i:
             i = i.replace('[]','[0]')
+        if i == '$':
+            continue
         elif (has_list['in list'] and has_list['name'] and has_list['name'] in i) or (has_dict['dict_done'] and has_dict['name'] and has_dict['name'] in i):
             continue
         else:
@@ -67,16 +69,17 @@ def only_one_item(using_dict, l, pk, hierarchy_level, parent):
             has_dict = {'dict_done': False, 'name': ''}
             if '[0]' in k:
                 has_list = {'in list': True, 'name': k}
-                dict_level = dict_level[k.replace('[0]', '')]
-                if set(type(item) for item in dict_level).pop() == float:
+                if set(type(item) for item in dict_level).pop() != list:
                     follow_list_dict['title'] = k.replace('[0]', '')
-                    follow_list_dict['value'] = str(dict_level)
-                    chosen = Chosen.objects.create(text_chosen=k.replace('[0]', ''), value_example=str(dict_level))
+                    the_value = dict_level[k.replace('[0]', '')]
+                    follow_list_dict['value'] = str(the_value)
+                    chosen = Chosen.objects.create(text_chosen=k.replace('[0]', ''), value_example=str(the_value))
                     child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
                 else:
+                    dict_level = dict_level[k.replace('[0]', '')]
                     follow_list_dict['title'] = k.replace('[0]', '')
                     chosen = Chosen.objects.create(text_chosen=k[:200])
-                    child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True )
+                    child = RegisterAPIChosen.objects.create(register_api_foreign=api, the_chosen=chosen, hierarchy=dict_numbered, children_of=parent, is_list=True)
                     follow_list_dict['children'] = only_one_item(sorted(hierarchy(dict_level[0])), dict_level[0], pk, dict_numbered, child)
             elif isinstance(dict_level[k], dict):
                 has_dict = {'dict_done': True, 'name': k}
