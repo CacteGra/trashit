@@ -17,7 +17,6 @@ from wagtail.snippets.models import register_snippet
 
 from .widgets import ChosenChooserWidget, OperatedChooserWidget
 
-
 class Booleanfield(models.Model):
     id = models.BigAutoField(primary_key=True)
     data_line = models.ManyToManyField('DataLine', blank=True)
@@ -482,6 +481,7 @@ class RequestLocalWaste(models.Model):
 class RegisterAPI(ClusterableModel):
     id = models.AutoField(primary_key=True, editable=False)
     api_title = models.TextField(max_length=100)
+    api_trash_type = models.CharField(max_length=250, null=True, blank=True)
     city = models.CharField(max_length=250, null=True, blank=True)
     state = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True, blank=True)
