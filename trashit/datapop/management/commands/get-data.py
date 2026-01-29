@@ -371,7 +371,7 @@ class Command(BaseCommand):
                         created = False
                         operated_fields = g_object.register_api_chosen.operatedfield_set.all()
                         if all_api.api_trash_type:
-                            the_type, the_type_created = TheType.objects.get_or_create(the_type=r.api_trash_type)
+                            the_type, the_type_created = TheType.objects.get_or_create(the_type=all_api.api_trash_type)
                             trash_type, trash_type_created = TrashType.objects.get_or_create(the_type=the_type)
                         for operated in operated_fields:
                             field_type = operated.field_type
