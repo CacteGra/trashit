@@ -173,6 +173,8 @@ class Command(BaseCommand):
 
                 # Process trash data
                 self._process_trash_data(all_api)
+                all_api.first = False
+                all_api.save()
 
     def _process_api_children(self, all_api, c, cluster_id_list, json_list):
         """Process JSON/KML API data."""
@@ -405,8 +407,6 @@ class Command(BaseCommand):
                                     m = import_string('datapop.models.{}'.format(chosen_field_type))
                                     lng = m.objects.get(data_line__in=[data_line],register_api_chosen__in=data_chosen)
                                     lng = lng.o_field
-                                    print(lng)
-                                    print(lat)
                                     point = Point(lng, lat, srid=4326)
                                 m = import_string('datapop.models.{}'.format(field_type))
                                 try:
