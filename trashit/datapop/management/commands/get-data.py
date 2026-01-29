@@ -386,12 +386,12 @@ class Command(BaseCommand):
                                     if type(o_field) is list:
                                         lat = o_field[0]
                                         lng = o_field[1]
-                                        point = Point(lng,lat)
+                                        point = Point(lng, lat, srid=4326)
                                     else:
                                         s = ast.literal_eval(o_field)
                                         lat = s[0]
                                         lng = s[1]
-                                        point = Point(lng,lat)
+                                        point = Point(lng, lat, srid=4326)
                                 elif field_type == 'Pointfield' and operated.operation == 'COMBINE':
                                     chosen = operated.register_api_chosen.get(field_name='lat')
                                     data_chosen = chosen.the_chosen.choosing.filter(register_api_foreign__isnull=False)
@@ -407,7 +407,7 @@ class Command(BaseCommand):
                                     lng = lng.o_field
                                     print(lng)
                                     print(lat)
-                                    point = Point(lng,lat)
+                                    point = Point(lng, lat, srid=4326)
                                 m = import_string('datapop.models.{}'.format(field_type))
                                 try:
                                     # point_field = m.objects.get(o_field=point, data_line__in=[data_line])
