@@ -168,7 +168,6 @@ class Command(BaseCommand):
                 # CSV file
                 elif all_api.api_type == "CSV":
                     get_csv_data.main(all_api.pk, cluster_id_list)
-                    all_api.first = False
                     all_api.save()
 
                 # Process trash data
@@ -271,9 +270,6 @@ class Command(BaseCommand):
                 data_object_list.extend(same_level_data)
             self.check_or_create_data(all_api.pk, data_object_list)
             page_number += 1
-        if all_api.first:
-            all_api.first = False
-        all_api.save()
 
     def _process_api_call(self, all_api, page_number, children_id_list, json_list):
         """Process API data with pagination."""
@@ -341,7 +337,7 @@ class Command(BaseCommand):
 
     def _process_trash_data(self, all_api):
         """Process trash data."""            
-        data_lines = DataLine.objects.all()
+        data_lines = DataLine.objects.filter(register_api=all_api)
         linked_pointfield = data_lines.values("pointfield__pk").filter(pointfield__pk__isnull=False)
         linked_polygonfield = data_lines.values("polygonfield__pk").filter(polygonfield__pk__isnull=False)
         
