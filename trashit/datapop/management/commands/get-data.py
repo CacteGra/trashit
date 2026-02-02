@@ -163,7 +163,7 @@ class Command(BaseCommand):
                 if all_api.api_type == "OSM":
                     osm_call.main()
                 # KML/JSON file or common API (share same workflow with dictionary to get value)
-                elif all_api.api_type in ["KML", "JSON"] or not all_api.api_type:
+                elif all_api.api_type in ["KML", "JSON", "NONE"]:
                     self._process_api_children(all_api, c, cluster_id_list, json_list)
                 # CSV file
                 elif all_api.api_type == "CSV":
@@ -225,7 +225,7 @@ class Command(BaseCommand):
 
         if all_api.api_type in ["KML", "JSON"]:
             self._process_json_kml_file(all_api, c, children_id_list, json_list)
-        elif all_api.api_type == "None":
+        elif all_api.api_type in ["NONE"]:
             self._process_api_call(all_api, c, children_id_list, json_list)
     
     def _has_valid_field(self, other_chosen):
@@ -273,67 +273,65 @@ class Command(BaseCommand):
 
     def _process_api_call(self, all_api, page_number, children_id_list, json_list):
         """Process API data with pagination."""
+        print("_process_api_call")
         waiting = False
+        page_number = all_api.pagination_number
         all_api.where_line = 0
         all_api.save()
-
         if waiting:
-            return
-            
+            return True
         while True:
+            print('page {}'.format(page_number))
             try:
-                # Make request based on API type
                 if all_api.is_dumb:
-                    response = requests.get(
-                        f"{all_api.api_endpoint}&{all_api.pagination}={page_number}&{all_api.rows_name}={all_api.rows_per_page}",
-                        timeout=10
-                    )
+                    print("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page))
+                    response = requests.get("{}&{}={}&{}={}".format(all_api.api_endpoint, all_api.pagination, page_number, all_api.rows_name, all_api.rows_per_page), timeout=10)
                 else:
                     params = {all_api.pagination: page_number, all_api.rows_name: all_api.rows_per_page}
-                    response = requests.get(all_api.api_endpoint, params=params, timeout=10)
-                    
-            except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+                    response = requests.get("{}".format(all_api.api_endpoint), params=params, timeout=10)
+            except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
                 waiting = True
                 break
-                
             if response.status_code == '404':
                 break
-                
-            try:
-                d = json.dumps(response.json(), sort_keys=True, indent=4)
-                l = json.loads(d)
-            except (json.JSONDecodeError, KeyError):
-                break
-                
-            # Check for limits
+            d = json.dumps(response.json(), sort_keys=True, indent=4)
+            l = json.loads(d)
             if all_api.json_limit:
                 try:
-                    if not l.get(all_api.json_limit):
+                    l[all_api.json_limit]
+                    if not l[all_api.json_limit]:
                         break
                 except KeyError:
                     break
             else:
                 r = RegisterAPI.objects.get(pk=all_api.pk)
+                print(r.where_line)
                 if all_api.until_line and all_api.until_line <= r.where_line:
                     break
                 elif not all_api.until_line:
-                    if int(l.get(all_api.results, 0)) < r.where_line:
+                    if int(l[all_api.results]) < r.where_line:
                         break
-                        
+                # counting = DataLine.objects.filter(register_api=all_api, the_time__gte=timezone.now() - timedelta(hours=24)).count()
+                # if int(l[all_api.results]) < counting:
+                #     print(l[all_api.results])
+                #     break
             l_copy = l
-            
-            # Process data for each child list
+            data_object_list = []
             for same_level_list in children_id_list:
+                # First we get the path (in list of lists form) to each data point we want 
                 path_list = self.get_path(same_level_list[0], [same_level_list], True)
                 iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
-                
-                if same_level_data:
-                    self.check_or_create_data(all_api.pk, same_level_data)
-            
+                data_object_list.extend(same_level_data)
+            self.check_new_data(all_api.pk, data_object_list)
             page_number += 1
-            
+            print('next page {}'.format(page_number))
             if all_api.sleep:
                 sleep(all_api.sleep)
+                break
+        if not waiting:
+            all_api.pagination_number = 0
+        else:
+            all_api.pagination_number = page_number
 
     def _process_trash_data(self, all_api):
         """Process trash data."""            
