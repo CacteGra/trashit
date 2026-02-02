@@ -267,7 +267,8 @@ class Command(BaseCommand):
                     # Removing JSON list key from list of values to record
                     path_list.remove(json_list)
                 iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
-                data_object_list.extend(same_level_data)
+                if same_level_data:
+                    data_object_list.extend(same_level_data)
             self.check_or_create_data(all_api.pk, data_object_list)
             page_number += 1
 
@@ -321,8 +322,9 @@ class Command(BaseCommand):
                 # First we get the path (in list of lists form) to each data point we want 
                 path_list = self.get_path(same_level_list[0], [same_level_list], True)
                 iterated, same_level_data = self.iterate_data_lines(path_list, -1, l_copy, all_api.pk, page_number)
-                data_object_list.extend(same_level_data)
-            self.check_new_data(all_api.pk, data_object_list)
+                if same_level_data:
+                    data_object_list.extend(same_level_data)
+            self.check_or_create_data(all_api.pk, data_object_list)
             page_number += 1
             print('next page {}'.format(page_number))
             if all_api.sleep:
