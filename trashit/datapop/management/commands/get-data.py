@@ -225,7 +225,7 @@ class Command(BaseCommand):
 
         if all_api.api_type in ["KML", "JSON"]:
             self._process_json_kml_file(all_api, c, children_id_list, json_list)
-        elif not all_api.api_type:
+        elif all_api.api_type == "None":
             self._process_api_call(all_api, c, children_id_list, json_list)
     
     def _has_valid_field(self, other_chosen):
