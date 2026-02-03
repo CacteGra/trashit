@@ -98,30 +98,33 @@ class Command(BaseCommand):
 
     def check_or_create_data(self, all_api_pk, check_new_data):
         all_api = RegisterAPI.objects.get(pk=all_api_pk)
-        current_model = check_new_data[0]
-        print(current_model.id)
-        print('after current model')
-        field_name = current_model._meta.model.__name__
-        query = Q(**{field_name.lower(): current_model})
-        query_to_create = Q(**{field_name.lower(): current_model})
-        data_line = DataLine.objects.filter(register_api=all_api)
-        data_line = data_line.filter(query)
-        for t in range(1, len(check_new_data)):
-            current_model = check_new_data[t]
-            field_name = current_model._meta.model.__name__
-            print(field_name)
-            query = Q(**{field_name.lower(): current_model})
-            data_line = data_line.filter(query)
-            query_to_create = query_to_create & Q(**{field_name.lower(): current_model})
-        if not data_line:
-            print('not data line')
-            print(query_to_create.children)
+        
+        # Build filters for all relationships
+        filters = {}
+        for model_obj in check_new_data:
+            field_name = model_obj._meta.model.__name__.lower()
+            filters[field_name] = model_obj
+        
+        # Check if exists with a single query
+        existing = DataLine.objects.filter(
+            register_api=all_api,
+            **filters
+        ).first()
+        
+        if not existing:
+            # Create new DataLine
             d = DataLine.objects.create(register_api=all_api)
-            for i in query_to_create.children:
-                g = getattr(d, "{}_set".format(i[0]))
-                g.add(i[1])
+            
+            # Set all relationships in bulk
+            for model_obj in check_new_data:
+                field_name = model_obj._meta.model.__name__.lower()
+                related_manager = getattr(d, f"{field_name}_set")
+                related_manager.add(model_obj)
         else:
-            data_line.update(the_time=timezone.now())
+            # Update existing record
+            existing.the_time = timezone.now()
+            existing.save()
+        
         return True
 
     def handle(self, *args, **options):
