@@ -44,12 +44,12 @@ class Command(BaseCommand):
     def iterate_data_lines(self, path_list, list_item, l_copy, all_api_pk, line_number=0):
         list_item += 1
         n = list_item
+        check_new_data = []
         for path_id in path_list[list_item:]:
             if list_item == 0:
                 where_line = 1
             n += 1
             if (type(path_id) is list):
-                check_new_data = []
                 for data_id in path_id:
                     base_r = RegisterAPIChosen.objects.get(id=data_id)
                     print(base_r.pk)
@@ -75,7 +75,8 @@ class Command(BaseCommand):
                 if r.is_list:
                     i = False
                     for upper_data_line in l_copy[(r.the_chosen.text_chosen).replace('[0]', '')]:
-                        i = self.iterate_data_lines(path_list, n-1, upper_data_line, all_api_pk, line_number)
+                        i, this_check_new_data = self.iterate_data_lines(path_list, n-1, upper_data_line, all_api_pk, line_number)
+                        check_new_data.extend(this_check_new_data)
                         line_number += 1
                         try:
                             where_line += 1
@@ -86,11 +87,11 @@ class Command(BaseCommand):
                             r = RegisterAPI.objects.get(pk=all_api_pk)
                             r.where_line += where_line
                             r.save()
-                            return True, None
+                            return True, check_new_data
                         except NameError:
-                            return True, None
+                            return True, check_new_data
                     else:
-                        return False, None
+                        return False, check_new_data
                 else:
                     l_copy_line_id = l_copy
                     l_copy = l_copy[(r.the_chosen.text_chosen).replace('[0]', '')]
@@ -326,17 +327,15 @@ class Command(BaseCommand):
                     data_object_list.extend(same_level_data)
             self.check_or_create_data(all_api.pk, data_object_list)
             page_number += 1
-            print('next page {}'.format(page_number))
             if all_api.sleep:
                 sleep(all_api.sleep)
-                break
         if not waiting:
             all_api.pagination_number = 0
         else:
             all_api.pagination_number = page_number
 
     def _process_trash_data(self, all_api):
-        """Process trash data."""            
+        """Process trash data."""
         data_lines = DataLine.objects.filter(register_api=all_api)
         linked_pointfield = data_lines.values("pointfield__pk").filter(pointfield__pk__isnull=False)
         linked_polygonfield = data_lines.values("polygonfield__pk").filter(polygonfield__pk__isnull=False)
@@ -351,7 +350,6 @@ class Command(BaseCommand):
     def _process_trash_specificities(self, all_api, data_lines):
         """Process trash specificities."""
         field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
-        
         for data_line in data_lines:
             if all_api.api_trash == "TRASHSPECIFICITIES":
                 field_types = [i[0].lower() for i in OperatedField.FIELD_CHOICES]
