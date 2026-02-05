@@ -411,13 +411,12 @@ class Command(BaseCommand):
                                     point = Point(lng, lat, srid=4326)
                                 m = import_string('datapop.models.{}'.format(field_type))
                                 try:
-                                    # point_field = m.objects.get(o_field=point, data_line__in=[data_line])
-                                    point_field = m.objects.get(o_field=point)
+                                    point_field = m.objects.get(o_field=point, data_line__in=[data_line])
                                     data_line_point_field = m.objects.filter(pk=point_field.pk,data_line__in=[data_line])
                                     if not data_line_point_field:
                                         point_field.data_line.add(data_line)
                                 except m.DoesNotExist:
-                                    point_field = m.objects.create(o_field=point)
+                                    point_field = m.objects.create(o_field=point, data_line=data_line)
                                     point_field.data_line.add(data_line)
                                 trash, created = TrashSpecificities.objects.get_or_create(point_field=point_field,from_local_api=True)
                                 # Find closest OSM trash points and hook them to local API trashes
