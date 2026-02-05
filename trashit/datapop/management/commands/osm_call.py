@@ -28,7 +28,7 @@ def safe_overpass_query(query, max_retries=3, delay=5):
                 raise Exception("Failed to execute Overpass query after retries") from e
 
 def main():
-    register_apis = RegisterAPI.objects.filter(api_type='OSM')
+    register_apis = RegisterAPI.objects.get(pk=r.pk)
     nominatim = Nominatim()
     print("osm")
     for register_api in register_apis:

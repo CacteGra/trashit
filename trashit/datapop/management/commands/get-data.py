@@ -136,6 +136,11 @@ class Command(BaseCommand):
                 # Skip if already processed recently
                 if all_api.the_time >= timezone.now() - timedelta(hours=24) and not all_api.first:
                     continue
+
+                # OSM API
+                if all_api.api_type == "OSM":
+                    osm_call.main(all_api.pk)
+                    continue
                 
                 # Get cluster data
                 c = all_api.copy_cluster()
@@ -163,11 +168,8 @@ class Command(BaseCommand):
                     continue
 
                 # Handle API type specific operations
-                # OSM API
-                if all_api.api_type == "OSM":
-                    osm_call.main()
                 # KML/JSON file or common API (share same workflow with dictionary to get value)
-                elif all_api.api_type in ["KML", "JSON", "NONE"]:
+                if all_api.api_type in ["KML", "JSON", "NONE"]:
                     self._process_api_children(all_api, c, cluster_id_list, json_list)
                 # CSV file
                 elif all_api.api_type == "CSV":
