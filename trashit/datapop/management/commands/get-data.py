@@ -386,6 +386,8 @@ class Command(BaseCommand):
                                         lat = o_field[0]
                                         lng = o_field[1]
                                         point = Point(lng, lat, srid=4326)
+                                    elif type(o_field) is Point:
+                                        point = o_field
                                     else:
                                         s = ast.literal_eval(o_field)
                                         lat = s[0]
