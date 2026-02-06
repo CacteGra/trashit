@@ -21,12 +21,9 @@ from .forms import RequestLocalForm
 
 class MainPageView(LoginRequiredMixin, TemplateView):
     template_name = 'mapping/home.html'
+    
     def get_context_data(self, **kwargs):
-        from trash.models import TheType
-
-        from .forms import RequestLocalForm
-
-        context = super(MainPageView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['trash_types'] = TheType.objects.values_list('the_type', flat=True).distinct()
         context['all_icons'] = [c[0] for c in TheType.icon.field.choices]
         context['form'] = RequestLocalForm()
@@ -34,13 +31,11 @@ class MainPageView(LoginRequiredMixin, TemplateView):
 
 
 class FirstLoad(LoginRequiredMixin, ListView):
-    from datapop.models import Pointfield
     model = Pointfield
     login_url = '/admin/'
     redirect_field_name = 'redirect_to'
 
     def iterate_points(self, ts, all_types, not_local_type, request):
-        from trash.models import TheType
         response = []
         type_count_dict = {}
         for t in ts:
@@ -80,7 +75,6 @@ class FirstLoad(LoginRequiredMixin, ListView):
         return response, all_types, not_local_type
 
     def distribute_points(self, latlng, num_points):
-        import numpy as np
         lat = latlng.y
         lng = latlng.x
         angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
@@ -99,21 +93,6 @@ class FirstLoad(LoginRequiredMixin, ListView):
         return lngs, lats
 
     def get(self, request, *arg, **kwargs):
-        from django.contrib.gis.geos import Point
-        from django.contrib.gis.measure import D
-        from django.contrib.gis.db.models.functions import Distance
-        from django.core.exceptions import ObjectDoesNotExist
-        from django.db.models import Q
-
-        from datetime import datetime, timedelta
-        import random
-        from pytz import utc
-
-        from datapop.models import OperatedField, Pointfield, RequestLocalWaste
-        from trash.models import TrashSpecificities, TrashType, TheType
-
-        from .forms import RequestLocalForm
-
         lat = float(request.GET['lat'])
         lng = float(request.GET['lng'])
         point = Point(lng, lat, srid=4326)
@@ -176,13 +155,11 @@ class FirstLoad(LoginRequiredMixin, ListView):
         return JsonResponse(whole_response, safe=False)
 
 class FilterType(LoginRequiredMixin, ListView):
-    from datapop.models import Pointfield
     model = Pointfield
     login_url = '/admin/'
     redirect_field_name = 'redirect_to'
 
     def iterate_points(self, ts, all_types, not_local_type, request):
-        from trash.models import TheType
         response = []
         type_count_dict = {}
         for t in ts:
@@ -222,7 +199,6 @@ class FilterType(LoginRequiredMixin, ListView):
         return response, all_types, not_local_type
 
     def distribute_points(self, latlng, num_points):
-        import numpy as np
         lat = latlng.y
         lng = latlng.x
         angles = np.linspace(0, 2 * np.pi, num_points, endpoint=False)
@@ -241,19 +217,6 @@ class FilterType(LoginRequiredMixin, ListView):
         return lngs, lats
 
     def get(self, request, *arg, **kwargs):
-        from django.contrib.gis.geos import Point
-        from django.contrib.gis.measure import D
-        from django.contrib.gis.db.models.functions import Distance
-        from django.core.exceptions import ObjectDoesNotExist
-        from django.db.models import Q
-
-        from datetime import datetime, timedelta
-        import random
-        from pytz import utc
-
-        from datapop.models import OperatedField, Pointfield
-        from trash.models import TrashSpecificities, TrashType, TheType
-
         lat = float(request.GET['lat'])
         lng = float(request.GET['lng'])
         get_type = request.GET['type']
@@ -317,19 +280,14 @@ class FilterType(LoginRequiredMixin, ListView):
 
 
 class RequestLocal(LoginRequiredMixin, FormView):
-    from .forms import RequestLocalForm
-
     template_name = "trash/request-local.html"
     form_class = RequestLocalForm
     success_url = "/"
 
     def form_valid(self, form):
-        from datapop.models import RequestLocalWaste
-        print(form.cleaned_data)
         RequestLocalWaste.objects.get_or_create(coordinates=form.cleaned_data['coordinates'])
         return super().form_valid(form)
 
     def form_invalid(self, form):
-        from django.http import HttpResponseRedirect
         print("FAILED")
         return HttpResponseRedirect('/')
