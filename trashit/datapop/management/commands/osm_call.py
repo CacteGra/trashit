@@ -39,7 +39,7 @@ def main(api_pk):
     for i in r:
         type_list = []
         point = Point(i.lon(), i.lat(), srid=4326)
-        point_field, created = Pointfield.objects.get_or_create(o_field=point)
+        point_field, created = Pointfield.objects.get_or_create(o_field=point, register_api_chosen__isnull=True, data_line__isnull=True)
         d = i.tags()
         try:
             waste_type = d['waste']
@@ -78,7 +78,7 @@ def main(api_pk):
     for i in r:
         type_list = []
         point = Point(i.lon(), i.lat(), srid=4326)
-        point_field, created = Pointfield.objects.get_or_create(o_field=point)
+        point_field, created = Pointfield.objects.get_or_create(o_field=point, register_api_chosen__isnull=True, data_line__isnull=True)
         d = i.tags()
         try:
             waste_type = d['waste']
@@ -117,7 +117,7 @@ def main(api_pk):
     for i in r:
         type_list = []
         point = Point(i.lon(), i.lat(), srid=4326)
-        point_field, created = Pointfield.objects.get_or_create(o_field=point)
+        point_field, created = Pointfield.objects.get_or_create(o_field=point, register_api_chosen__isnull=True, data_line__isnull=True)
         d = i.tags()
         waste_type = None
         for key, value in d.items():
