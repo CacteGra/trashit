@@ -155,8 +155,7 @@ class FirstLoad(BaseLoadView):
                                                                  request=request)}
         else:
             all_types = list(TheType.objects.filter(pk__in=all_types).values_list('the_type', flat=True))
-            response_types = list(TheType.objects.filter(pk__in=local_types).values_list('the_type', flat=True))
-            whole_response = {'response': whole_response, 'all_types': response_types, 'all_icons': [c[0] for c in TheType.icon.field.choices]}
+            whole_response = {'response': whole_response, 'all_types': all_types, 'all_icons': [c[0] for c in TheType.icon.field.choices]}
         
         return JsonResponse(whole_response, safe=False)
 
