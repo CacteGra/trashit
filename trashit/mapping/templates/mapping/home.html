@@ -572,6 +572,10 @@
         }
       });
 
+      document.getElementById('garbage-collection').onclick = garbageCollect;
+      document.getElementById('scan-wrapper').onclick = scanWrapper;
+      document.getElementById('filter all').onclick = filterTrash;
+
       // Attach Handlers
       document.getElementById('add-menu').onclick = () => {
         const href = `mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at ${oldLatLng.lat}, ${oldLatLng.lng}`;
