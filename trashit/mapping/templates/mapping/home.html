@@ -59,7 +59,6 @@
         <i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>
       </button>
       <ul class="filtering dropdown-menu">
-        <li><button class="dropdown-item filter" id="filter all" name="all">{% trans "All" %}</button></li>
       </ul>
     </div>
   </div>
@@ -263,6 +262,15 @@
             } else {
               const menu = document.querySelector('.filtering.dropdown-menu');
               menu.innerHTML = '';
+              const li = document.createElement('li');
+              const btn = document.createElement('button');
+              btn.className = 'dropdown-item filter';
+              btn.id = 'filter all';
+              btn.name = 'all';
+              btn.textContent = 'all';
+              btn.onclick = (e) => filterTrash(e);
+              li.appendChild(btn);
+              menu.appendChild(li); 
               for (const type of response.all_types) {
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
