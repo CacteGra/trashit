@@ -166,7 +166,6 @@ class FilterType(BaseLoadView):
         get_type = request.GET['type']
         point = Point(lng, lat, srid=4326)
         whole_response = []
-        all_types = []
         not_local_type = []
         
         if get_type == 'all':
@@ -177,10 +176,10 @@ class FilterType(BaseLoadView):
             the_type = TheType.objects.get(the_type=get_type)
             trash_types = TrashType.objects.filter(the_type__in=[the_type])
             ts = TrashSpecificities.objects.filter(
-                point_field__o_field__distance_lte=(point, D(m=10000)), 
+                point_field__o_field__distance_lte=(point, D(m=2000)), 
                 trash_type__in=trash_types
             ).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
-            whole_response, _, _ = self.iterate_points(ts, all_types, not_local_type, request)
+            whole_response, _, _ = self.iterate_points(ts, [get_type], not_local_type, request)
         
         return JsonResponse(whole_response, safe=False)
 
