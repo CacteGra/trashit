@@ -228,6 +228,11 @@
       const $replaceCollection = document.getElementById('replaceCollection');
       const $requestLocalForm = document.getElementById('request-local-form');
 
+      function locationButtonClick() {
+        firstLoad = false;
+        map.locate();
+      }
+
       // Event: Location Found
       function onLocationFound(e) {
         const lat = e.latlng.lat;
@@ -268,7 +273,7 @@
               btn.id = 'filter all';
               btn.name = 'all';
               btn.textContent = 'all';
-              btn.onclick = (e) => filterTrash(e);
+              btn.onclick = function () {locationButtonClick();};
               li.appendChild(btn);
               menu.appendChild(li); 
               for (const type of response.all_types) {
@@ -573,16 +578,15 @@
         }
       });
 
-      document.addEventListener('click', (e) => {
-        const id = e.target.id;
-        if (id.startsWith('filter ')) {
-          filterTrash(e);
-        }
-      });
+      // document.addEventListener('click', (e) => {
+      //   const id = e.target.id;
+      //   if (id.startsWith('filter ')) {
+      //     filterTrash(e);
+      //   }
+      // });
 
       document.getElementById('garbage-collection').onclick = garbageCollect;
       document.getElementById('scan-wrapper').onclick = scanWrapper;
-      document.getElementById('filter all').onclick = filterTrash;
 
       // Attach Handlers
       document.getElementById('add-menu').onclick = () => {
