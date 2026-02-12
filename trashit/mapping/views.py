@@ -168,18 +168,13 @@ class FilterType(BaseLoadView):
         whole_response = []
         not_local_type = []
         
-        if get_type == 'all':
-            # Similar logic as FirstLoad but for all types
-            # ... implementation
-            pass
-        else:
-            the_type = TheType.objects.get(the_type=get_type)
-            trash_types = TrashType.objects.filter(the_type__in=[the_type])
-            ts = TrashSpecificities.objects.filter(
-                point_field__o_field__distance_lte=(point, D(m=2000)), 
-                trash_type__in=trash_types
-            ).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
-            whole_response, _, _ = self.iterate_points(ts, [get_type], not_local_type, request)
+        the_type = TheType.objects.get(the_type=get_type)
+        trash_types = TrashType.objects.filter(the_type__in=[the_type])
+        ts = TrashSpecificities.objects.filter(
+            point_field__o_field__distance_lte=(point, D(m=2000)), 
+            trash_type__in=trash_types
+        ).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
+        whole_response, _, _ = self.iterate_points(ts, [get_type], not_local_type, request)
         
         return JsonResponse(whole_response, safe=False)
 
