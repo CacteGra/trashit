@@ -38,7 +38,7 @@ class TrashType(models.Model):
 class Packaging(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     component = models.CharField(max_length=1000, null=True, blank=True)
-    the_type = models.OneToOneField('TheType', on_delete=models.CASCADE, null=True, blank=True)
+    the_type = models.ForeignKey('TheType', on_delete=models.CASCADE, null=True, blank=True)
 
 class Wrapper(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
