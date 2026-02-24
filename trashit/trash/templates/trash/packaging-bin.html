@@ -1,7 +1,8 @@
 {% if wrapper %}
 {% if packagings %}
 {% for packaging in packagings %}
-{{ packaging.packaging.the_type }}
+{{ packaging.component }}
+{{ packaging.the_type.the_type }}
 {% endfor %}
 {% else %}
 No info on packaging
