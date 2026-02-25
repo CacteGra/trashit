@@ -17,7 +17,7 @@ from django.urls import reverse
 from django.shortcuts import redirect
 from django import forms
 
-from wagtail.telepath import JSContext
+from wagtail.admin.telepath import JSContext
 
 import requests
 
