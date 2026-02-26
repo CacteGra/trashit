@@ -358,7 +358,7 @@ class Chosen(models.Model):
         else:
             return "%s" % (self.text_chosen)
 
-class RegisterAPIChosen(Orderable, models.Model):
+class RegisterAPIChosen(Orderable):
     id = models.BigAutoField(primary_key=True)
     register_api = ParentalKey("RegisterAPI", related_name="the_api", on_delete=models.CASCADE, null=True, blank=True)
     register_api_foreign = models.ForeignKey('RegisterAPI', related_name="first_api", on_delete=models.CASCADE, null=True, blank=True)
