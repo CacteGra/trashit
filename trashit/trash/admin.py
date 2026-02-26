@@ -1,11 +1,11 @@
 from django.contrib import admin
-from django.contrib.gis.admin import OSMGeoAdmin
+from django.contrib.gis.admin import ModelAdmin
 from .models import TrashSpecificities, TheType
 from modeltranslation.admin import TranslationAdmin
 
 
 @admin.register(TrashSpecificities)
-class TrashIssueAdmin(OSMGeoAdmin):
+class TrashIssueAdmin(ModelAdmin):
     list_display = ('get_trash_types', 'map_point')
 
 

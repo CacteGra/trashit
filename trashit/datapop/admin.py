@@ -1,9 +1,9 @@
 from django.contrib import admin
-from django.contrib.gis.admin import OSMGeoAdmin
+from django.contrib.gis.admin import ModelAdmin
 from .models import Pointfield, Polygonfield
 
 @admin.register(Pointfield)
-class PointfieldAdmin(OSMGeoAdmin):
+class PointfieldAdmin(ModelAdmin):
     list_display = ('o_field', 'trash_type')
 
     def trash_type(self, obj):
@@ -17,7 +17,7 @@ class PointfieldAdmin(OSMGeoAdmin):
         return queryset
 
 @admin.register(Polygonfield)
-class PolygonfieldAdmin(OSMGeoAdmin):
+class PolygonfieldAdmin(ModelAdmin):
     list_display = ('o_field',)
 
     def get_queryset(self, request):
