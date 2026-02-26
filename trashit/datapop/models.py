@@ -358,9 +358,71 @@ class Chosen(models.Model):
         else:
             return "%s" % (self.text_chosen)
 
+private_storage = FileSystemStorage(location=settings.PRIVATE_STORAGE_ROOT)
+
+
+class RequestLocalWaste(models.Model):
+    coordinates = models.PointField(null=True, blank=True)
+    register_api = models.ForeignKey('RegisterAPI', on_delete=models.SET_NULL, null=True, blank=True)
+    allow_requested = models.BooleanField(default=False)
+
+class RegisterAPI(ClusterableModel):
+    id = models.AutoField(primary_key=True, editable=False)
+    api_title = models.TextField(max_length=100)
+    api_trash_type = models.CharField(max_length=250, null=True, blank=True)
+    city = models.CharField(max_length=250, null=True, blank=True)
+    state = models.CharField(max_length=250, null=True, blank=True)
+    country = models.CharField(max_length=250, null=True, blank=True)
+    language = models.CharField(max_length=2, null=True, blank=True)
+    api_endpoint = models.URLField(max_length=500,null=True, blank=True)
+    TYPE_CHOICES = [
+        ("NONE", "NONE"),
+        ("CSV", "CSV"),
+        ("JSON", "JSON"),
+        ("KML", "KML"),
+        ("OSM", "OSM"),
+        ("OTHER", "OTHER"),
+    ]
+
+    api_type = models.CharField(
+        max_length=10,
+        choices=TYPE_CHOICES,
+        null=True, blank=True
+    )
+
+    is_dumb = models.BooleanField(default=False)
+    first = models.BooleanField(default=True)
+    the_time = models.DateTimeField(auto_now=True)
+    pagination = models.CharField(max_length=100)
+    pagination_number = models.PositiveIntegerField(default=1)
+    rows_name = models.CharField(max_length=100)
+    rows_per_page = models.PositiveIntegerField()
+    once_every = models.PositiveIntegerField(null=True, blank=True)
+    sleep = models.PositiveIntegerField(null=True, blank=True)
+    json_limit = models.CharField(max_length=100, null=True, blank=True)
+    results = models.CharField(max_length=100, null=True)
+    where_line = models.PositiveIntegerField(default=0)
+    until_line = models.PositiveIntegerField(blank=True, null=True)
+    register_file = models.FileField(storage=private_storage, blank=True, null=True)
+
+
+    TRASH_CHOICES = [
+        ("TRASHSPECIFICITIES", "TRASHSPECIFICITIES"),
+        ("COLLECTAREA", "COLLECTAREA"),
+    ]
+
+    api_trash = models.CharField(
+        max_length=20,
+        choices=TRASH_CHOICES,
+        null=True, blank=True
+    )
+
+    def __str__(self):
+        return "%s" % (self.api_title)
+        
 class RegisterAPIChosen(Orderable):
     id = models.BigAutoField(primary_key=True)
-    register_api = models.ForeignKey("RegisterAPI", related_name="the_api", on_delete=models.CASCADE, null=True, blank=True)
+    register_api = ParentalKey("RegisterAPI", related_name="the_api", on_delete=models.CASCADE, null=True, blank=True)
     register_api_foreign = models.ForeignKey('RegisterAPI', related_name="first_api", on_delete=models.CASCADE, null=True, blank=True)
     # operated_select = ParentalManyToManyField("OperatedField", related_name="the_operated", blank=True)
     # operated_select_foreign = models.ForeignKey('OperatedField', on_delete=models.CASCADE, null=True, blank=True)
@@ -469,65 +531,3 @@ class OperatedField(ClusterableModel):
         choices=OPERATION_CHOICES,
         null=True, blank=True
     )
-
-private_storage = FileSystemStorage(location=settings.PRIVATE_STORAGE_ROOT)
-
-
-class RequestLocalWaste(models.Model):
-    coordinates = models.PointField(null=True, blank=True)
-    register_api = models.ForeignKey('RegisterAPI', on_delete=models.SET_NULL, null=True, blank=True)
-    allow_requested = models.BooleanField(default=False)
-
-class RegisterAPI(ClusterableModel):
-    id = models.AutoField(primary_key=True, editable=False)
-    api_title = models.TextField(max_length=100)
-    api_trash_type = models.CharField(max_length=250, null=True, blank=True)
-    city = models.CharField(max_length=250, null=True, blank=True)
-    state = models.CharField(max_length=250, null=True, blank=True)
-    country = models.CharField(max_length=250, null=True, blank=True)
-    language = models.CharField(max_length=2, null=True, blank=True)
-    api_endpoint = models.URLField(max_length=500,null=True, blank=True)
-    TYPE_CHOICES = [
-        ("NONE", "NONE"),
-        ("CSV", "CSV"),
-        ("JSON", "JSON"),
-        ("KML", "KML"),
-        ("OSM", "OSM"),
-        ("OTHER", "OTHER"),
-    ]
-
-    api_type = models.CharField(
-        max_length=10,
-        choices=TYPE_CHOICES,
-        null=True, blank=True
-    )
-
-    is_dumb = models.BooleanField(default=False)
-    first = models.BooleanField(default=True)
-    the_time = models.DateTimeField(auto_now=True)
-    pagination = models.CharField(max_length=100)
-    pagination_number = models.PositiveIntegerField(default=1)
-    rows_name = models.CharField(max_length=100)
-    rows_per_page = models.PositiveIntegerField()
-    once_every = models.PositiveIntegerField(null=True, blank=True)
-    sleep = models.PositiveIntegerField(null=True, blank=True)
-    json_limit = models.CharField(max_length=100, null=True, blank=True)
-    results = models.CharField(max_length=100, null=True)
-    where_line = models.PositiveIntegerField(default=0)
-    until_line = models.PositiveIntegerField(blank=True, null=True)
-    register_file = models.FileField(storage=private_storage, blank=True, null=True)
-
-
-    TRASH_CHOICES = [
-        ("TRASHSPECIFICITIES", "TRASHSPECIFICITIES"),
-        ("COLLECTAREA", "COLLECTAREA"),
-    ]
-
-    api_trash = models.CharField(
-        max_length=20,
-        choices=TRASH_CHOICES,
-        null=True, blank=True
-    )
-
-    def __str__(self):
-        return "%s" % (self.api_title)
