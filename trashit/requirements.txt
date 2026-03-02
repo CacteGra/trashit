@@ -1,4 +1,4 @@
-Django==5.2
+Django>=6,<6.1
 wagtail==7.3
 psycopg2
 wagtail-metadata==4.0.3

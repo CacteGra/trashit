@@ -1,5 +1,5 @@
 # Use an official Python runtime based on Debian 10 "buster" as a parent image.
-FROM debian:bookworm
+FROM python:3.12-slim-bookworm
 
 # Add user that will be used in the container.
 RUN useradd wagtail
@@ -35,7 +35,7 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     libfreetype6-dev \
     python-dev-is-python3 \
     python3-pip \
-    python3.11-venv \
+    python3-venv \
  && rm -rf /var/lib/apt/lists/*
 
 RUN touch /var/log/cron.log
@@ -49,7 +49,7 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install the application server.
-RUN pip install "gunicorn==20.0.4"
+RUN pip install "gunicorn==25.1.0"
 
 # Install the project requirements.
 COPY requirements.txt /
