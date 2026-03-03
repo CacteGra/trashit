@@ -10,18 +10,18 @@
       {% if packagings %}
         {% for packaging in packagings %}
           <tr>
-            <td>{{ packaging.component }}</td>
-            <td>{{ packaging.the_type.the_type }}</td>
+            <td>{{ packaging.component|title }}</td>
+            <td>{{ packaging.the_type.the_type|title }}</td>
           </tr>
         {% endfor %}
       {% else %}
         <tr>
-          <td colspan="2" class="text-center text-muted">No info on packaging</td>
+          <td colspan="2" class="text-center text-muted">No Info On Packaging</td>
         </tr>
       {% endif %}
     {% else %}
       <tr>
-        <td colspan="2" class="text-center text-muted">Unknown product</td>
+        <td colspan="2" class="text-center text-muted">Unknown Product</td>
       </tr>
     {% endif %}
   </tbody>
