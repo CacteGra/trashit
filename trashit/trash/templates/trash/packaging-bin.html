@@ -1,12 +1,28 @@
-{% if wrapper %}
-{% if packagings %}
-{% for packaging in packagings %}
-{{ packaging.component }}
-{{ packaging.the_type.the_type }}
-{% endfor %}
-{% else %}
-No info on packaging
-{% endif %}
-{% else %}
-Unknown product
-{% endif %}
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if wrapper %}
+      {% if packagings %}
+        {% for packaging in packagings %}
+          <tr>
+            <td>{{ packaging.component }}</td>
+            <td>{{ packaging.the_type.the_type }}</td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr>
+          <td colspan="2">No info on packaging</td>
+        </tr>
+      {% endif %}
+    {% else %}
+      <tr>
+        <td colspan="2">Unknown product</td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
