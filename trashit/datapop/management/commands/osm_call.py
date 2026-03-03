@@ -1,20 +1,14 @@
 from datapop.models import RegisterAPI, Pointfield
-from trash.models import TrashSpecificities, TrashType, TheType, ContainerType
+from trash.models import TrashSpecificities, TrashType, TheType
 from django.contrib.gis.geos import Point
-
 from OSMPythonTools.nominatim import Nominatim
 from OSMPythonTools.overpass import overpassQueryBuilder, Overpass
-
 import time
 import logging
 
-# Configure logging
 logger = logging.getLogger(__name__)
 
 def safe_overpass_query(query, max_retries=3, delay=5):
-    """
-    Execute an Overpass query with retry logic.
-    """
     overpass = Overpass()
     for attempt in range(max_retries):
         try:
@@ -24,235 +18,80 @@ def safe_overpass_query(query, max_retries=3, delay=5):
             logger.warning(f"Attempt {attempt + 1} failed: {e}")
             if attempt < max_retries - 1:
                 time.sleep(delay)
-            else:
-                raise Exception("Failed to execute Overpass query after retries") from e
+    raise Exception("Failed to execute Overpass query after retries") from e
+
 
 def main(api_pk):
     register_api = RegisterAPI.objects.get(pk=api_pk)
     nominatim = Nominatim()
-    print("osm")
-    waste_type = "trash"
-    areaId = nominatim.query('{}, {}, {}'.format(register_api.city, register_api.state, register_api.country)).areaId()
-    query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_basket"', out='body')
-    result = safe_overpass_query(query)
-    r = result.elements()
-    for i in r:
-        type_list = []
-        point = Point(i.lon(), i.lat(), srid=4326)
-        point_field, created = Pointfield.objects.get_or_create(o_field=point, register_api_chosen__isnull=True, data_line__isnull=True)
-        d = i.tags()
-        try:
-            waste_type = d['waste']
-        except KeyError:    
-            waste_type = "trash"
-        print(waste_type)
-        if ";" in waste_type:
-            for w in waste_type.split(";"):
-                the_type, created = TheType.objects.get_or_create(the_type=w, is_osm=True)
-            if created:
-                if 'trash' in waste_type:
-                    the_type.icon = 'trashicon'
-                    the_type.update()
-                if 'plastic' in waste_type:
-                    the_type.icon = 'plasticbottle'
-                    the_type.update()
-                elif 'paper' in waste_type:
-                    the_type.icon = 'paper'
-                    the_type.update()
-                elif 'magazines' in waste_type:
-                    the_type.icon = 'paper'
-                    the_type.update()
-                elif 'shoes' in waste_type:
-                    the_type.icon = 'shirt'
-                    the_type.update()
-                elif 'clothes' in waste_type:
-                    the_type.icon = 'shirt'
-                    the_type.update()
-                elif 'cans' in waste_type:
-                    the_type.icon = 'can'
-                    the_type.update()
-                elif 'cardboard' in waste_type:
-                    the_type.icon = 'cardboard'
-                    the_type.update()
-                elif 'glass' in waste_type:
-                    the_type.icon = 'glassbottle'
-                    the_type.update()
-                elif 'oil' in waste_type:
-                    the_type.icon = 'specialbin'
-                    the_type.update()
-                else:
-                    the_type.icon = 'recycle'
-                    the_type.update()
-                trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
-                type_list.append(trash_type)
-        else:
-            the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
-            trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
-            if created:
-                if not any(x in waste_type for x in ['waste', 'trash']):
-                    print(the_type.icon)
-                    print(the_type.the_type)
-                    the_type.icon = "specialbin"
-                    the_type.update()
-        try:
-            t = TrashSpecificities.objects.get(point_field=point_field)
-            if not t.trash_type:
-                if type_list:
-                    for a_trash_type in type_list:
-                        t.trash_type.add(a_trash_type)
-                else:
-                    t.trash_type.add(trash_type)
-        except TrashSpecificities.DoesNotExist:
-            t = TrashSpecificities.objects.create(point_field=point_field)
-            if type_list:
-                for a_trash_type in type_list:
-                    t.trash_type.add(a_trash_type)
+
+    areaId = nominatim.query(f"{register_api.city}, {register_api.state}, {register_api.country}").areaId()
+    queries = [
+        ("waste_basket", 'amenity="waste_basket"'),
+        ("waste_disposal", 'amenity="waste_disposal"'),
+        ("recycling", 'amenity="recycling"')
+    ]
+
+    icon_mapping = {
+        'plastic': 'plasticbottle',
+        'paper': 'paper',
+        'magazines': 'paper',
+        'shoes': 'shirt',
+        'clothes': 'shirt',
+        'cans': 'can',
+        'cardboard': 'cardboard',
+        'glass': 'glassbottle',
+        'oil': 'specialbin',
+    }
+
+    # Process each amenity type
+    for amenity_name, selector in queries:
+        query = overpassQueryBuilder(area=areaId, elementType='node', selector=selector, out='body')
+        result = safe_overpass_query(query)
+        elements = result.elements()
+
+        for i in elements:
+            point = Point(i.lon(), i.lat(), srid=4326)
+            point_field, created = Pointfield.objects.get_or_create(
+                o_field=point,
+                register_api_chosen__isnull=True,
+                data_line__isnull=True
+            )
+
+            d = i.tags()
+            waste_type = d.get('waste', 'trash')
+            type_list = []
+
+            if ";" in waste_type:
+                waste_types = [w.strip() for w in waste_type.split(";")]
             else:
-                t.trash_type.add(trash_type)
-    query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="waste_disposal"', out='body')
-    result = safe_overpass_query(query)
-    r = result.elements()
-    for i in r:
-        type_list = []
-        point = Point(i.lon(), i.lat(), srid=4326)
-        point_field, created = Pointfield.objects.get_or_create(o_field=point, register_api_chosen__isnull=True, data_line__isnull=True)
-        d = i.tags()
-        try:
-            waste_type = d['waste']
-        except KeyError:
-            waste_type = "trash"
-        if ";" in waste_type:
-            for w in waste_type.split(";"):
-                the_type, created = TheType.objects.get_or_create(the_type=w, is_osm=True)
-                trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
+                waste_types = [waste_type]
+
+            for wt in waste_types:
+                the_type, created = TheType.objects.get_or_create(
+                    the_type=wt,
+                    is_osm=True
+                )
+
+                # Only set icon if newly created and match icon
+                if created:
+                    icon = icon_mapping.get(wt, 'specialbin' if not any(x in wt for x in ['waste', 'trash']) else 'trashicon')
+                    the_type.icon = icon
+                    the_type.save()
+
+                trash_type, _ = TrashType.objects.get_or_create(the_type=the_type)
                 type_list.append(trash_type)
-        else:
-            the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
-            trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
-        if created:
-            if not any(x in waste_type for x in ['waste', 'trash']):
-                the_type.icon = "specialbin"
-                the_type.update()
-        try:
-            t = TrashSpecificities.objects.get(point_field=point_field)
-            if not t.trash_type:
-                if type_list:
-                    for a_trash_type in type_list:
-                        t.trash_type.add(a_trash_type)
-                else:
-                    t.trash_type.add(trash_type)
-        except TrashSpecificities.DoesNotExist:
-            t = TrashSpecificities.objects.create(point_field=point_field)
-            if type_list:
-                for a_trash_type in type_list:
-                    t.trash_type.add(a_trash_type)
-            else:
-                t.trash_type.add(trash_type)
-    query = overpassQueryBuilder(area=areaId, elementType='node', selector='"amenity"="recycling"', out='body')
-    result = safe_overpass_query(query)
-    r = result.elements()
-    for i in r:
-        type_list = []
-        point = Point(i.lon(), i.lat(), srid=4326)
-        point_field, created = Pointfield.objects.get_or_create(o_field=point, register_api_chosen__isnull=True, data_line__isnull=True)
-        d = i.tags()
-        waste_type = None
-        for key, value in d.items():
-            underground = False
-            if "location:" in key and value == 'underground':
-                underground = True
-            if ("recycling:" in key and value == 'yes'):
-                waste_type = key.replace("recycling:", '')
-                type_list.append(waste_type)
-        if not type_list:
-            try:
-                waste_type = d['name']
-            except KeyError:
-                try:
-                    waste_type = d['operator']
-                except:
-                    waste_type = 'recycle'
-            the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
-            if created:
-                if 'plastic' in waste_type:
-                    the_type.icon = 'plasticbottle'
-                    the_type.update()
-                elif 'paper' in waste_type:
-                    the_type.icon = 'paper'
-                    the_type.update()
-                elif 'magazines' in waste_type:
-                    the_type.icon = 'paper'
-                    the_type.update()
-                elif 'shoes' in waste_type:
-                    the_type.icon = 'shirt'
-                    the_type.update()
-                elif 'clothes' in waste_type:
-                    the_type.icon = 'shirt'
-                    the_type.update()
-                elif 'cans' in waste_type:
-                    the_type.icon = 'can'
-                    the_type.update()
-                elif 'cardboard' in waste_type:
-                    the_type.icon = 'cardboard'
-                    the_type.update()
-                elif 'glass' in waste_type:
-                    the_type.icon = 'glassbottle'
-                    the_type.update()
-                elif 'oil' in waste_type:
-                    the_type.icon = 'specialbin'
-                    the_type.update()
-                else:
-                    the_type.icon = 'recycle'
-                    the_type.update()
-            trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
+
+            # Link to TrashSpecificities
             try:
                 t = TrashSpecificities.objects.get(point_field=point_field)
-                if not t.trash_type:
-                    t.trash_type.add(trash_type)
+                if not t.trash_type.exists():
+                    for tt in type_list:
+                        t.trash_type.add(tt)
             except TrashSpecificities.DoesNotExist:
                 t = TrashSpecificities.objects.create(point_field=point_field)
-                t.trash_type.add(trash_type)
-        else:
-            recycle_type = None
-            for recycle_type in type_list:
-                the_type, created = TheType.objects.get_or_create(the_type=recycle_type, is_osm=True)
-                if created:
-                    if 'plastic' in recycle_type:
-                        the_type.icon = 'plasticbottle'
-                        the_type.update()
-                    elif 'paper' in recycle_type:
-                        the_type.icon = 'paper'
-                        the_type.update()
-                    elif 'magazines' in recycle_type:
-                        the_type.icon = 'paper'
-                        the_type.update()
-                    elif 'shoes' in recycle_type:
-                        the_type.icon = 'shirt'
-                        the_type.update()
-                    elif 'clothes' in recycle_type:
-                        the_type.icon = 'shirt'
-                        the_type.update()
-                    elif 'cans' in recycle_type:
-                        the_type.icon = 'can'
-                        the_type.update()
-                    elif 'cardboard' in recycle_type:
-                        the_type.icon = 'cardboard'
-                        the_type.update()
-                    elif 'glass' in recycle_type:
-                        the_type.icon = 'glassbottle'
-                        the_type.update()
-                    elif 'oil' in recycle_type:
-                        the_type.icon = 'specialbin'
-                        the_type.update()
-                    else:
-                        the_type.icon = 'recycle'
-                        the_type.update()
-                trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
-                try:
-                    t = TrashSpecificities.objects.get(point_field=point_field)
-                    t.trash_type.add(trash_type)
-                except TrashSpecificities.DoesNotExist:
-                    t = TrashSpecificities.objects.create(point_field=point_field)
-                    t.trash_type.add(trash_type)
+                for tt in type_list:
+                    t.trash_type.add(tt)
+
     register_api.first = False
     register_api.save()
