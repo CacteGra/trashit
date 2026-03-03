@@ -1,5 +1,5 @@
-<table>
-  <thead>
+<table class="table table-striped table-hover">
+  <thead class="table-dark">
     <tr>
       <th>Component</th>
       <th>Type</th>
@@ -16,12 +16,12 @@
         {% endfor %}
       {% else %}
         <tr>
-          <td colspan="2">No info on packaging</td>
+          <td colspan="2" class="text-center text-muted">No info on packaging</td>
         </tr>
       {% endif %}
     {% else %}
       <tr>
-        <td colspan="2">Unknown product</td>
+        <td colspan="2" class="text-center text-muted">Unknown product</td>
       </tr>
     {% endif %}
   </tbody>
