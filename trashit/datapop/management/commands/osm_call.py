@@ -45,18 +45,55 @@ def main(api_pk):
             waste_type = d['waste']
         except KeyError:    
             waste_type = "trash"
+        print(waste_type)
         if ";" in waste_type:
             for w in waste_type.split(";"):
                 the_type, created = TheType.objects.get_or_create(the_type=w, is_osm=True)
+            if created:
+                if 'trash' in waste_type:
+                    the_type.icon = 'trashicon'
+                    the_type.update()
+                if 'plastic' in waste_type:
+                    the_type.icon = 'plasticbottle'
+                    the_type.update()
+                elif 'paper' in waste_type:
+                    the_type.icon = 'paper'
+                    the_type.update()
+                elif 'magazines' in waste_type:
+                    the_type.icon = 'paper'
+                    the_type.update()
+                elif 'shoes' in waste_type:
+                    the_type.icon = 'shirt'
+                    the_type.update()
+                elif 'clothes' in waste_type:
+                    the_type.icon = 'shirt'
+                    the_type.update()
+                elif 'cans' in waste_type:
+                    the_type.icon = 'can'
+                    the_type.update()
+                elif 'cardboard' in waste_type:
+                    the_type.icon = 'cardboard'
+                    the_type.update()
+                elif 'glass' in waste_type:
+                    the_type.icon = 'glassbottle'
+                    the_type.update()
+                elif 'oil' in waste_type:
+                    the_type.icon = 'specialbin'
+                    the_type.update()
+                else:
+                    the_type.icon = 'recycle'
+                    the_type.update()
                 trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
                 type_list.append(trash_type)
         else:
             the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
             trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
-        if created:
-            if not any(x in waste_type for x in ['waste', 'trash']):
-                the_type.icon = "special-bin"
-                the_type.save()
+            if created:
+                if not any(x in waste_type for x in ['waste', 'trash']):
+                    print(the_type.icon)
+                    print(the_type.the_type)
+                    the_type.icon = "specialbin"
+                    the_type.update()
         try:
             t = TrashSpecificities.objects.get(point_field=point_field)
             if not t.trash_type:
@@ -94,8 +131,8 @@ def main(api_pk):
             trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
         if created:
             if not any(x in waste_type for x in ['waste', 'trash']):
-                the_type.icon = "special-bin"
-                the_type.save()
+                the_type.icon = "specialbin"
+                the_type.update()
         try:
             t = TrashSpecificities.objects.get(point_field=point_field)
             if not t.trash_type:
@@ -138,35 +175,35 @@ def main(api_pk):
             the_type, created = TheType.objects.get_or_create(the_type=waste_type, is_osm=True)
             if created:
                 if 'plastic' in waste_type:
-                    the_type.icon = 'plastic-bottle'
-                    the_type.save()
+                    the_type.icon = 'plasticbottle'
+                    the_type.update()
                 elif 'paper' in waste_type:
                     the_type.icon = 'paper'
-                    the_type.save()
+                    the_type.update()
                 elif 'magazines' in waste_type:
                     the_type.icon = 'paper'
-                    the_type.save()
+                    the_type.update()
                 elif 'shoes' in waste_type:
                     the_type.icon = 'shirt'
-                    the_type.save()
+                    the_type.update()
                 elif 'clothes' in waste_type:
                     the_type.icon = 'shirt'
-                    the_type.save()
+                    the_type.update()
                 elif 'cans' in waste_type:
                     the_type.icon = 'can'
-                    the_type.save()
+                    the_type.update()
                 elif 'cardboard' in waste_type:
                     the_type.icon = 'cardboard'
-                    the_type.save()
+                    the_type.update()
                 elif 'glass' in waste_type:
-                    the_type.icon = 'glass-bottle'
-                    the_type.save()
+                    the_type.icon = 'glassbottle'
+                    the_type.update()
                 elif 'oil' in waste_type:
-                    the_type.icon = 'special-bin'
-                    the_type.save()
+                    the_type.icon = 'specialbin'
+                    the_type.update()
                 else:
                     the_type.icon = 'recycle'
-                    the_type.save()
+                    the_type.update()
             trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
             try:
                 t = TrashSpecificities.objects.get(point_field=point_field)
@@ -181,35 +218,35 @@ def main(api_pk):
                 the_type, created = TheType.objects.get_or_create(the_type=recycle_type, is_osm=True)
                 if created:
                     if 'plastic' in recycle_type:
-                        the_type.icon = 'plastic-bottle'
-                        the_type.save()
+                        the_type.icon = 'plasticbottle'
+                        the_type.update()
                     elif 'paper' in recycle_type:
                         the_type.icon = 'paper'
-                        the_type.save()
+                        the_type.update()
                     elif 'magazines' in recycle_type:
                         the_type.icon = 'paper'
-                        the_type.save()
+                        the_type.update()
                     elif 'shoes' in recycle_type:
                         the_type.icon = 'shirt'
-                        the_type.save()
+                        the_type.update()
                     elif 'clothes' in recycle_type:
                         the_type.icon = 'shirt'
-                        the_type.save()
+                        the_type.update()
                     elif 'cans' in recycle_type:
                         the_type.icon = 'can'
-                        the_type.save()
+                        the_type.update()
                     elif 'cardboard' in recycle_type:
                         the_type.icon = 'cardboard'
-                        the_type.save()
+                        the_type.update()
                     elif 'glass' in recycle_type:
-                        the_type.icon = 'glass-bottle'
-                        the_type.save()
+                        the_type.icon = 'glassbottle'
+                        the_type.update()
                     elif 'oil' in recycle_type:
-                        the_type.icon = 'special-bin'
-                        the_type.save()
+                        the_type.icon = 'specialbin'
+                        the_type.update()
                     else:
                         the_type.icon = 'recycle'
-                        the_type.save()
+                        the_type.update()
                 trash_type, created = TrashType.objects.get_or_create(the_type=the_type)
                 try:
                     t = TrashSpecificities.objects.get(point_field=point_field)
