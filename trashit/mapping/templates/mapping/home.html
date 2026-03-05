@@ -182,7 +182,8 @@
       const tileLayer = L.tileLayer(
         'https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
         {
-          maxZoom: 17,
+          maxNativeZoom:19,
+          maxZoom:25,
           attribution: '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
         }
       );
