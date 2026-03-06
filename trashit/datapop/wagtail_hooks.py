@@ -89,6 +89,102 @@ def first_connection(request, instance):
         t.save()
     return True
 
+@hooks.register('after_create_snippet')
+def after_create_snippet(request: 'HttpRequest', instance) -> bool:
+    """
+    Handle actions after creating a snippet.
+    """
+    if isinstance(instance, RegisterAPI):
+        return handle_register_api_creation(request, instance)
+    elif isinstance(instance, OperatedField):
+        return handle_operated_field_creation(request, instance)
+    elif isinstance(instance, CollectArea):
+        return handle_collect_area_creation(request, instance)
+    elif isinstance(instance, TrashType):
+        return handle_trash_type_creation(request, instance)
+    return True
+
+def handle_register_api_creation(request: 'HttpRequest', instance: RegisterAPI) -> bool:
+    """Handle RegisterAPI creation."""
+    r = RegisterAPI.objects.get(pk=instance.pk)
+    
+    if not r.api_endpoint:
+        return True
+    
+    if r.api_type == "CSV":
+        one_list_item_csv.main(r.pk)
+    elif r.api_type in ["JSON", "KML"]:
+        one_list_item_json.main(r.pk)
+    elif r.api_type not in ["CSV", "JSON", "KML"]:
+        handle_generic_api_request(r)
+
+    return redirect(url_to_edit_object(r))
+
+def handle_generic_api_request(r: RegisterAPI) -> None:
+    """Handle generic API request processing."""
+    try:
+        if r.is_dumb:
+            response = requests.get(
+                f"{r.api_endpoint}&{r.pagination}={1}&{r.rows_name}={r.rows_per_page}",
+                timeout=10
+            )
+        else:
+            params = {r.pagination: 1, r.rows_name: r.rows_per_page}
+            response = requests.get(r.api_endpoint, params=params, timeout=10)
+    except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout):
+        print("Connection error or timeout")
+        return
+    
+    l = unique_get_data.main(r.api_endpoint)
+    one_list_item.main(l, r.pk)
+
+def handle_operated_field_creation(request: 'HttpRequest', instance: OperatedField) -> bool:
+    """Handle OperatedField creation."""
+    chosen = RegisterAPIChosen.objects.filter(operatedfield=instance).first()
+    if not chosen:
+        return True
+    
+    non_foreign_chosen = chosen.the_chosen.choosing.filter(register_api_foreign__isnull=True).first()
+    if not non_foreign_chosen:
+        return True
+    
+    this_api = non_foreign_chosen.register_api
+    c = this_api.copy_cluster()
+    
+    cluster_id_list = []
+    for _, j in enumerate(c[1]):
+        o = c[1][j]
+        register_api_chosen_id = o.the_chosen.choosing.filter(register_api_foreign__isnull=False).first()
+        if register_api_chosen_id:
+            cluster_id_list.append(register_api_chosen_id.id)
+    
+    no_operated = RegisterAPIChosen.objects.filter(
+        id__in=cluster_id_list, 
+        operatedfield__isnull=True, 
+        json_list=False
+    )
+    
+    if not no_operated:
+        this_api.first = True
+        this_api.save()
+    
+    return True
+
+def handle_collect_area_creation(request: 'HttpRequest', instance: CollectArea) -> bool:
+    """Handle CollectArea creation."""
+    c = CollectArea.objects.get(pk=instance.pk)
+    str_to_coords.main(instance.pk)
+    return True
+
+
+def handle_trash_type_creation(request: 'HttpRequest', instance: TrashType) -> bool:
+    """Handle TrashType creation."""
+    t = TrashType.objects.get(pk=instance.pk)
+    t.area = True
+    t.save()
+    return True
+
+
 @hooks.register('after_edit_snippet')
 def first_connection(request, instance):
     from OSMPythonTools.nominatim import Nominatim
