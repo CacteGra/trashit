@@ -46,14 +46,6 @@ class Wrapper(models.Model):
     code = models.CharField(max_length=1000, null=True, blank=True)
     packaging = models.ManyToManyField(Packaging, blank=True)
 
-class TypeLocale(Orderable, models.Model):
-    the_type = ParentalKey("TheType", related_name="related_the_type", on_delete=models.CASCADE, null=True, blank=True)
-    locale = models.CharField(max_length=100, null=True, blank=True)
-    language = models.CharField(max_length=2, null=True, blank=True)
-    
-    def __str__(self):
-        return "%s" % (self.locale)
-
 class TheType(ClusterableModel):
     the_type = models.CharField(max_length=100, null=True, blank=True)
     osm_type = models.ManyToManyField('self', blank=True)
@@ -79,6 +71,14 @@ class TheType(ClusterableModel):
 
     def __str__(self):
         return "%s" % (self.the_type)
+
+class TypeLocale(Orderable):
+    the_type = ParentalKey("TheType", related_name="related_the_type", on_delete=models.CASCADE, null=True, blank=True)
+    locale = models.CharField(max_length=100, null=True, blank=True)
+    language = models.CharField(max_length=2, null=True, blank=True)
+    
+    def __str__(self):
+        return "%s" % (self.locale)
 
 class ContainerType(models.Model):
     container_type = models.CharField(max_length=100, null=True, blank=True)
