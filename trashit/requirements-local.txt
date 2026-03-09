@@ -1,4 +1,4 @@
-Django==5.2
+Django>=6,<6.1
 wagtail==7.3
 #psycopg2
 wagtail-metadata==4.0.3
@@ -6,7 +6,7 @@ django-crontab==0.7.1
 django-leaflet==0.29.0
 OSMPythonTools==0.3.5
 wagtailgeowidget==9.1.0
-django-modeltranslation==0.19.3
+django-modeltranslation==0.20.2
 kml2geojson==5.1.0
 django-simple-captcha==0.6.2
 pytz==2025.2
