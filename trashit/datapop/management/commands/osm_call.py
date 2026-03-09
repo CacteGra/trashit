@@ -85,6 +85,8 @@ def process_amenity_type(amenity_name, selector, areaId, icon_mapping):
 
                 # Process all waste types
                 for wt in waste_types:
+                    if wt == "":
+                        continue
                     try:
                         
                         the_type, created = TheType.objects.get_or_create(
