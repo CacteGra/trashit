@@ -46,50 +46,6 @@ def url_to_edit_object(obj):
   return url
 
 @hooks.register('after_create_snippet')
-def first_connection(request, instance):
-    if isinstance(instance, RegisterAPI):
-        r = RegisterAPI.objects.get(pk=instance.pk)
-        if r.api_endpoint and r.api_type == "CSV":
-            one_list_item_csv.main(r.pk)
-        elif r.api_endpoint and r.api_type in ["JSON", "KML"]:
-            one_list_item_json.main(r.pk)
-        elif r.api_endpoint and r.api_type not in ["CSV", "JSON", "KML"]:
-            try:
-                if r.is_dumb:
-                    print("{}&{}={}&{}={}".format(r.api_endpoint, r.pagination, 1, r.rows_name, r.rows_per_page))
-                    response = requests.get("{}&{}={}&{}={}".format(r.api_endpoint, r.pagination, 1, r.rows_name, r.rows_per_page), timeout=10)
-                else:
-                    params = {r.pagination: 1, r.rows_name: r.rows_per_page}
-                    response = requests.get("{}".format(r.api_endpoint), params=params, timeout=10)
-            except requests.exceptions.ConnectionError or requests.exceptions.ReadTimeout:
-                print(False)
-            l = unique_get_data.main(r.api_endpoint)
-            one_list_item.main(l, r.pk)
-        return redirect(url_to_edit_object(r))
-    elif isinstance(instance, OperatedField):
-        chosen = RegisterAPIChosen.objects.filter(operatedfield=instance)[0]
-        non_foreign_chosen = chosen.the_chosen.choosing.get(register_api_foreign__isnull=True)
-        this_api = non_foreign_chosen.register_api
-        c = this_api.copy_cluster()
-        cluster_id_list = []
-        for i, j in enumerate(c[1]):
-            o = c[1][j]
-            register_api_chosen_id = o.the_chosen.choosing.get(register_api_foreign__isnull=False)
-            cluster_id_list.append(register_api_chosen_id.id)
-        no_operated = RegisterAPIChosen.objects.filter(id__in=cluster_id_list, operatedfield__isnull=True, json_list=False)
-        if not no_operated:
-            this_api.first = True
-            this_api.save()
-    elif isinstance(instance, CollectArea):
-        c = CollectArea.objects.get(pk=instance.pk)
-        str_to_coords.main(instance.pk)
-    elif isinstance(instance, TrashType):
-        t = TrashType.objects.get(pk=instance.pk)
-        t.area = True
-        t.save()
-    return True
-
-@hooks.register('after_create_snippet')
 def after_create_snippet(request: 'HttpRequest', instance) -> bool:
     """
     Handle actions after creating a snippet.
