@@ -531,3 +531,13 @@ class OperatedField(ClusterableModel):
         choices=OPERATION_CHOICES,
         null=True, blank=True
     )
+
+    def related_register_api(self):
+
+        if self.register_api_chosen:
+            print("SNIPP")
+            return self.register_api_chosen.all().values_list("register_api_foreign__api_title", flat=True)[0]
+        return "No API Assigned"
+
+    related_register_api.short_description = "Register API Title"
+    related_register_api.admin_order_field = 'register_api__api_title'

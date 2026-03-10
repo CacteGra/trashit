@@ -343,6 +343,9 @@ class RegisterAPIChosenTemplate(SnippetViewSet):
     model = RegisterAPIChosen
     index_view_class = RegisterAPIChosenIndex
 
+    list_display = ['id', 'register_api__api_title', 'the_chosen', 'hierarchy']
+    search_fields = ['the_chosen__text_chosen']
+
     panels = [
         FieldPanel("field_type"),
         FieldPanel('field_name'),
@@ -403,6 +406,8 @@ class TypedOnlyPanel(FieldPanel):
 
 class OperatedTemplate(SnippetViewSet):
     model = OperatedField
+
+    list_display = ['id', 'related_register_api']
 
     panels = [
         TypedOnlyPanel("register_api_chosen", widget_class=CheckboxSelectMultiple),
