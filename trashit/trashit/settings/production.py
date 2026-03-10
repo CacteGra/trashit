@@ -8,6 +8,11 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: define the correct hosts in production!
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
+INSTALLED_APPS += [
+    "django.contrib.postgres",
+    "django.contrib.gis",
+]
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
