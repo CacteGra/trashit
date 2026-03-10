@@ -535,7 +535,6 @@ class OperatedField(ClusterableModel):
     def related_register_api(self):
 
         if self.register_api_chosen:
-            print("SNIPP")
             return self.register_api_chosen.all().values_list("register_api_foreign__api_title", flat=True)[0]
         return "No API Assigned"
 

@@ -69,6 +69,15 @@ class TheType(ClusterableModel):
         default='trashicon'
     )
 
+    def related_register_api(self):        
+
+        if self.trashtype_set.filter(trashspecificities__point_field__register_api_chosen__isnull=False):
+            return list(self.trashtype_set.filter(trashspecificities__point_field__register_api_chosen__isnull=False).values_list('trashspecificities__point_field__register_api_chosen__register_api_foreign__api_title', flat=True).distinct())
+        return "No API Assigned"
+
+    related_register_api.short_description = "Register API Title"
+    related_register_api.admin_order_field = 'register_api__api_title'
+
     def __str__(self):
         return "%s" % (self.the_type)
 

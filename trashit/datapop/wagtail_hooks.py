@@ -444,6 +444,9 @@ class OSMType(FieldPanel):
 
 class TheTypeTemplate(SnippetViewSet):
     model = TheType
+
+    list_display = ['the_type', 'related_register_api']
+
     panels = [
         FieldPanel('the_type'),
         OSMType("osm_type", widget_class=CheckboxSelectMultiple),
