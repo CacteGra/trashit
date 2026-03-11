@@ -10,3 +10,4 @@ django-modeltranslation==0.20.2
 kml2geojson==5.1.0
 django-simple-captcha==0.6.2
 pytz==2025.2
+selenium==4.41.0
