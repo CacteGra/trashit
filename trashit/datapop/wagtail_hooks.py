@@ -299,8 +299,9 @@ class RegisterAPIChosenTemplate(SnippetViewSet):
     model = RegisterAPIChosen
     index_view_class = RegisterAPIChosenIndex
 
-    list_display = ['id', 'register_api__api_title', 'the_chosen', 'hierarchy']
+    list_display = ['the_chosen', 'register_api__api_title']
     search_fields = ['the_chosen__text_chosen']
+    ordering = 'register_api__api_title'
 
     panels = [
         FieldPanel("field_type"),
