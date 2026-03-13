@@ -1,5 +1,21 @@
 version: "3"  
 services:
+  chrome:
+    image: selenium/node-chrome:3.14.0-gallium
+    volumes:
+      - /dev/shm:/dev/shm
+    depends_on:
+      - hub
+    environment:
+      HUB_HOST: hub
+    networks:
+      - trashit-backend 
+  hub:
+    image: selenium/hub:3.14.0-gallium
+    ports:
+      - "4444:4444"
+    networks:
+      - trashit-backend 
   ingress:
     restart: always
     image: trashit/backend-ingress

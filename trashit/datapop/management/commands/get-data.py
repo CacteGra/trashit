@@ -15,7 +15,7 @@ from datetime import timedelta
 
 from trash.models import TrashSpecificities, TrashType, TheType, CollectArea
 
-from . import osm_call, get_csv_data
+from . import osm_call, get_csv_data, get_trash_collection
 
 class Command(BaseCommand):
 
@@ -434,3 +434,5 @@ class Command(BaseCommand):
             description = Textfield.objects.get(data_line=data_line)
             collect_area.description = description
             collect_area.save()
+        if all_api.city == "Agglo La Rochelle":
+            get_trash_collection.main(all_api.pk)
