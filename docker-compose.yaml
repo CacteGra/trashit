@@ -1,7 +1,7 @@
 version: "3"  
 services:
   chrome:
-    image: selenium/node-chrome:3.14.0-gallium
+    image: selenium/node-chrome:4.9.0
     volumes:
       - /dev/shm:/dev/shm
     depends_on:
@@ -11,7 +11,7 @@ services:
     networks:
       - trashit-backend 
   hub:
-    image: selenium/hub:3.14.0-gallium
+    image: selenium/hub:4.9.0
     ports:
       - "4444:4444"
     networks:

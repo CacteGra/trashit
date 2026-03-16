@@ -28,11 +28,14 @@ def drive_url(url):
     # Configure Selenium options
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    print('TO DRIVER')
     driver = webdriver.Remote(
-        command_executor='http://172.19.0.2:4444/wd/hub',
+            command_executor='http://hub:4444/wd/hub',
         options=chrome_options
     )
+    print('URL')
     driver.get(url)
+    print('GOT')
     wait = WebDriverWait(driver, 10)
     pins = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "mapplic-pin")))
     time.sleep(5)  # Wait for the page to load
