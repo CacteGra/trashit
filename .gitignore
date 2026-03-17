@@ -1,3 +1,6 @@
+#Empty folders
+!.gitignore
+
 #Docker with NGINX and Postgresql
 data/
 
