@@ -97,7 +97,7 @@ class ContainerType(models.Model):
 class CollectArea(models.Model):
     id = models.AutoField(primary_key=True, editable=False)
     raw_data = models.CharField(max_length=10000, null=True, blank=True)
-    quarter = models.CharField(max_length=50, null=True, blank=True)
+    quarter = models.ForeignKey(Textfield, on_delete=models.CASCADE, null=True, blank=True)
     polygon_field = models.OneToOneField(Polygonfield, on_delete=models.CASCADE, null=True, blank=True)
     description = models.ForeignKey(Textfield, on_delete=models.CASCADE, null=True, blank=True)
 
