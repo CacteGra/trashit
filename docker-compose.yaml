@@ -1,19 +1,20 @@
 version: "3"  
 services:
-  chrome:
-    image: selenium/node-chrome:4.9.0
-    volumes:
-      - /dev/shm:/dev/shm
-    depends_on:
-      - hub
-    environment:
-      HUB_HOST: hub
-    networks:
-      - trashit-backend 
+  # chrome:
+  #   image: selenium/node-chrome:4.41.0
+  #   volumes:
+  #     - /dev/shm:/dev/shm
+  #   depends_on:
+  #     - hub
+  #   environment:
+  #     HUB_HOST: hub
+  #   networks:
+  #     - trashit-backend 
   hub:
-    image: selenium/hub:4.9.0
+    image: selenium/standalone-chrome:latest
     ports:
       - "4444:4444"
+    shm_size: "2g"
     networks:
       - trashit-backend 
   ingress:
