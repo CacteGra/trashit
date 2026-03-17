@@ -187,8 +187,14 @@ def after_snippet_delete(request, instances):
                 points.delete()
                 polygon_fields.delete()
             trash_types = TrashType.objects.filter(trashspecificities__in=trash_specificities)
-            operated_chosen = r.register_api_chosen.filter(operatedfield__isnull=False)
-            operated_chosen.operatedfield_set.all().delete()
+            c = r.copy_cluster()
+            cluster_id_list = []
+            for i, j in enumerate(c[1]):
+                o = c[1][j]
+                OperatedField.objects.filter(register_api_chosen=o).delete()
+                register_api_chosen_id = o.the_chosen.choosing.get(register_api__isnull=False)
+                cluster_id_list.append(register_api_chosen_id.id)
+            OperatedField.objects.filter(register_api_chosen__id__in=cluster_id_list).delete()
             trash_types.delete()
             trash_specificities.delete()
             if r.api_type != 'OSM':
