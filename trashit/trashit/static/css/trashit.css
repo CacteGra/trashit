@@ -60,7 +60,7 @@ html, body, #container /*, and all other map parent selectors*/ {
 .dropup-filter {
     position: absolute;
     margin-top: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 50px;
     margin-right: 10px;
     bottom: 0;
     right: 0;
