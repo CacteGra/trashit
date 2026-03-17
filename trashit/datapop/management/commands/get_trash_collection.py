@@ -28,12 +28,15 @@ def drive_url(url):
     # Configure Selenium options
     chrome_options = Options()
     chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--window-size=1920,1080")
     print('TO DRIVER')
     driver = webdriver.Remote(
             command_executor='http://hub:4444/wd/hub',
         options=chrome_options
     )
-    print('URL')
+    print(driver)
     driver.get(url)
     print('GOT')
     wait = WebDriverWait(driver, 10)
@@ -41,7 +44,7 @@ def drive_url(url):
     time.sleep(5)  # Wait for the page to load
     return driver, pins, wait
 
-def get_info_from_pin(pin, waste_data, special):
+def get_info_from_pin(driver, wait, pin, i, location, waste_data):
     # Scroll the element into view first
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", pin)
     time.sleep(1)
@@ -55,20 +58,13 @@ def get_info_from_pin(pin, waste_data, special):
     # Extract the tooltip text
     tooltip_text = tooltip.text
     
-    if special:
-        # Store the data
-        if tooltip_text:
-            waste_data.append({
-                "pin_index": i,
-                "location": location,
-                "tooltip_content": tooltip_text
-            })
-    else:
-        return {
-                "pin_index": i,
-                "location": location,
-                "tooltip_content": tooltip_text
-            }
+    # Store the data
+    if tooltip_text:
+        waste_data.append({
+            "pin_index": i,
+            "location": location,
+            "tooltip_content": tooltip_text
+        })
     
     # Close the tooltip before clicking another pin
     try:
@@ -81,9 +77,7 @@ def get_info_from_pin(pin, waste_data, special):
     print(f"Pin {i} ({location}): Successfully extracted and closed data")
 
 
-def main(pk):
-
-    agglo_api = RegisterAPI.objects.get(pk=pk)
+def main(data_lines):
 
     # URL of the waste collection page
     url = "https://intersites.agglo-larochelle.fr/plan-dechets-2026/"
@@ -118,8 +112,8 @@ def main(pk):
                     chatel_pins = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, "map-area")))
                     chatel_data = []
                     for chatel_pin in chatel_pins:
-                        chatel_data.append(get_info_from_pin(chatel_pin, waste_data, True))
-                    waste_data.append()
+                        get_info_from_pin(driver, wait, chatel_pin, i, location, waste_data)
+                    waste_data.append(chatel_data)
                     print(waste_data)
                     back_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".btn.btn--secondary.item-back")))
                     back_button.click()
@@ -128,7 +122,7 @@ def main(pk):
                     #driver, pins, wait = drive_url(url)
                     print("AFTER DRIVER")
                 else:
-                    get_info_from_pin(pin, waste_data, False)
+                    get_info_from_pin(driver, wait, pin, i, location, waste_data)
                 
             except (ElementClickInterceptedException, TimeoutException) as e:
                 print(f"Error processing pin {i} ({location}): {e}")
@@ -156,5 +150,4 @@ def main(pk):
         print(f"Total pins processed (excluding La Rochelle): {len(waste_data)}")
         
     except Exception as e:
-        print(f"Error accessing the page: {e}")
         driver.quit()
