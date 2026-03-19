@@ -128,6 +128,9 @@ services:
       - POSTGRES_DB
       - POSTGRES_USER
       - POSTGRES_PASSWORD
+    volumes: 
+      - ./db-init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - trashit-backend 
 networks:
@@ -143,3 +146,5 @@ volumes:
     shared:
       driver: local
     ssl:
+    postgres_data:
+      driver: local
