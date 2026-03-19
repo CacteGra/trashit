@@ -13,6 +13,26 @@ from trash.models import CollectArea
 
 from collections import Counter
 
+from django.contrib.postgres.search import TrigramSimilarity
+from django.db.models import Q
+
+def find_closest_location(query_string):
+    # Make sure to import TrigramSimilarity correctly
+    try:
+        matches = Textfield.objects.annotate(
+            similarity=TrigramSimilarity('o_field', query_string)
+        ).filter(
+            similarity__gt=0.1  # Adjust threshold as needed
+        ).order_by('-similarity')
+        
+        return matches.first()
+    except Exception as e:
+        print(f"Trigram error: {e}")
+        # Fallback to basic icontains
+        return Textfield.objects.filter(
+            o_field__icontains=query_string
+        ).first()
+
 def get_dicts_with_same_value(dict_list, key):
     """Get dictionaries that have the same value for a specific key"""
     # Count occurrences of each value
@@ -113,7 +133,6 @@ def main(data_lines):
                     chatel_data = []
                     for chatel_pin in chatel_pins:
                         get_info_from_pin(driver, wait, chatel_pin, i, location, waste_data)
-                    waste_data.append(chatel_data)
                     print(waste_data)
                     back_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".btn.btn--secondary.item-back")))
                     back_button.click()
@@ -132,15 +151,15 @@ def main(data_lines):
         driver.quit()
 
         # Print results
+        locations_findings = []
         for data in waste_data:
-            print(data['location'])
-            try:
-                area_name = Textfield.objects.get(o_field__icontains=data['location'])
-            except Textfield.DoesNotExist:
+            closest_location = find_closest_location(data['location'])
+            if closest_location in locations_findings:
                 continue
-            c_a = CollectArea.objects.get(quarter=area_name)
+            locations_findings.append(closest_location)
+            c_a = CollectArea.objects.get(quarter__id__in=[closest_location.id])
             same_locations = get_dicts_with_same_value(waste_data, 'location')
-            if same_locations.count > 1:
+            if len(same_locations) > 1:
                 same_location_description = ''
                 for same_location in same_locations:
                     same_location_description += data['tooltip_content']
