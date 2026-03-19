@@ -101,5 +101,11 @@ class CollectArea(models.Model):
     polygon_field = models.OneToOneField(Polygonfield, on_delete=models.CASCADE, null=True, blank=True)
     description = models.CharField(max_length=10000, null=True, blank=True)
 
+    def related_register_api(self):        
+
+        if self.filter(polygon_field__register_api_chosen__isnull=False):
+            return list(self.filter(polygon_field__register_api_chosen__isnull=False).values_list('polygon_field__register_api_chosen__register_api_foreign__api_title', flat=True).distinct())
+        return "No API Assigned"
+
     def __str__(self):
         return "%s" % (self.quarter)

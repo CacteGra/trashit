@@ -373,6 +373,8 @@ class OperatedTemplate(SnippetViewSet):
 class CollectAreaTemplate(SnippetViewSet):
     model = CollectArea
 
+    list_display = ['quarter__o_field', 'related_register_api']
+
     panels = [
         FieldPanel('raw_data'),
         FieldPanel('quarter'),
