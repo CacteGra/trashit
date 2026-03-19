@@ -8,7 +8,7 @@ from selenium.common.exceptions import TimeoutException, ElementClickIntercepted
 
 import time
 
-from datapop.models import RegisterAPI
+from datapop.models import RegisterAPI, Textfield
 from trash.models import CollectArea
 
 from collections import Counter
@@ -130,10 +130,15 @@ def main(data_lines):
         
         # Close Selenium driver
         driver.quit()
-        
+
         # Print results
         for data in waste_data:
-            c_a = CollectArea.objects.get(description__icontains=data['location'])
+            print(data['location'])
+            try:
+                area_name = Textfield.objects.get(o_field__icontains=data['location'])
+            except Textfield.DoesNotExist:
+                continue
+            c_a = CollectArea.objects.get(quarter=area_name)
             same_locations = get_dicts_with_same_value(waste_data, 'location')
             if same_locations.count > 1:
                 same_location_description = ''

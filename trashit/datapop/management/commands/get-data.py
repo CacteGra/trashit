@@ -431,8 +431,12 @@ class Command(BaseCommand):
         for data_line in data_lines:
             polygon_field = Polygonfield.objects.get(data_line=data_line)
             collect_area, created = CollectArea.objects.get_or_create(polygon_field=polygon_field)
-            description = Textfield.objects.get(data_line=data_line)
-            collect_area.description = description
+            text_field = Textfield.objects.get(data_line=data_line)
+            r_c = RegisterAPIChosen.objects.get(textfield__in=[text_field])
+            if r_c.field_name == "area name":
+                collect_area.quarter = text_field
+            elif r_c.field_name == "description":
+                collect_area.description = description
             collect_area.save()
         if all_api.city == "Agglo La Rochelle":
             get_trash_collection.main(all_api.pk)
