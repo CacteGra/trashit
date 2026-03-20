@@ -379,6 +379,7 @@ class CollectAreaTemplate(SnippetViewSet):
         FieldPanel('raw_data'),
         FieldPanel('quarter'),
         FieldPanel('polygon_field'),
+        FieldPanel('description'),
     ]
 
 class TrashTypeIndex(IndexView):

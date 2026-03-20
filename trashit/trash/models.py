@@ -102,10 +102,15 @@ class CollectArea(models.Model):
     description = models.CharField(max_length=10000, null=True, blank=True)
 
     def related_register_api(self):        
-
-        if self.filter(polygon_field__register_api_chosen__isnull=False):
-            return list(self.filter(polygon_field__register_api_chosen__isnull=False).values_list('polygon_field__register_api_chosen__register_api_foreign__api_title', flat=True).distinct())
+        if self.polygon_field and self.polygon_field.register_api_chosen:
+            # Access the register_api through the RegisterAPIChosen relationship
+            register_api = self.polygon_field.register_api_chosen.register_api_foreign
+            if register_api:
+                return register_api.api_title
         return "No API Assigned"
+    
+    related_register_api.short_description = "Register API Title"
+    related_register_api.admin_order_field = 'polygon_field__register_api_chosen__register_api_foreign__api_title'
 
     def __str__(self):
         return "%s" % (self.quarter)
