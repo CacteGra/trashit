@@ -33,16 +33,8 @@ def find_closest_location(query_string):
             o_field__icontains=query_string
         ).first()
 
-def get_dicts_with_same_value(dict_list, key):
-    """Get dictionaries that have the same value for a specific key"""
-    # Count occurrences of each value
-    value_counts = Counter(d[key] for d in dict_list if key in d)
-    
-    # Get values that appear more than once
-    duplicate_values = {value for value, count in value_counts.items() if count > 1}
-    
-    # Return dictionaries with duplicate values
-    return [d for d in dict_list if key in d and d[key] in duplicate_values]
+def get_dicts_with_same_location(dict_list, location_key, target_location):
+    return [d for d in dict_list if location_key in d and d[location_key] == target_location]
 
 def drive_url(url):
     # Configure Selenium options
@@ -158,11 +150,11 @@ def main(data_lines):
                 continue
             locations_findings.append(closest_location)
             c_a = CollectArea.objects.get(quarter__id__in=[closest_location.id])
-            same_locations = get_dicts_with_same_value(waste_data, 'location')
+            same_locations = get_dicts_with_same_location(waste_data, 'location', data['location'])
             if len(same_locations) > 1:
                 same_location_description = ''
                 for same_location in same_locations:
-                    same_location_description += data['tooltip_content']
+                    same_location_description += same_location['tooltip_content']
                 c_a.description = same_location_description
             else:
                 c_a.description = data['tooltip_content']
