@@ -379,7 +379,7 @@ class CollectAreaTemplate(SnippetViewSet):
         FieldPanel('raw_data'),
         FieldPanel('quarter'),
         FieldPanel('polygon_field'),
-        FieldPanel('description'),
+        FieldPanel('description', widget=forms.Textarea(attrs={'rows': 10, 'cols': 40})),
     ]
 
 class TrashTypeIndex(IndexView):
