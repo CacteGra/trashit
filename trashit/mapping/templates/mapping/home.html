@@ -6,6 +6,7 @@
 
 {% block header %}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="referrer" content="origin">
   {% leaflet_css %}
   <link rel="stylesheet" type="text/css" href="{% static 'css/trashit.css' %}" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.1.0/dist/MarkerCluster.css" />
@@ -180,11 +181,15 @@
     // Main Map Init Function
     function mapInit(map, options) {
       const tileLayer = L.tileLayer(
-        'https://tiles.wmflabs.org/hikebike/{z}/{x}/{y}.png',
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
           maxNativeZoom:19,
           maxZoom:25,
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          headers: {
+              'User-Agent': 'YourAppName/1.0 (https://yourwebsite.com)',
+              'Referer': window.location.origin // Ensure Referer is sent
+          }
         }
       );
 
