@@ -222,6 +222,7 @@
       let scanning = false;
       let firstLoad = false;
       let modalDisplayed = false;
+      let following = true;
 
       // Define icons
       const userIcon = createIcon("{% static 'icons/dot-circle.png' %}", [40, 40]);
@@ -299,6 +300,10 @@
           })
         }
 
+        if (following) {
+          map.setView(oldLatLng, 19);
+        }
+
       }
 
       // Event: Location Error
@@ -319,10 +324,17 @@
         }
       }, 3000);
 
+      map.on('dragstart', function() {
+        following = false;
+      });
+
       // Zoom Controls
       document.getElementById('in').onclick = () => map.setZoom(map.getZoom() + 1);
       document.getElementById('out').onclick = () => map.setZoom(map.getZoom() - 1);
-      document.getElementById('recenter').onclick = () => map.setView(oldLatLng, 19);
+      document.getElementById('recenter').onclick = () => {
+        following = true;
+        map.setView(oldLatLng, 19);
+      };
 
       // Initialize map
       map.addLayer(tileLayer);
