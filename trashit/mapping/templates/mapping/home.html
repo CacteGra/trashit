@@ -301,7 +301,8 @@
         }
 
         if (following) {
-          map.setView(oldLatLng, 19);
+          currentZoom = map.getZoom();
+          map.setView(oldLatLng, currentZoom);
         }
 
       }
@@ -333,7 +334,7 @@
       document.getElementById('out').onclick = () => map.setZoom(map.getZoom() - 1);
       document.getElementById('recenter').onclick = () => {
         following = true;
-        map.setView(oldLatLng, 19);
+        map.setView(oldLatLng, 17);
       };
 
       // Initialize map
