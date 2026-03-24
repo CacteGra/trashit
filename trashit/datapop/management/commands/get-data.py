@@ -157,11 +157,12 @@ class Command(BaseCommand):
                     if not register_api_chosen_id.field_type or register_api_chosen_id.field_type != o.field_type:
                         register_api_chosen_id.field_type = o.field_type
                         register_api_chosen_id.save()
-                    # IDs of chosen values created as new
-                    cluster_id_list.append(register_api_chosen_id.id)
                     # Key of JSON file for list of values from which to iterate
                     if o.json_list:
                         json_list =  register_api_chosen_id.pk
+                    else:
+                        # IDs of chosen values created as new
+                        cluster_id_list.append(register_api_chosen_id.id)
                 
                 empty_type_chosens = RegisterAPIChosen.objects.filter(id__in=cluster_id_list,field_type__isnull=True)
                 if (not cluster_id_list) or empty_type_chosens:
@@ -262,9 +263,7 @@ class Command(BaseCommand):
                 if '[0]' in path_name:
                     path_name = path_name.replace('[0]', '')
                 # Using JSON list key to navigate to list of values
-                if json_list:
-                    json_file = json_file[path_name]
-        n = 0
+                json_file = json_file[path_name]
         for l_copy in json_file:
             data_object_list = []
             for same_level_list in children_id_list:

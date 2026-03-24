@@ -31,6 +31,8 @@ def main(register_api_pk):
             sleep(1)
     if all_api.api_type == "KML":
         json_response = kml2geojson.main.convert(response)
+        if type(json_response) is list and len(json_response) == 1:
+            json_response = json_response[0]
     else:
         json_response = json.load(response)
     with open('{}/data.json'.format(DATAPOP_DIR), 'w') as f:
