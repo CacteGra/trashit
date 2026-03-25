@@ -99,7 +99,7 @@ class CollectArea(models.Model):
     raw_data = models.CharField(max_length=10000, null=True, blank=True)
     quarter = models.ForeignKey(Textfield, related_name="area_name", on_delete=models.CASCADE, null=True, blank=True)
     polygon_field = models.OneToOneField(Polygonfield, on_delete=models.CASCADE, null=True, blank=True)
-    description = models.CharField(max_length=10000, null=True, blank=True)
+    description = models.ForeignKey(Textfield, related_name="area_description", on_delete=models.CASCADE, null=True, blank=True)
 
     def related_register_api(self):        
         if self.polygon_field and self.polygon_field.register_api_chosen:
