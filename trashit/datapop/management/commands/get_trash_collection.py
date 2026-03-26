@@ -150,14 +150,17 @@ def main(data_lines):
                 continue
             locations_findings.append(closest_location)
             c_a = CollectArea.objects.get(quarter__id__in=[closest_location.id])
+            r_a_c = c_a.polygon_field.register_api_chosen
             same_locations = get_dicts_with_same_location(waste_data, 'location', data['location'])
             if len(same_locations) > 1:
                 same_location_description = ''
                 for same_location in same_locations:
                     same_location_description += same_location['tooltip_content']
-                c_a.description = same_location_description
+                description = same_location_description
             else:
-                c_a.description = data['tooltip_content']
+                description = data['tooltip_content']
+            textfield = Textfield.objects.get_or_create(register_api_chosen=r_a_c,o_field=description)
+            c_a.description = textfield
             c_a.save()
             print(f"Location: {data['location']}")
             print(f"Data: {data['tooltip_content']}")
