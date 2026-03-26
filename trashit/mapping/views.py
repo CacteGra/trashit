@@ -188,5 +188,6 @@ class RequestLocal(LoginRequiredMixin, FormView):
         return super().form_valid(form)
     
     def form_invalid(self, form):
+        from django.http import HttpResponseRedirect
         print("FAILED")
         return HttpResponseRedirect('/')
