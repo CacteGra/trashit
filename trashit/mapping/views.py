@@ -15,6 +15,11 @@ import random
 from pytz import utc
 import numpy as np
 
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import FormView
+from django.shortcuts import redirect
+
 from datapop.models import Pointfield, OperatedField, RequestLocalWaste
 from trash.models import TrashSpecificities, TrashType, TheType, TrashSpecificities
 from .forms import RequestLocalForm
@@ -188,6 +193,5 @@ class RequestLocal(LoginRequiredMixin, FormView):
         return super().form_valid(form)
     
     def form_invalid(self, form):
-        from django.http import HttpResponseRedirect
-        print("FAILED")
-        return HttpResponseRedirect('/')
+        messages.warning(self.request, "Form validation failed. Please check your input.")
+        return redirect(self.success_url)

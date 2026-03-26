@@ -131,6 +131,11 @@
 
   <div class="modal fade" id="noData" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
       <div class="modal-content" id="request-local-form"></div>
     </div>
   </div>
