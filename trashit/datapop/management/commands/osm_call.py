@@ -164,6 +164,7 @@ def main(api_pk):
             'cans': 'can',
             'cardboard': 'cardboard',
             'glass': 'glassbottle',
+            'organic': 'organic'
             'oil': 'specialbin',
         }
 
