@@ -209,6 +209,7 @@ class RegisterAPITemplate(SnippetViewSet):
         FieldPanel('city'),
         FieldPanel('state'),
         FieldPanel('country'),
+        FieldPanel('admin_mail'),
         FieldPanel('api_type'),
         FieldPanel('api_trash'),
         FieldPanel('is_dumb'),

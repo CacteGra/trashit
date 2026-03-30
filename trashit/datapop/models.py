@@ -373,6 +373,7 @@ class RegisterAPI(ClusterableModel):
     city = models.CharField(max_length=250, null=True, blank=True)
     state = models.CharField(max_length=250, null=True, blank=True)
     country = models.CharField(max_length=250, null=True, blank=True)
+    admin_mail = models.EmailField(null=True, blank=True)
     language = models.CharField(max_length=2, null=True, blank=True)
     api_endpoint = models.URLField(max_length=500,null=True, blank=True)
     TYPE_CHOICES = [

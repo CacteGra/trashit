@@ -33,7 +33,7 @@
       <button class="btn btn-light shadow fw-bold buttons-wrap" id="scan-wrapper">
         <i class="bi bi-upc-scan"></i> {% trans "Scan wrapper" %}
       </button>
-      <button type="button" class="btn btn-light shadow fw-bold rounded-circle buttons-wrap" id="add-menu">
+      <button type="button" class="btn btn-light shadow fw-bold rounded-circle buttons-wrap reporting dump" id="add-menu">
         <i class="bi bi-exclamation-triangle" style="font-size: 35px;"></i>
       </button>
 
@@ -60,6 +60,7 @@
         <i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>
       </button>
       <ul class="filtering dropdown-menu">
+        Not available.
       </ul>
     </div>
   </div>
@@ -100,7 +101,7 @@
         <div class="modal-header">
           <h5 class="modal-title">{% trans "Information" %}</h5>
           <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
+		  <span aria-hidden="true">X</span>
           </button>
         </div>
         <div class="modal-body">
@@ -120,7 +121,7 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p><a id="dumping-notif" href="">{% trans "Write an email to notify of an unauthorized dumping." %}</a></p>
+          <p><a id="dumping-notif" href=""></a></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Close" %}</button>
@@ -192,7 +193,7 @@
           maxZoom:25,
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           headers: {
-              'User-Agent': 'YourAppName/1.0 (https://yourwebsite.com)',
+              'User-Agent': 'TrashIt/1.0 (https://trashit.click)',
               'Referer': window.location.origin // Ensure Referer is sent
           }
         }
@@ -228,6 +229,9 @@
       let firstLoad = false;
       let modalDisplayed = false;
       let following = true;
+      let localEmail;
+      let href;
+      let notifInfo;
 
       // Define icons
       const userIcon = createIcon("{% static 'icons/dot-circle.png' %}", [40, 40]);
@@ -261,7 +265,6 @@
 
         if (!firstLoad || (JSON.stringify(Object.values(checkLoc)) !== JSON.stringify(Object.values(newLatLng)))) {
           console.log(checkLoc);
-          firstLoad = true;
           $.ajax({
             url: "{% url 'get_first_load' %}",
             data: { lat, lng, same_session: false },
@@ -277,6 +280,9 @@
                 requestCoords.value = `SRID=4326;POINT (${lng} ${lat})`;
               }
             } else {
+              if (!firstLoad) {
+                localEmail = response.administration_email; 
+              };
               const menu = document.querySelector('.filtering.dropdown-menu');
               menu.innerHTML = '';
               const li = document.createElement('li');
@@ -287,7 +293,7 @@
               btn.textContent = 'all';
               btn.onclick = function () {locationButtonClick();};
               li.appendChild(btn);
-              menu.appendChild(li); 
+              menu.appendChild(li);
               for (const type of response.all_types) {
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
@@ -302,6 +308,7 @@
 
               renderTrashMarkers(response.response);
             }
+            firstLoad = true;
           })
         }
 
@@ -613,9 +620,22 @@
       document.getElementById('scan-wrapper').onclick = scanWrapper;
 
       // Attach Handlers
-      document.getElementById('add-menu').onclick = () => {
-        const href = `mailto:no-one@snai1mai1.com?subject=Trash full&body=Hi, I found this unauthorized dumping at ${oldLatLng.lat}, ${oldLatLng.lng}`;
-        document.getElementById('dumping-notif').href = href;
+      document.getElementById('add-menu').onclick = (event) => {
+        if (typeof localEmail === undefined) {
+          href = '#';
+          notifInfo = "Reporting not available in your location";
+        } else {
+          if (event.target.parentNode.className.includes("report trash")) {
+            href = `mailto:${localEmail}?subject=Trash diposal issue&body=Hi, there is a trash disposal issue at this location ${oldLatLng.lat}, ${oldLatLng.lng}`;
+            notifInfo = "Write an email to notify of a diposal issue.";
+          } else if (event.target.parentNode.className.includes("reporting dump")) {
+            href = `mailto:${localEmail}?subject=Unauthorized dump&body=Hi, I found this unauthorized dumping at ${oldLatLng.lat}, ${oldLatLng.lng}`;
+            notifInfo = "Write an email to notify of an unauthorized dumping.";
+          }
+        }
+        const notif = document.getElementById('dumping-notif');
+        notif.href = href;
+        notif.innerHTML = notifInfo;
         $('#add-trash-modal').modal('toggle');
       };
 

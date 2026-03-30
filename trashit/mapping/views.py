@@ -76,7 +76,7 @@ class BaseLoadView(LoginRequiredMixin, ListView):
                 # Skip if too many of same type
                 try:
                     type_count_dict[current_type['the_type__pk']] += 1
-                    if type_count_dict[current_type['the_type__pk']] > 5 and types_count == 1:
+                    if type_count_dict[current_type['the_type__pk']] > 10 and types_count == 1:
                         continue
                 except KeyError:
                     type_count_dict[current_type['the_type__pk']] = 1
@@ -116,7 +116,7 @@ class FirstLoad(BaseLoadView):
         lat = float(request.GET['lat'])
         lng = float(request.GET['lng'])
         point = Point(lng, lat, srid=4326)
-        m = 500
+        m = 1000
         all_types = []
         not_local_type = []
         whole_response = []
@@ -126,6 +126,11 @@ class FirstLoad(BaseLoadView):
             point_field__o_field__distance_lte=(point, D(m=m)), 
             from_local_api=True
         ).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
+
+        if ts:
+            admin_email = ts[0].point_field.register_api_chosen.register_api_foreign.admin_mail
+        else:
+            admin_email = None
         
         response, local_types, not_local_type = self.iterate_points(ts, all_types, not_local_type, request)
         all_types = list(set().union(all_types, local_types))
@@ -147,9 +152,6 @@ class FirstLoad(BaseLoadView):
         all_types = list(set().union(all_types, types))
         whole_response.extend(response)
         
-        # Handle remaining cases...
-        # ... (similar patterns for other queries)
-        
         if not whole_response:
             r = RequestLocalWaste.objects.filter(coordinates__distance_lte=(point, D(m=2000)))
             if r:
@@ -160,7 +162,7 @@ class FirstLoad(BaseLoadView):
                                                                  request=request)}
         else:
             all_types = list(TheType.objects.filter(pk__in=all_types).values_list('the_type', flat=True))
-            whole_response = {'response': whole_response, 'all_types': all_types, 'all_icons': [c[0] for c in TheType.icon.field.choices]}
+            whole_response = {'response': whole_response, 'all_types': all_types, 'all_icons': [c[0] for c in TheType.icon.field.choices], 'administration_email': admin_email}
         
         return JsonResponse(whole_response, safe=False)
 
