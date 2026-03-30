@@ -61,6 +61,7 @@ class TheType(ClusterableModel):
         ("specialbin", "Special waste"),
         ("trashicon", "General trash"),
         ("shirt", "Clothes"),
+        ("organic", "Organic"),
     ]
 
     icon = models.CharField(
