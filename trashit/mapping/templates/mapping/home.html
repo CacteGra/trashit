@@ -184,8 +184,27 @@
       return cookieValue;
     };
 
+    function getBrowserLanguage() {
+      // Check for available language properties
+      if (navigator.languages && navigator.languages.length > 0) {
+        // Modern browsers
+        return navigator.languages[0];
+      } else if (navigator.language) {
+        // Older browsers
+        return navigator.language;
+      } else if (navigator.userLanguage) {
+        // IE
+        return navigator.userLanguage;
+      } else {
+        // Fallback
+        return 'en-US';
+      }
+    }
+
     // Main Map Init Function
     function mapInit(map, options) {
+      const browserLanguage = getBrowserLanguage();
+      const languageOnly = browserLanguage.split('-')[0];
       const tileLayer = L.tileLayer(
         'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
@@ -269,7 +288,7 @@
           console.log(checkLoc);
           $.ajax({
             url: "{% url 'get_first_load' %}",
-            data: { lat, lng, same_session: false },
+            data: { lat, lng, same_session: false, languageOnly },
             type: 'GET'
           }).done(function (response) {
             if (response.requestlocal) {
@@ -300,9 +319,18 @@
                 const li = document.createElement('li');
                 const btn = document.createElement('button');
                 btn.className = 'dropdown-item filter';
-                btn.id = `filter ${type}`;
-                btn.name = type;
-                btn.textContent = type;
+                btn.id = `${type[0]}`;
+                btn.name = type[1];
+                if (languageOnly === 'en') {
+                  btn.textContent = type[1];
+                } else {
+                  if (type[2]) {
+                    btn.textContent = type[2];
+                  }
+                  else {
+                    btn.textContent = type[1];
+                  }
+                }
                 btn.onclick = (e) => filterTrash(e);
                 li.appendChild(btn);
                 menu.appendChild(li);
@@ -402,7 +430,7 @@
 
         $.ajax({
           url: "{% url 'filter_type' %}",
-          data: { lat, lng, type },
+          data: { lat, lng, type, languageOnly},
           type: 'GET'
         }).done(function (response) {
           const html = response.map(item => item.html).join('');

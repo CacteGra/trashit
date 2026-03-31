@@ -113,6 +113,7 @@ class BaseLoadView(LoginRequiredMixin, ListView):
 
 class FirstLoad(BaseLoadView):
     def get(self, request, *args, **kwargs):
+        language = request.GET['languageOnly']
         lat = float(request.GET['lat'])
         lng = float(request.GET['lng'])
         point = Point(lng, lat, srid=4326)
@@ -149,7 +150,7 @@ class FirstLoad(BaseLoadView):
         ).exclude(pk__in=list(osm_linked_trashes.values_list('osm_trash_spec__pk', flat=True))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
         
         response, types, not_local_type = self.iterate_points(ts, all_types, not_local_type, request)
-        all_types = list(set().union(all_types, types))
+        whole_types = list(set().union(all_types, types))
         whole_response.extend(response)
         
         if not whole_response:
@@ -161,7 +162,13 @@ class FirstLoad(BaseLoadView):
                                                                  {'form': RequestLocalForm(request.POST), 'coordinates': point}, 
                                                                  request=request)}
         else:
-            all_types = list(TheType.objects.filter(pk__in=all_types).values_list('the_type', flat=True))
+            if language == 'en':
+                all_types = list(TheType.objects.filter(pk__in=whole_types).values_list('pk', 'the_type', 'related_the_type__locale'))
+            else:
+                all_types = list(TheType.objects.filter(pk__in=whole_types, related_the_type__isnull=True).values_list('pk', 'the_type', 'related_the_type__locale'))
+                lang_types = list(TheType.objects.filter(pk__in=whole_types, related_the_type__isnull=False, related_the_type__language=language).values_list('pk', 'the_type', 'related_the_type__locale'))
+                all_types.extend(lang_types)
+
             whole_response = {'response': whole_response, 'all_types': all_types, 'all_icons': [c[0] for c in TheType.icon.field.choices], 'administration_email': admin_email}
         
         return JsonResponse(whole_response, safe=False)
