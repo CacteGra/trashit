@@ -117,7 +117,7 @@ class BaseLoadView(LoginRequiredMixin, ListView):
                     'lat': lats[n], 
                     'lng': lngs[n], 
                     'trash_id': t.id, 
-                    'trash_type': the_type, 
+                    'trash_type': combined_type, 
                     'trash_icon': trash_icon
                 })
             
@@ -182,12 +182,15 @@ class FirstLoad(BaseLoadView):
                                                                  {'form': RequestLocalForm(request.POST), 'coordinates': point}, 
                                                                  request=request)}
         else:
-            if language == 'en':
-                all_types = list(TheType.objects.filter(pk__in=whole_types).values_list('pk', 'the_type', 'related_the_type__locale'))
-            else:
-                all_types = list(TheType.objects.filter(pk__in=whole_types, related_the_type__isnull=True).values_list('pk', 'the_type', 'related_the_type__locale'))
-                lang_types = list(TheType.objects.filter(pk__in=whole_types, related_the_type__isnull=False, related_the_type__language=language).values_list('pk', 'the_type', 'related_the_type__locale'))
-                all_types.extend(lang_types)
+            typing = TheType.objects.filter(pk__in=whole_types, related_the_type__isnull=False, related_the_type__language=language).annotate(
+                combined_type=Coalesce('related_the_type__locale', 'the_type')
+            )
+            all_types = list(typing.values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type'))
+            original_types = list(TheType.objects.filter(~Q(pk__in=whole_types) & ~Q(pk__in=typing.values_list('pk', flat=True))).annotate(
+                    combined_type=Coalesce('related_the_type__locale', 'the_type')
+            ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type'))
+            all_types.extend(original_types)
+            print(all_types)
 
             whole_response = {'response': whole_response, 'all_types': all_types, 'all_icons': [c[0] for c in TheType.icon.field.choices], 'administration_email': admin_email}
         
