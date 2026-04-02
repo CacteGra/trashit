@@ -19,6 +19,7 @@ import numpy as np
 
 from django.contrib import messages
 from django.views.generic import FormView
+from django.utils import translation
 from django.shortcuts import redirect
 
 from datapop.models import Pointfield, OperatedField, RequestLocalWaste
@@ -30,9 +31,41 @@ class MainPageView(LoginRequiredMixin, TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Detect language before page load
+        user_languages = self.request.META.get('HTTP_ACCEPT_LANGUAGE', 'en')
+        
+        # Parse browser languages (like "fr-FR,fr;q=0.9,en;q=0.8")
+        languages = []
+        if user_languages:
+            for lang in user_languages.split(','):
+                lang_code = lang.split(';')[0].strip()
+                languages.append(lang_code)
+        
+        # Determine preferred language
+        preferred_language = 'en'  # default
+        supported_languages = ['en', 'fr', 'es']  # your supported languages
+        
+        for lang in languages:
+            if lang in supported_languages:
+                preferred_language = lang
+                break
+            # Check language codes without region
+            lang_code = lang.split('-')[0]
+            if lang_code in supported_languages:
+                preferred_language = lang_code
+                break
+        
+        # Set language for this request
+        translation.activate(preferred_language)
+        
         context['trash_types'] = TheType.objects.values_list('the_type', flat=True).distinct()
         context['all_icons'] = [c[0] for c in TheType.icon.field.choices]
         context['form'] = RequestLocalForm()
+        
+        # Add language info to context if needed
+        context['current_language'] = preferred_language
+        
         return context
 
 class BaseLoadView(LoginRequiredMixin, ListView):
