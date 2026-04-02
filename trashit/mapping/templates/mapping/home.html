@@ -414,50 +414,19 @@
       function filterTrash(e) {
         const lat = oldLatLng.lat;
         const lng = oldLatLng.lng;
-        const type = e.target.name;
+        const typeId = e.target.id;
 
         markersLayer.clearLayers();
         circlesLayer.clearLayers();
 
         $.ajax({
           url: "{% url 'filter_type' %}",
-          data: { lat, lng, type, languageOnly},
+          data: { lat, lng, typeId, languageOnly},
           type: 'GET'
         }).done(function (response) {
           const html = response.map(item => item.html).join('');
           $trashList.innerHTML += html;
-
-          response.forEach(item => {
-            const latlng = L.latLng(item.lat, item.lng);
-            const circle = L.circle(latlng, item.radius);
-            circlesLayer.addLayer(circle);
-
-            item.data_list.forEach(d => {
-              if (d.reload) {
-                $reload.innerHTML = d.reload;
-              }
-
-              const latlng = L.latLng(d.lat, d.lng);
-              const iconName = d.trash_icon || 'trash-icon';
-              const iconUrl = `{% static 'icons/' %}${iconName}.svg`;
-              const trashIcon = new selectedIcon({ iconUrl });
-
-              const marker = L.marker(latlng, {
-                title: d.trash_type,
-                alt: `${d.trash_id} ${d.trash_type}`,
-                icon: trashIcon
-              }).on('click', highlightTrash);
-
-              markersLayer.addLayer(marker);
-
-              // Update filter button icon
-              if (d.trash_type === type) {
-                document.getElementById('add-filter').innerHTML = `<img class="imgFilter" src="${iconUrl}">`;
-              } else if (type === 'all') {
-                document.getElementById('add-filter').innerHTML = `<i class="bi bi-funnel" style="font-size: 35px;"></i>`;
-              }
-            });
-          });
+          renderTrashMarkers(response);
         });
       }
 

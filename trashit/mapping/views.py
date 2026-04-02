@@ -223,12 +223,12 @@ class FilterType(BaseLoadView):
     def get(self, request, *args, **kwargs):
         lat = float(request.GET['lat'])
         lng = float(request.GET['lng'])
-        get_type = request.GET['type']
+        get_type = request.GET['typeId']
         point = Point(lng, lat, srid=4326)
         whole_response = []
         not_local_type = []
         
-        the_type = TheType.objects.get(the_type=get_type)
+        the_type = TheType.objects.get(pk=get_type)
         trash_types = TrashType.objects.filter(the_type__in=[the_type])
         ts = TrashSpecificities.objects.filter(
             point_field__o_field__distance_lte=(point, D(m=2000)), 
