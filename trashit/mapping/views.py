@@ -8,6 +8,8 @@ from django.contrib.gis.measure import D
 from django.contrib.gis.db.models.functions import Distance
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
+from django.db.models import Case, When, Value, CharField
+from django.db.models.functions import Coalesce
 from django.core.serializers import serialize
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
@@ -16,7 +18,6 @@ from pytz import utc
 import numpy as np
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import FormView
 from django.shortcuts import redirect
 
@@ -56,6 +57,7 @@ class BaseLoadView(LoginRequiredMixin, ListView):
         return lngs, lats
     
     def iterate_points(self, ts, all_types, not_local_type, request):
+        language = request.GET['languageOnly']
         response = []
         type_count_dict = {}
         
@@ -71,25 +73,43 @@ class BaseLoadView(LoginRequiredMixin, ListView):
             
             n = -1
             for current_type in current_types:
+                current_type_pk = current_type['the_type__pk']
                 n += 1
                 
                 # Skip if too many of same type
                 try:
-                    type_count_dict[current_type['the_type__pk']] += 1
-                    if type_count_dict[current_type['the_type__pk']] > 10 and types_count == 1:
+                    type_count_dict[current_type_pk] += 1
+                    if type_count_dict[current_type_pk] > 10 and types_count == 1:
                         continue
                 except KeyError:
-                    type_count_dict[current_type['the_type__pk']] = 1
+                    type_count_dict[current_type_pk] = 1
                 
                 # Check if type is OSM
-                type_is_osm = TheType.objects.filter(osm_type__pk__in=[current_type['the_type__pk']])
+                type_is_osm = TheType.objects.filter(osm_type__pk__in=[current_type_pk])
                 if not type_is_osm and current_type['the_type__the_type'] not in not_local_type:
                     not_local_type.append(current_type['the_type__the_type'])
                 
                 all_types.append(current_type['the_type__pk'])
-                trash_type = current_type['the_type__the_type']
+                type_result = TheType.objects.filter(pk=current_type_pk, related_the_type__isnull=False, related_the_type__language=language).annotate(
+                    combined_type=Coalesce('related_the_type__locale', 'the_type')
+                ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type')
+                if not type_result:
+                    type_result = TheType.objects.filter(pk=current_type_pk).annotate(
+                        combined_type=Coalesce('related_the_type__locale', 'the_type')
+                    ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type')
+                pk, the_type, locale, combined_type = type_result[0]
+                # if language == 'en':
+                #     trash_type = list(TheType.objects.filter(pk=current_type_pk).values_list('pk', 'the_type', 'related_the_type__locale'))[0]
+                #     trash_type = trash_type[1]
+                # else:
+                #     trash_type = list(TheType.objects.filter(pk=current_type_pk, related_the_type__isnull=False, related_the_type__language=language).values_list('pk', 'the_type', 'related_the_type__locale'))
+                #     if trash_type:
+                #         trash_type = list(trash_type)[0][2]
+                #     else:
+                #         trash_type = list(TheType.objects.filter(pk=current_type_pk, related_the_type__isnull=True).values_list('pk', 'the_type', 'related_the_type__locale'))[0]
+                #         trash_type = trash_type[1]
                 html = render_to_string('trash/trash-presentation.html', 
-                                       {'trash': t, 'trash_type': trash_type}, 
+                                       {'trash': t, 'trash_type': combined_type}, 
                                        request=request)
                 trash_icon = current_type['the_type__icon']
                 data_list.append({
@@ -97,7 +117,7 @@ class BaseLoadView(LoginRequiredMixin, ListView):
                     'lat': lats[n], 
                     'lng': lngs[n], 
                     'trash_id': t.id, 
-                    'trash_type': trash_type, 
+                    'trash_type': the_type, 
                     'trash_icon': trash_icon
                 })
             
