@@ -128,7 +128,7 @@ class BaseLoadView(LoginRequiredMixin, ListView):
                 ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type')
                 if not type_result:
                     type_result = TheType.objects.filter(pk=current_type_pk).annotate(
-                        combined_type=Coalesce('related_the_type__locale', 'the_type')
+                        combined_type=Coalesce('the_type', 'related_the_type__locale')
                     ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type')
                 pk, the_type, locale, combined_type = type_result[0]
                 # if language == 'en':
@@ -219,11 +219,10 @@ class FirstLoad(BaseLoadView):
                 combined_type=Coalesce('related_the_type__locale', 'the_type')
             )
             all_types = list(typing.values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type'))
-            original_types = list(TheType.objects.filter(~Q(pk__in=whole_types) & ~Q(pk__in=typing.values_list('pk', flat=True))).annotate(
-                    combined_type=Coalesce('related_the_type__locale', 'the_type')
+            original_types = list(TheType.objects.filter(Q(pk__in=whole_types) & ~Q(pk__in=typing.values_list('pk', flat=True))).annotate(
+                    combined_type=Coalesce('the_type', 'related_the_type__locale')
             ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type'))
             all_types.extend(original_types)
-            print(all_types)
 
             whole_response = {'response': whole_response, 'all_types': all_types, 'all_icons': [c[0] for c in TheType.icon.field.choices], 'administration_email': admin_email}
         
