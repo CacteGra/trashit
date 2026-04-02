@@ -123,6 +123,7 @@ class BaseLoadView(LoginRequiredMixin, ListView):
                     not_local_type.append(current_type['the_type__the_type'])
                 
                 all_types.append(current_type['the_type__pk'])
+                # Get type in language
                 type_result = TheType.objects.filter(pk=current_type_pk, related_the_type__isnull=False, related_the_type__language=language).annotate(
                     combined_type=Coalesce('related_the_type__locale', 'the_type')
                 ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type')
@@ -131,16 +132,6 @@ class BaseLoadView(LoginRequiredMixin, ListView):
                         combined_type=Coalesce('the_type', 'related_the_type__locale')
                     ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type')
                 pk, the_type, locale, combined_type = type_result[0]
-                # if language == 'en':
-                #     trash_type = list(TheType.objects.filter(pk=current_type_pk).values_list('pk', 'the_type', 'related_the_type__locale'))[0]
-                #     trash_type = trash_type[1]
-                # else:
-                #     trash_type = list(TheType.objects.filter(pk=current_type_pk, related_the_type__isnull=False, related_the_type__language=language).values_list('pk', 'the_type', 'related_the_type__locale'))
-                #     if trash_type:
-                #         trash_type = list(trash_type)[0][2]
-                #     else:
-                #         trash_type = list(TheType.objects.filter(pk=current_type_pk, related_the_type__isnull=True).values_list('pk', 'the_type', 'related_the_type__locale'))[0]
-                #         trash_type = trash_type[1]
                 html = render_to_string('trash/trash-presentation.html', 
                                        {'trash': t, 'trash_type': combined_type}, 
                                        request=request)
