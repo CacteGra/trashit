@@ -126,6 +126,14 @@ msgstr ""
 msgid "Hello"
 msgstr "Bonjour"
 
+#: mapping/templates/mapping/home.html:42
+msgid "Zoom in"
+msgstr "Zoomer"
+
+#: mapping/templates/mapping/home.html:43
+msgid "Zoom out"
+msgstr "Dézoomer"
+
 #: mapping/templates/mapping/home.html:661
 msgid "Scan wrapper"
 msgstr "Scanner emballage"
@@ -133,3 +141,35 @@ msgstr "Scanner emballage"
 #: mapping/templates/mapping/home.html:686
 msgid "Garbage collection"
 msgstr "Collecte des ordures"
+
+#: mapping/templates/mapping/home.html:120
+msgid "Unauthorized waste dumping notification"
+msgstr "Notification de dépôt non autorisé"
+
+#: mapping/templates/mapping/home.html:616
+msgid "Reporting not available in your location."
+msgstr "Rapport non disponible à cet endroit."
+
+#: mapping/templates/mapping/home.html:619
+msgid "Trash diposal issue"
+msgstr "Lieu de dépôt d'ordures"
+
+#: mapping/templates/mapping/home.html:619
+msgid "Hi, there is a trash disposal issue at this location."
+msgstr "Bonjour, il y a un problème avec le dépôt d'ordures ici :"
+
+#: mapping/templates/mapping/home.html:620
+msgid "Write an email to notify of a diposal issue."
+msgstr "Écrire un email pour notifier d'un problème de dépôt d'ordures"
+
+#: mapping/templates/mapping/home.html:622
+msgid "Unauthorized dump"
+msgstr "Dépôt d'ordures non autorisé"
+
+#: mapping/templates/mapping/home.html:622
+msgid "Hi, I found this unauthorized dumping at"
+msgstr "Bonjour%2C%20j'ai trouvé ce dépôt non autorisé ici :"
+
+#: mapping/templates/mapping/home.html:623
+msgid "Write an email to notify of an unauthorized dumping."
+msgstr "Écrire un email pour notifier d'un dépôt non autorisé."

@@ -613,14 +613,14 @@
       document.getElementById('add-menu').onclick = (event) => {
         if (typeof localEmail === undefined) {
           href = '#';
-          notifInfo = "Reporting not available in your location";
+		notifInfo = "{% trans 'Reporting not available in your location.' %}";
         } else {
           if (event.target.parentNode.className.includes("report trash")) {
-            href = `mailto:${localEmail}?subject=Trash diposal issue&body=Hi, there is a trash disposal issue at this location ${oldLatLng.lat}, ${oldLatLng.lng}`;
-            notifInfo = "Write an email to notify of a diposal issue.";
+            href = `mailto:${localEmail}?subject={% trans "Trash diposal issue" %}&body={% trans "Hi, there is a trash disposal issue at this location." %} ${oldLatLng.lat}%2C%20${oldLatLng.lng}.`;
+            notifInfo = "{% trans 'Write an email to notify of a diposal issue.' %}";
           } else if (event.target.parentNode.className.includes("reporting dump")) {
-            href = `mailto:${localEmail}?subject=Unauthorized dump&body=Hi, I found this unauthorized dumping at ${oldLatLng.lat}, ${oldLatLng.lng}`;
-            notifInfo = "Write an email to notify of an unauthorized dumping.";
+            href = `mailto:${localEmail}?subject={% trans "Unauthorized dump" %}&body={% trans "Hi, I found this unauthorized dumping at" %} ${oldLatLng.lat}%2C%20${oldLatLng.lng}.`;
+		  notifInfo = "{% trans 'Write an email to notify of an unauthorized dumping.' %}";
           }
         }
         const notif = document.getElementById('dumping-notif');
