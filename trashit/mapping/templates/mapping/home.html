@@ -239,6 +239,10 @@
 
       // Remove default zoom control
       map.removeControl(map.zoomControl);
+      const leafletControlContainers = document.querySelectorAll('.leaflet-control-container');
+      leafletControlContainers.forEach(container => {
+          container.style.display = 'none';
+      });
 
       // State variables
       let oldLatLng = null;
