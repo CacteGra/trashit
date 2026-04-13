@@ -16,7 +16,7 @@ from wagtail.admin.views.generic.chooser import  ChooseView, ChooseResultsView, 
 from wagtail.admin.viewsets.chooser import ChooserViewSet
 
 from django.core.paginator import Paginator
-from django.utils.translation import gettext_lazy as _
+from django.utils import translation
 from django.template.response import TemplateResponse
 
 
@@ -27,6 +27,32 @@ import re
 from pprint import pprint
 
 # Create your views here.
+
+def get_language(request):
+    # Detect language before page load
+    user_languages = request.META.get('HTTP_ACCEPT_LANGUAGE', 'en')
+    
+    # Parse browser languages (like "fr-FR,fr;q=0.9,en;q=0.8")
+    languages = []
+    if user_languages:
+        for lang in user_languages.split(','):
+            lang_code = lang.split(';')[0].strip()
+            languages.append(lang_code)
+    
+    # Determine preferred language
+    preferred_language = 'en'  # default
+    supported_languages = ['en', 'fr', 'es']  # your supported languages
+    
+    for lang in languages:
+        if lang in supported_languages:
+            preferred_language = lang
+            break
+        # Check language codes without region
+        lang_code = lang.split('-')[0]
+        if lang_code in supported_languages:
+            preferred_language = lang_code
+            break
+    return preferred_language
 
 class ReportTrash(LoginRequiredMixin, generic.DetailView):
     model = User
@@ -86,6 +112,10 @@ class GarbageCollection(LoginRequiredMixin, ListView):
         print(lat)
         print(lng)
         point = Point(lng, lat, srid=4326)
+        print(request)
+        preferred_language = get_language(request)
+        print(preferred_language)
+        translation.activate(preferred_language)
         try:
             collection_area = CollectArea.objects.get(polygon_field__o_field__contains=point)
         except CollectArea.DoesNotExist:

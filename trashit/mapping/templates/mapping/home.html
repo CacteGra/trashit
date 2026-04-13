@@ -49,7 +49,7 @@
       </div>
 
       <!-- Profile Info Trigger -->
-      <a class="u-link text-center d-block" data-bs-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static "leaflet/images/marker-icon.png" %});' href='#callProfile'></a>
+      <!-- <a class="u-link text-center d-block" data-bs-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static "leaflet/images/marker-icon.png" %});' href='#callProfile'></a> -->
     </div>
   </div>
 
@@ -60,7 +60,7 @@
         <i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>
       </button>
       <ul class="filtering dropdown-menu">
-        Not available.
+        {"% trans "Not available" %}.
       </ul>
     </div>
   </div>
@@ -310,8 +310,8 @@
               const btn = document.createElement('button');
               btn.className = 'dropdown-item filter';
               btn.id = 'filter all';
-              btn.name = 'all';
-              btn.textContent = 'all';
+              btn.name = '{% trans "All" %}';
+              btn.textContent = '{% trans "All" %}';
               btn.onclick = function () {locationButtonClick();};
               li.appendChild(btn);
               menu.appendChild(li);

@@ -1,9 +1,10 @@
 {% load static %}
+{% load i18n %}
     <div class="modal-content">
       <div class="modal-header">
         <!-- <h1 class="trashSelect modal-title fs-5" id="{{ trash.id }}"> -->
         <h1 class="modal-title fs-5"></h1>
-          Garbage collection days
+          {% trans "Garbage collection days" %}
         </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -11,6 +12,6 @@
         {{ collection.description.o_field|safe }}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">{% trans "Close" %}</button>
       </div>
     </div>

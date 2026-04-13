@@ -122,6 +122,14 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
+#: trash/templates/trash/collection-days.html:7
+msgid "Garbage collection days"
+msgstr "Jours de collecte"
+
+#: trash/templates/trash/collection-days.html:15
+msgid "Close"
+msgstr "Fermer"
+
 #: mapping/templates/mapping/home.html:1
 msgid "Hello"
 msgstr "Bonjour"
@@ -133,6 +141,18 @@ msgstr "Zoomer"
 #: mapping/templates/mapping/home.html:43
 msgid "Zoom out"
 msgstr "Dézoomer"
+
+#: mapping/templates/mapping/home.html:43
+msgid "Recenter view"
+msgstr "Recentrer la carte"
+
+#: mapping/templates/mapping/home.html:63 110 127
+msgid "Not available"
+msgstr "Non disponible"
+
+#: mapping/templates/mapping/home.html:313 314
+msgid "All"
+msgstr "Tous"
 
 #: mapping/templates/mapping/home.html:661
 msgid "Scan wrapper"
