@@ -122,6 +122,34 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
+#: trash/templates/trash/request-local.html:2
+msgid "No local data"
+msgstr "Pas de données locales"
+
+#: trash/templates/trash/request-local.html:6
+msgid "Request to add local waste disposal data"
+msgstr "Demander à ajouter des données de gestion locale des déchets"
+
+#: trash/templates/trash/request-local.html:15
+msgid "Request"
+msgstr "Faire la demande"
+
+#: trash/templates/trash/packaging-bin.html:4
+msgid "Component"
+msgstr "Composant"
+
+#: trash/templates/trash/packaging-bin.html:19
+msgid "No info on packaging"
+msgstr "Pas d'info sur l'emballage"
+
+#: trash/templates/trash/packaging-bin.html:24
+msgid "Unknown product"
+msgstr "Produit inconnu"
+
+#: trash/templates/trash/packaging-bin.html:29
+msgid "Service unavailable"
+msgstr "Service indisponible"
+
 #: trash/templates/trash/collection-days.html:7
 msgid "Garbage collection days"
 msgstr "Jours de collecte"

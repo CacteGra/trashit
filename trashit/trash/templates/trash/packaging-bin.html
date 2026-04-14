@@ -1,27 +1,34 @@
+{% load i18n %}
 <table class="table table-striped table-hover">
   <thead class="table-dark">
     <tr>
-      <th>Component</th>
+      <th>{% trans "Component" %}</th>
       <th>Type</th>
     </tr>
   </thead>
   <tbody>
-    {% if wrapper %}
-      {% if packagings %}
-        {% for packaging in packagings %}
+    {% if available %}
+      {% if wrapper %}
+        {% if wrapper.packagings.all %}
+          {% for packaging in wrapper.packagings.all %}
+            <tr>
+              <td>{{ packaging.component|title }}</td>
+              <td>{{ packaging.the_type.the_type|title }}</td>
+            </tr>
+          {% endfor %}
+        {% else %}
           <tr>
-            <td>{{ packaging.component|title }}</td>
-            <td>{{ packaging.the_type.the_type|title }}</td>
+            <td colspan="2" class="text-center text-muted">{% trans "No info on packaging" %}</td>
           </tr>
-        {% endfor %}
+        {% endif %}
       {% else %}
         <tr>
-          <td colspan="2" class="text-center text-muted">No Info On Packaging</td>
+          <td colspan="2" class="text-center text-muted">{% trans "Unknown product" %}</td>
         </tr>
       {% endif %}
     {% else %}
       <tr>
-        <td colspan="2" class="text-center text-muted">Unknown Product</td>
+        <td colspan="2" class="text-center text-muted">{% trans "Service unavailable" %}</td>
       </tr>
     {% endif %}
   </tbody>
