@@ -138,9 +138,8 @@ class ScanWrapper(LoginRequiredMixin, ListView):
         from trash.models import Wrapper
         from .all_functions import openfoodfacts_api
         code = int(request.GET['code'])
-        pk = openfoodfacts_api.main(code)
-        wrapper = Wrapper.objects.get(pk=pk)
-        html = render_to_string('trash/packaging-bin.html', {'packagings': wrapper.packaging.all(), 'wrapper': True}, request=request)
+        wrapper, available = openfoodfacts_api.main(code)
+        html = render_to_string('trash/packaging-bin.html', {'packagings': wrapper, 'available': available}, request=request)
         return JsonResponse([{'html': html, }], safe=False)
 
 class IssueChooseView(ChooseView):

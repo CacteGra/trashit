@@ -23,27 +23,30 @@ def main(code):
         if response.status_code == 200:
             # Parse the JSON response into a Python dictionary
             product_data = response.json()
-            try:
-                packagings = product_data['product']["packagings"]
-            except KeyError:
-                return False
-            for packaging in packagings:
-                material = packaging['material'].split(':')[1]
-                shape = packaging['shape'].split(':')[1]
+            if product_data['status'] == 0:
+                return None, True
+            else:
                 try:
-                    packaging = Packaging.objects.get(component=shape)
-                except Packaging.DoesNotExist:
-                    packaging = Packaging.objects.create(component=shape)
-                wrapper.packaging.add(packaging)
-                wrapper.save()
-                try:
-                    the_type = TheType.objects.get(the_type__iexact=material)
-                except TheType.DoesNotExist:
-                    the_type = TheType.objects.create(the_type=material)
-                packaging.the_type = the_type
-                packaging.save()
+                    packagings = product_data['product']["packagings"]
+                except KeyError:
+                    return wrapper, True
+                for packaging in packagings:
+                    material = packaging['material'].split(':')[1]
+                    shape = packaging['shape'].split(':')[1]
+                    try:
+                        packaging = Packaging.objects.get(component=shape)
+                    except Packaging.DoesNotExist:
+                        packaging = Packaging.objects.create(component=shape)
+                    wrapper.packaging.add(packaging)
+                    wrapper.save()
+                    try:
+                        the_type = TheType.objects.get(the_type__iexact=material)
+                    except TheType.DoesNotExist:
+                        the_type = TheType.objects.create(the_type=material)
+                    packaging.the_type = the_type
+                    packaging.save()
         else:
             print("Error:", response.status_code)
-            return False
+            return None, False
 
-    return wrapper.pk
+    return wrapper, True
