@@ -1,4 +1,4 @@
-from .models import PageStats, VisitorSession
+from .models import PageStats, VisitorStats
 from django.utils import timezone
 import uuid
 
@@ -17,11 +17,11 @@ def visitor_stats(request):
         request.session['visit_start_time'] = timezone.now().isoformat()
 
     # 2. Check if this session is already tracked
-    is_new_visitor = not VisitorSession.objects.filter(session_key=session_id).exists()
+    is_new_visitor = not VisitorStats.objects.filter(session_key=session_id).exists()
     
     if is_new_visitor:
         # Record the session
-        VisitorSession.objects.create(session_key=session_id)
+        VisitorStats.objects.create(session_key=session_id)
         
         # Increment the global counter
         stats, created = PageStats.objects.get_or_create(page_name="trash_map")
