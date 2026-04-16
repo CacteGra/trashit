@@ -20,11 +20,14 @@ class VisitorStats(models.Model):
 class PageStats(models.Model):
     page_name = models.CharField(max_length=100, default="trash_map")
     total_visitors = models.PositiveIntegerField(default=0)
+    total_seconds_spent = models.PositiveIntegerField(default=0) # <--- Add this
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"{self.page_name} - {self.total_visitors}"
 
-    class Meta:
-        verbose_name = "Page Statistic"
-        verbose_name_plural = "Page Statistics"
+    @property
+    def average_time_spent(self):
+        if self.total_visitors > 0:
+            return round(self.total_seconds_spent / self.total_visitors, 2)
+        return 0
+
+    def __str__(self):
+        return f"{self.page_name} {self.total_visitors} (Avg: {self.average_time_spent}s)"

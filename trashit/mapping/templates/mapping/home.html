@@ -149,56 +149,26 @@
   <!-- Script: Modern, efficient, clean -->
   <script>
 
-    // --- NEW: Time Passed Logic ---
-    function updateTimePassed() {
-      const startTimeStr = "{% if visit_start_time %}{{ visit_start_time }}{% endif %}";
-      
-      if (!startTimeStr) {
-        // Fallback if backend didn't send time
-        const now = new Date();
-        localStorage.setItem('pageStart', now.getTime());
-        return;
-      }
+    // 1. Record when the page loaded
+    const startTime = Date.now();
 
-      // Convert ISO string to Date object
-      const startTime = new Date(startTimeStr).getTime();
-      const now = new Date().getTime();
-      const diff = now - startTime;
+    // 2. Listen for the user leaving the page
+    document.addEventListener('visibilitychange', function() {
+        // 'hidden' means the user switched tabs or closed the window/minimized
+        if (document.visibilityState === 'hidden') {
+            const endTime = Date.now();
+            const durationSeconds = Math.floor((endTime - startTime) / 1000);
+            
+            // Create the data to send
+            const formData = new FormData();
+            formData.append('duration', durationSeconds);
+            formData.append('page_name', 'trash_map'); // Match your model default
 
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      const timeString = 
-        (hours < 10 ? "0" : "") + hours + ":" +
-        (minutes < 10 ? "0" : "") + minutes + ":" +
-        (seconds < 10 ? "0" : "") + seconds;
-
-      document.getElementById("time-passed").innerText = timeString;
-    }
-    // Start timer immediately
-    updateTimePassed();
-    setInterval(updateTimePassed, 1000);
-    // --- END Time Passed Logic ---
-
-    // Preload icons to improve performance
-    const iconCache = new Map();
-    
-    function createIcon(iconUrl, size) {
-      if (iconCache.has(iconUrl)) {
-        return iconCache.get(iconUrl);
-      }
-      
-      const icon = L.icon({
-        iconUrl: iconUrl,
-        iconSize: size,
-        iconAnchor: [size[0]/2, size[1]],
-        popupAnchor: [-3, -76]
-      });
-      
-      iconCache.set(iconUrl, icon);
-      return icon;
-    }
+            // 3. Use sendBeacon to send data reliably as the page closes
+            const url = "{% url 'record_time_spent' %}";
+            navigator.sendBeacon(url, formData);
+        }
+    });
 
     // CSRF Helper
     function getCookie(name) {
