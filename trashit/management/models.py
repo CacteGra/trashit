@@ -1,24 +1,30 @@
 from django.db import models
 from django.utils import timezone
+from wagtail.snippets.models import register_snippet  # <--- Import this
 
-class PageStats(models.Model):
-    """Single row to store global stats for the page"""
+@register_snippet  # <--- This decorator makes it show up in the Wagtail Admin
+class VisitorStats(models.Model):
     page_name = models.CharField(max_length=100, default="trash_map")
     total_visitors = models.PositiveIntegerField(default=0)
-    updated_at = models.DateTimeField(auto_now=True)
+    session_key = models.CharField(max_length=100, unique=True, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
-    class Meta:
-        verbose_name = "Page Stats"
-        verbose_name_plural = "Page Stats"
-
     def __str__(self):
         return f"{self.page_name}: {self.total_visitors}"
 
-class VisitorSession(models.Model):
-    """Tracks individual sessions to ensure uniqueness"""
-    session_key = models.CharField(max_length=100, unique=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    
     class Meta:
-        verbose_name = "Visitor Session"
-        verbose_name_plural = "Visitor Sessions"
+        verbose_name = "Visitor Statistic"
+        verbose_name_plural = "Visitor Statistics"
+
+@register_snippet  # <--- This makes this one show up too
+class PageStats(models.Model):
+    page_name = models.CharField(max_length=100, default="trash_map")
+    total_visitors = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.page_name} - {self.total_visitors}"
+
+    class Meta:
+        verbose_name = "Page Statistic"
+        verbose_name_plural = "Page Statistics"
