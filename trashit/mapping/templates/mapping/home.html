@@ -149,26 +149,40 @@
   <!-- Script: Modern, efficient, clean -->
   <script>
 
-    // 1. Record when the page loaded
     const startTime = Date.now();
 
-    // 2. Listen for the user leaving the page
     document.addEventListener('visibilitychange', function() {
-        // 'hidden' means the user switched tabs or closed the window/minimized
         if (document.visibilityState === 'hidden') {
             const endTime = Date.now();
             const durationSeconds = Math.floor((endTime - startTime) / 1000);
             
-            // Create the data to send
             const formData = new FormData();
             formData.append('duration', durationSeconds);
             formData.append('page_name', 'trash_map'); // Match your model default
 
-            // 3. Use sendBeacon to send data reliably as the page closes
             const url = "{% url 'record_time_spent' %}";
             navigator.sendBeacon(url, formData);
         }
     });
+
+    // Preload icons to improve performance
+    const iconCache = new Map();
+    
+    function createIcon(iconUrl, size) {
+      if (iconCache.has(iconUrl)) {
+        return iconCache.get(iconUrl);
+      }
+      
+      const icon = L.icon({
+        iconUrl: iconUrl,
+        iconSize: size,
+        iconAnchor: [size[0]/2, size[1]],
+        popupAnchor: [-3, -76]
+      });
+      
+      iconCache.set(iconUrl, icon);
+      return icon;
+    }
 
     // CSRF Helper
     function getCookie(name) {

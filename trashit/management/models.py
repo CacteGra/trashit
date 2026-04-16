@@ -1,8 +1,8 @@
 from django.db import models
 from django.utils import timezone
-from wagtail.snippets.models import register_snippet  # <--- Import this
+from wagtail.snippets.models import register_snippet
 
-@register_snippet  # <--- This decorator makes it show up in the Wagtail Admin
+@register_snippet
 class VisitorStats(models.Model):
     page_name = models.CharField(max_length=100, default="trash_map")
     total_visitors = models.PositiveIntegerField(default=0)
@@ -16,11 +16,11 @@ class VisitorStats(models.Model):
         verbose_name = "Visitor Statistic"
         verbose_name_plural = "Visitor Statistics"
 
-@register_snippet  # <--- This makes this one show up too
+@register_snippet
 class PageStats(models.Model):
     page_name = models.CharField(max_length=100, default="trash_map")
     total_visitors = models.PositiveIntegerField(default=0)
-    total_seconds_spent = models.PositiveIntegerField(default=0) # <--- Add this
+    total_seconds_spent = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
