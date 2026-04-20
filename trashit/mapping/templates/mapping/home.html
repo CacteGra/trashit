@@ -322,9 +322,7 @@
                 requestCoords.value = `SRID=4326;POINT (${lng} ${lat})`;
               }
             } else {
-              if (!firstLoad) {
-                localEmail = response.administration_email; 
-              };
+              localEmail = response.administration_email; 
               const menu = document.querySelector('.filtering.dropdown-menu');
               menu.innerHTML = '';
               const li = document.createElement('li');
