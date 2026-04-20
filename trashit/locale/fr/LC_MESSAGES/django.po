@@ -130,6 +130,34 @@ msgstr "Pas de données locales"
 msgid "Request to add local waste disposal data"
 msgstr "Demander à ajouter des données de gestion locale des déchets"
 
+#: trash/templates/trash/request-local-no-data.html:3
+msgid "No local data available"
+msgstr "Pas de données locales disponibles"
+
+#: trash/templates/trash/request-local-no-data.html:7
+msgid "No local data is available at the moment"
+msgstr "Pas de données locales disponibles pour le moment"
+
+#: trash/templates/trash/trash-presentation.html:14
+msgid "Report issue"
+msgstr "Signaler un problème"
+
+#: trash/templates/trash/trash-presentation.html:17
+msgid "Video stream not available"
+msgstr "Stream vidéo non disponible"
+
+#: trash/templates/trash/trash-presentation.html:19
+msgid "Take photo"
+msgstr "Prendre la photo"
+
+#: trash/templates/trash/trash-presentation.html:26
+msgid "Retake Photo"
+msgstr "Reprendre la photo"
+
+#: trash/templates/trash/trash-presentation.html:27
+msgid "Report Trash"
+msgstr "Signaler la poubelle"
+
 #: trash/templates/trash/request-local.html:15
 msgid "Request"
 msgstr "Faire la demande"
