@@ -223,8 +223,8 @@ msgid "Unauthorized waste dumping notification"
 msgstr "Notification de dépôt non autorisé"
 
 #: mapping/templates/mapping/home.html:616
-msgid "Reporting not available in your location."
-msgstr "Rapport non disponible à cet endroit."
+msgid "Reporting not available in your location"
+msgstr "Rapport non disponible à cet endroit"
 
 #: mapping/templates/mapping/home.html:619
 msgid "Trash diposal issue"
