@@ -5,14 +5,22 @@
 </div>
 <div class="modal-body" id="request-local-form">
     <p>{% trans "Request to add local waste disposal data" %}.</p>
-    <form action="{% url 'request_local' %}" method="post">
+    <!-- Added d-flex (flexbox), flex-column (stack vertically), and gap-3 (even spacing) -->
+    <form action="{% url 'request_local' %}" method="post" class="d-flex flex-column gap-3">
         {% csrf_token %}
-        <br>
+        
         <div>
-            <input  type="hidden" id="coordinates" name="coordinates" value='{{ coordinates }}'>
+            <input type="hidden" id="coordinates" name="coordinates" value='{{ coordinates }}'>
         </div>
-        <br>
-        {{form.captcha}}
-        <button type="submit" class="btn btn-warning" id="request-local" data-bs-dismiss="modal">{% trans "Request" %}</button>
+
+        <!-- The captcha input -->
+        <div class="w-100" style="text-align: center;">
+            {{form.captcha}}
+        </div>
+
+        <!-- The button with w-100 to make it span the full width -->
+        <button type="submit" class="btn btn-warning w-100" id="request-local" data-bs-dismiss="modal">
+            {% trans "Request" %}
+        </button>
     </form>
 </div>
