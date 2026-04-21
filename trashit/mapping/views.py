@@ -26,7 +26,7 @@ from datapop.models import Pointfield, OperatedField, RequestLocalWaste
 from trash.models import TrashSpecificities, TrashType, TheType, TrashSpecificities
 from .forms import RequestLocalForm
 
-class MainPageView(LoginRequiredMixin, TemplateView):
+class MainPageView(TemplateView):
     template_name = 'mapping/home.html'
     
     def get_context_data(self, **kwargs):
@@ -68,7 +68,7 @@ class MainPageView(LoginRequiredMixin, TemplateView):
         
         return context
 
-class BaseLoadView(LoginRequiredMixin, ListView):
+class BaseLoadView(ListView):
     model = Pointfield
     login_url = '/admin/'
     redirect_field_name = 'redirect_to'
@@ -238,7 +238,7 @@ class FilterType(BaseLoadView):
         
         return JsonResponse(whole_response, safe=False)
 
-class RequestLocal(LoginRequiredMixin, FormView):
+class RequestLocal(FormView):
     template_name = "trash/request-local.html"
     form_class = RequestLocalForm
     success_url = "/"

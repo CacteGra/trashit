@@ -54,7 +54,7 @@ def get_language(request):
             break
     return preferred_language
 
-class ReportTrash(LoginRequiredMixin, generic.DetailView):
+class ReportTrash(generic.DetailView):
     model = User
     context_object_name = 'user'
     def post(self, request, *arg, **kwargs):
@@ -88,7 +88,7 @@ class ReportTrash(LoginRequiredMixin, generic.DetailView):
         return JsonResponse(data, safe=False)
 
 
-class ReportDump(LoginRequiredMixin, generic.DetailView):
+class ReportDump(generic.DetailView):
     from django.contrib.auth.models import User
     model = User
     context_object_name = 'user'
@@ -99,7 +99,7 @@ class ReportDump(LoginRequiredMixin, generic.DetailView):
         TrashSpecificities.objects.get_or_create(pointfield=trash_point)
         return True
 
-class GarbageCollection(LoginRequiredMixin, ListView):
+class GarbageCollection(ListView):
     from trash.models import CollectArea
     model = CollectArea
     login_url = '/admin/'
@@ -128,7 +128,7 @@ class GarbageCollection(LoginRequiredMixin, ListView):
         print(html)
         return JsonResponse([{'html': html}], safe=False)
 
-class ScanWrapper(LoginRequiredMixin, ListView):
+class ScanWrapper(ListView):
     from trash.models import Wrapper
     model = Wrapper
     login_url = '/admin/'
@@ -139,7 +139,7 @@ class ScanWrapper(LoginRequiredMixin, ListView):
         from .all_functions import openfoodfacts_api
         code = int(request.GET['code'])
         wrapper, available = openfoodfacts_api.main(code)
-        html = render_to_string('trash/packaging-bin.html', {'packagings': wrapper, 'available': available}, request=request)
+        html = render_to_string('trash/packaging-bin.html', {'wrapper': wrapper, 'available': available}, request=request)
         return JsonResponse([{'html': html, }], safe=False)
 
 class IssueChooseView(ChooseView):
