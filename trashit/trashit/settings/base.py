@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "mapping",
     "trash",
     "management",
+    "about",
     "wagtailmetadata",
     "django_crontab",
     "leaflet",
