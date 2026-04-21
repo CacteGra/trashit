@@ -9,8 +9,8 @@
   <tbody>
     {% if available %}
       {% if wrapper %}
-        {% if wrapper.packagings.all %}
-          {% for packaging in wrapper.packagings.all %}
+        {% if wrapper.packaging.all %}
+          {% for packaging in wrapper.packaging.all %}
             <tr>
               <td>{{ packaging.component|title }}</td>
               <td>{{ packaging.the_type.the_type|title }}</td>

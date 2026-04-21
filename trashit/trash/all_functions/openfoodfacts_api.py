@@ -14,7 +14,7 @@ def main(code):
         product_id = code
 
         # Construct the API request URL
-        url = f"https://world.openfoodfacts.org/api/v0/product/{product_id}"
+        url = f"https://world.openfoodfacts.net/api/v2/product/{product_id}"
 
         # Send the GET request and retrieve the response
         response = requests.get(url)
@@ -48,5 +48,4 @@ def main(code):
         else:
             print("Error:", response.status_code)
             return None, False
-
     return wrapper, True
