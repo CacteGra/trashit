@@ -21,6 +21,7 @@ urlpatterns = i18n_patterns(
     path('filter_type/', views.FilterType.as_view(), name='filter_type'),
     path('request_local/', views.RequestLocal.as_view(), name='request_local'),
     path('trash/', include('trash.urls')),
+    path('about/', include('about.urls')),
     path('captcha/', include('captcha.urls')),
     path('api/record-time/', record_time_spent, name='record_time_spent'),
     prefix_default_language=False
