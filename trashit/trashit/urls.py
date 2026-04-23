@@ -10,6 +10,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 # from search import views as search_views
 from mapping import views
 from management.views import record_time_spent
+from about import views as about_views
 
 urlpatterns = i18n_patterns(
     path("django-admin/", admin.site.urls),
@@ -21,7 +22,7 @@ urlpatterns = i18n_patterns(
     path('filter_type/', views.FilterType.as_view(), name='filter_type'),
     path('request_local/', views.RequestLocal.as_view(), name='request_local'),
     path('trash/', include('trash.urls')),
-    path('about/', include('about.urls')),
+    path("about/", about_views.About.as_view(), name="about"),
     path('captcha/', include('captcha.urls')),
     path('api/record-time/', record_time_spent, name='record_time_spent'),
     prefix_default_language=False
