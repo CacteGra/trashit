@@ -1,25 +1,34 @@
 from .base import *
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ehgr^!wcf%wkn&rh_5$s1+^pz@i094o*dwcj7ij65_kcpm(m@("
+SECRET_KEY = os.environ['SECRET_KEY']
 
 # SECURITY WARNING: define the correct hosts in production!
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(" ")
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+INSTALLED_APPS += [
+    "django.contrib.postgres",
+    "django.contrib.gis",
+]
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.environ['POSTGRES_DB'],
+        'USER': os.environ['POSTGRES_USER'],
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': 'db',
+        'PORT': '5432',
     }
 }
+
+SITE_ID = int(os.environ['SITE_ID'])
+
+WAGTAILADMIN_BASE_URL = os.environ['WAGTAILADMIN_BASE_URL']
+
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS").split(" ")
 
 try:
     from .local import *

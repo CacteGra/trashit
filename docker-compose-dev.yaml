@@ -1,0 +1,93 @@
+version: "3"  
+services:
+  getdata:
+    build:
+      context: trashit/
+    image: trashit/backend
+    entrypoint: ["/bin/sh","-c"]
+    command:
+    - |
+        ./wait-for-it.sh db:5432 -- ./getdatastart.sh -- cron -f
+    networks:
+      - trashit-backend
+    environment:
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - SECRET_KEY
+      - ALLOWED_HOSTS
+      - SITE_ID
+      - WAGTAILADMIN_BASE_URL
+      - EMAIL_HOST
+      - EMAIL_PORT
+      - EMAIL_HOST_USER
+      - EMAIL_HOST_PASSWORD
+      - CSRF_TRUSTED_ORIGINS
+    volumes: 
+      - static:/app/static
+      - media:/app/media
+      - private:/app/private
+    depends_on:
+      - backend
+  backend:
+    build:
+      context: trashit/
+    restart: always
+    image: trashit/backend
+    ports:
+      - "8001:8000"
+    entrypoint: ["/bin/sh","-c"]
+    command:
+    - |
+       ./wait-for-it.sh db:5432 -- ./start-dev.sh 
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - SECRET_KEY
+      - ALLOWED_HOSTS
+      - SITE_ID
+      - WAGTAILADMIN_BASE_URL
+      - EMAIL_HOST
+      - EMAIL_PORT
+      - EMAIL_HOST_USER
+      - EMAIL_HOST_PASSWORD
+      - CSRF_TRUSTED_ORIGINS
+    networks:
+      - trashit-backend
+    volumes: 
+      - static:/app/static
+      - media:/app/media
+      - private:/app/private
+    depends_on:
+      - db 
+  db:
+    restart: always
+    image: postgis/postgis:latest
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_DB
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    volumes: 
+      - ./db-init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - trashit-backend 
+networks:
+  trashit-backend:
+    driver: bridge
+volumes:
+    static:
+      driver: local
+    media:
+      driver: local
+    private:
+      driver: local
+    shared:
+      driver: local
+    ssl:
+    postgres_data:
+      driver: local
