@@ -60,7 +60,7 @@
         <i class="bi bi-funnel" id="iconType" name="all" style="font-size: 35px;"></i>
       </button>
       <ul class="filtering dropdown-menu">
-        {"% trans "Not available" %}.
+        {% trans "Not available" %}.
       </ul>
     </div>
   </div>
@@ -322,6 +322,10 @@
                 requestCoords.value = `SRID=4326;POINT (${lng} ${lat})`;
               }
             } else {
+              if (modalDisplayed === true) {
+                $('#noData').modal('hide');
+                modalDisplayed = false;
+              }
               localEmail = response.administration_email; 
               const menu = document.querySelector('.filtering.dropdown-menu');
               menu.innerHTML = '';
