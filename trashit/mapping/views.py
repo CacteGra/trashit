@@ -124,7 +124,7 @@ class BaseLoadView(ListView):
                 
                 all_types.append(current_type['the_type__pk'])
                 # Get type in language
-                type_result = TheType.objects.filter(pk=current_type_pk, related_the_type__isnull=False, related_the_type__language=language).annotate(
+                type_result = TheType.objects.filter(pk=current_type_pk, related_the_type__isnull=False, related_the_type__language=language.upper()).annotate(
                     combined_type=Coalesce('related_the_type__locale', 'the_type')
                 ).values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type')
                 if not type_result:
@@ -206,7 +206,7 @@ class FirstLoad(BaseLoadView):
                                                                  {'form': RequestLocalForm(request.POST), 'coordinates': point}, 
                                                                  request=request)}
         else:
-            typing = TheType.objects.filter(pk__in=whole_types, related_the_type__isnull=False, related_the_type__language=language).annotate(
+            typing = TheType.objects.filter(pk__in=whole_types, related_the_type__isnull=False, related_the_type__language=language.upper()).annotate(
                 combined_type=Coalesce('related_the_type__locale', 'the_type')
             )
             all_types = list(typing.values_list('pk', 'the_type', 'related_the_type__locale', 'combined_type'))
