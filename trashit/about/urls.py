@@ -22,4 +22,5 @@ from . import views
 
 urlpatterns = [
     path(r'about/', views.About.as_view(), name='about'),
+    path(r'privacy-policy/', views.PrivacyPolicy.as_view(), name='privacy-policy'),
 ]

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--[if lt IE 9 ]><html class="no-js oldie" lang="en"> <![endif]-->
+<!--[if IE 9 ]><html class="no-js oldie ie9" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+  
+    <head>
+    
+    <!--- basic page needs
+    ================================================== -->
+        <meta charset="utf-8">
+        <title>About TrashIt</title>
+        <meta name="description" content="">
+        <meta name="author" content="">
+    
+    <!-- mobile specific metas
+    ================================================== -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- CSS
+    ================================================== -->
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        <link rel="stylesheet" href="{% static 'css/vendor.css' %}">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    
+    <!-- script
+    ================================================== -->
+        <script src="{% static 'js/modernizr.js' %}"></script>
+        <script src="{% static 'js/pace.min.js' %}"></script>
+    
+    <!-- favicons
+        ================================================== -->
+        <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+        <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    
+    </head>
+    
+    <body id="top">
+
+        # Privacy Policy for TrashIt
+
+        **Effective Date:** [Insert Date]
+        **Last Updated:** [Insert Date]
+
+        At **TrashIt** (accessible via https://trashit.click/), one of our main priorities is the privacy of our visitors. This Privacy Policy document contains types of information that is collected and recorded by TrashIt and how we use it.
+
+        If you have additional questions or require more information about our Privacy Policy, do not hesitate to contact us at **contact.trashit@trashit.click**.
+
+        ## 1. Information We Collect
+
+        To provide our mapping, recycling, and reporting services, we collect several types of information.
+
+        ### A. Precise Location Data
+        The core functionality of the TrashIt web application relies on your geographic location. 
+        * **How we collect it:** We use your browser's Geolocation API to request your current latitude and longitude.
+        * **How we use it:** We use this data to center the map on your position, show you nearby waste disposal points, provide local garbage collection schedules, and allow you to report unauthorized dumping at your specific location.
+        * **Continuous Tracking:** Please note that for the best user experience, our app may periodically re-locate your position to update the map as you move.
+
+        ### B. Visual Information (Camera Access)
+        TrashIt includes features that require access to your device's camera.
+        * **Barcode Scanning:** We use your camera to scan product packaging to provide recycling instructions.
+        * **Issue Reporting:** When reporting unauthorized waste dumping, you may choose to take a photograph to provide evidence to local authorities.
+        * **Processing:** We only access your camera when you explicitly trigger these features (e.g., clicking "Scan wrapper" or "Report trash"). Photos are processed to be sent via your device's email client or uploaded to our reporting system as specified in the interface.
+
+        ### C. Usage and Analytics Data
+        We collect data to understand how our service is performing and to improve user experience.
+        * **Session Duration:** We use the `navigator.sendBeacon` API to record how long a user spends on specific pages (e.g., the homepage). This is used for anonymous analytical purposes to understand engagement.
+        * **Browser Information:** We may collect information about your browser language, device type, and browser version to ensure the application displays correctly in your local language and format.
+
+        ## 2. How We Use Your Information
+
+        We use the information we collect in various ways, including to:
+        * Provide, operate, and maintain our web application.
+        * Improve, personalize, and expand our services.
+        * Understand and analyze how you use our web application.
+        * Develop new features and functionality.
+        * Communicate with you, either directly or through one of our partners, for customer service or to provide updates regarding our service.
+        * Facilitate the reporting of environmental issues to local public services.
+
+        ## 3. Third-Party Services and Open Data
+
+        TrashIt utilizes third-party technologies to provide its services. These third parties may collect information according to their own privacy policies:
+
+        * **OpenStreetMap (OSM):** We use OpenStreetMap for our map tiles and data. Your requests for map tiles include your IP address and location data as part of the standard HTTP request to their servers.
+        * **Leaflet:** We use the Leaflet JavaScript library to render interactive maps.
+        * **Quagga2:** We use this library for barcode scanning via your camera.
+        * **Local Government/Public APIs:** When you request local data or report an issue, information (such as your location and potentially your email) may be transmitted to local public service APIs or via your email client to local authorities.
+
+        ## 4. Data Retention
+
+        We retain collected information only for as long as is necessary for the purposes set out in this Privacy Policy. 
+        * **Location Data:** Real-time location is processed in the session to provide map services and is not stored permanently unless you specifically submit a report.
+        * **Usage Analytics:** Anonymous usage data is kept to help us improve our service metrics.
+
+        ## 5. Security of Your Data
+
+        We value your trust in providing us your information. We use industry-standard methods (such as HTTPS/TLS encryption) to protect your data during transmission. However, please remember that no method of transmission over the internet, or method of electronic storage, is 100% secure.
+
+        ## 6. Children's Information
+
+        Another part of our priority is adding protection for children while using the internet. TrashIt does not knowingly collect any Personal Identifiable Information from children under the age of 13 (or the applicable age in your jurisdiction). If you think that your child provided this kind of information on our website, we strongly encourage you to contact us immediately and we will do our best to promptly remove such information from our records.
+
+        ## 7. Your Data Protection Rights (GDPR/CCPA)
+
+        Depending on your location, you may have the following rights:
+        * **The right to access:** You have the right to request copies of your personal data.
+        * **The right to rectification:** You have the right to request that we correct any information you believe is inaccurate.
+        * **The right to erasure:** You have the right to request that we erase your personal data, under certain conditions.
+        * **The right to object to processing:** You have the right to object to our processing of your personal data.
+
+        ## 8. Changes to This Privacy Policy
+
+        We may update our Privacy Policy from time to time. Thus, we advise you to review this page periodically for any changes. We will notify you of any changes by posting the new Privacy Policy on this page.
+
+        ## 9. Contact Us
+
+        If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at:
+
+        **Email:** <a href="#" class="email-link"></a></b><br></p>
+        **Website:** https://trashit.click/
+
+        <span>© Copyright TrashIt.click {% now "Y" as current_year %}.</span>
+
+        <script>
+            const encodedEmail = "Y29udGFjdC50cmFzaGl0QHRyYXNoaXQuY2xpY2s=";
+            const targets = document.querySelectorAll('.email-link');
+            const decodedEmail = atob(encodedEmail);
+            targets.forEach(target => {
+                target.innerHTML = decodedEmail;
+                target.href = "mailto:" + decodedEmail;
+            });
+        </script>
+    
+    </body>
+</html>
