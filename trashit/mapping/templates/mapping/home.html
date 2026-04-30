@@ -274,7 +274,13 @@
       let notifInfo;
 
       // Define icons
-      const userIcon = createIcon("{% static 'icons/dot-circle.png' %}", [40, 40]);
+      const userIcon = L.icon({
+        iconUrl: "{% static 'icons/dot-circle.png' %}",
+        iconSize: [40, 40],
+        shadowUrl: "{% static 'icons/dot-circle-shadow.png' %}",
+        shadowSize: [45, 45],
+        shadowAnchor: [20, 20]
+      });
       const defaultIcon = createIcon("{% static 'leaflet/images/marker-icon.png' %}", [25, 41]);
 
       // Cache DOM elements
