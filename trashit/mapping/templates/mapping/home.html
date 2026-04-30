@@ -51,6 +51,14 @@
       <!-- Profile Info Trigger -->
       <!-- <a class="u-link text-center d-block" data-bs-toggle="modal" role="button" aria-label="Information" style='background-image: url({% static "leaflet/images/marker-icon.png" %});' href='#callProfile'></a> -->
     </div>
+    <div class="leaflet-bottom leaflet-center more-custom">
+      <a href="{% url 'about' %}" class="btn btn-light shadow fw-bold bottom-nav-btn buttons-wrap">
+        <i class="bi bi-info-circle"></i> About
+      </a>
+      <a href="{% url 'privacy-policy' %}" class="btn btn-light shadow fw-bold bottom-nav-btn buttons-wrap">
+        <i class="bi bi-shield-lock"></i> Privacy Policy
+      </a>
+    </div>
   </div>
 
   <!-- Filter Dropdown -->
@@ -63,6 +71,11 @@
         {% trans "Not available" %}.
       </ul>
     </div>
+  </div>
+
+  <!-- Bottom Navigation Buttons -->
+  <div class="leaflet-control-container">
+
   </div>
 
   <!-- Modals -->
