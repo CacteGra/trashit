@@ -7,7 +7,7 @@ services:
     entrypoint: ["/bin/sh","-c"]
     command:
     - |
-        ./wait-for-it.sh db:5432 -- ./getdatastart.sh -- cron -f
+        ./wait-for-it.sh db:5432 -- ./getdatastart-dev.sh -- cron -f
     networks:
       - trashit-backend
     environment:
