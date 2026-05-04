@@ -20,7 +20,7 @@ from django.utils import translation
 from django.template.response import TemplateResponse
 
 
-from datapop.models import Pointfield
+from datapop.models import Pointfield, RegisterAPI
 from .models import TrashSpecificities, TrashType, TheType, TypeLocale
 
 import re
@@ -116,8 +116,9 @@ class GarbageCollection(ListView):
         preferred_language = get_language(request)
         print(preferred_language)
         translation.activate(preferred_language)
+        collect_area_apis = RegisterAPI.objects.filter(api_trash="COLLECTAREA")
         try:
-            collection_area = CollectArea.objects.get(polygon_field__o_field__contains=point)
+            collection_area = CollectArea.objects.get(polygon_field__o_field__contains=point, polygon_field__register_api_chosen__register_api_foreign__in=collect_area_apis)
         except CollectArea.DoesNotExist:
             collection_area = None
         print(collection_area)
