@@ -1,0 +1,347 @@
+{% load static %}
+<!DOCTYPE html>
+<!--[if lt IE 9 ]><html class="no-js oldie" lang="fr"> <![endif]-->
+<!--[if IE 9 ]><html class="no-js oldie ie9" lang="fr"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html class="no-js" lang="fr">
+<!--<![endif]-->
+
+<head>
+
+<!--- basic page needs
+   ================================================== -->
+    <meta charset="utf-8">
+    <title>À propos de TrashIt</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+<!-- mobile specific metas
+   ================================================== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS
+   ================================================== -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/vendor.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+<!-- script
+   ================================================== -->
+    <script src="{% static 'js/modernizr.js' %}"></script>
+    <script src="{% static 'js/pace.min.js' %}"></script>
+
+<!-- favicons
+    ================================================== -->
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+
+</head>
+
+<body id="top">
+
+<!-- header
+   ================================================== -->
+   <header id="header" class="row">   
+
+        <div class="header-logo">
+            <a href="/">TrashIt</a>
+        </div>
+
+        <nav id="header-nav-wrap">
+            <ul class="header-main-nav">
+                <li class="current"><a class="smoothscroll"  href="#home" title="home">Accueil</a></li>
+                <li><a class="smoothscroll"  href="#about" title="about">À propos</a></li>
+            </ul>
+
+            <a href="#" title="sign-up" class="button button-primary cta email-link">Contact</a>
+        </nav>
+
+        <a class="header-menu-toggle" href="#"><span>Menu</span></a>        
+   </header> <!-- /header -->
+
+
+<!-- home
+   ================================================== -->
+   <section id="home" data-parallax="scroll" data-image-src="{% static 'images/hero-bg.jpg' %}" data-natural-width=3000 data-natural-height=2000>
+
+        <div class="overlay"></div>
+        <div class="home-content">
+      
+            <div class="row contents">                     
+                <div class="home-content-left">
+
+                    <h3 data-aos="fade-up">Bienvenue sur TrashIt</h3>
+
+                    <h1 data-aos="fade-up">
+                        Gérer mieux les déchets, <br>
+                        Améliorer le recyclage. <br>
+                        Utiliser les données ouvertes.
+                    </h1>
+
+                    <div class="buttons" data-aos="fade-up">
+                        <a href="https://trashit.click/" class="button stroke">
+                            <span class="icon-mouse" aria-hidden="true"></span>
+                            Essayer l'application Web
+                        </a>
+                        <a href="#about" class="button stroke smoothscroll">
+                            <span class="icon-circle-down" aria-hidden="true"></span>
+                            En savoir plus
+                        </a>
+                    </div>
+                                     
+                </div>
+
+                <div class="home-image-right">
+                    <img src="{% static 'images/iphone-app-470.png' %}"
+                        srcset="{% static 'images/iphone-app-470.png' %} 1x, {% static 'images/iphone-app-940.png' %} 2x"  
+                        data-aos="fade-up">
+                </div>
+            </div>
+
+        </div> <!-- end home-content -->
+
+        <div class="home-scrolldown">
+            <a href="#about" class="scroll-icon smoothscroll">
+                <span>Descendre</span>
+                <i class="icon-arrow-right" aria-hidden="true"></i>
+            </a>
+        </div>
+
+    </section> <!-- end home -->
+
+
+<!-- about
+    ================================================== -->
+    <section id="about">
+
+        <div class="row about-intro">
+
+            <div class="col-four">
+                <h1 class="intro-header" data-aos="fade-up">À propos de TrashIt</h1>
+            </div>
+            <div class="col-eight">
+                <p class="lead" data-aos="fade-up">
+                    En tirant parti du pouvoir des données ouvertes, TrashIt aide les utilisateurs à trouver le bon endroit pour jeter leurs déchets en cartographiant leur environnement immédiat, à améliorer le recyclage en choisissant la bonne poubelle, et à réduire le déversement illégal de déchets en redirigeant vers les déchetteries les plus proches et en signalant les problèmes locaux.
+                </p>
+            </div>                       
+        </div>
+        <div class="row about-features">
+            <div class="features-list block-1-3 block-m-1-2 block-mob-full group">
+                <div class="bgrid feature" data-aos="fade-up">  
+                    <span class="icon"><i class="icon-map"></i></span>            
+                    <div class="service-content">   
+                        <h3>Cartographie</h3>
+                        <p>Obtenez l'élimination des déchets locaux instantanément. Les utilisateurs peuvent également demander que leur zone soit ajoutée (les bots sont filtrés à l'aide d'un simple captcha).</p>
+                    </div>               
+                </div> <!-- /bgrid -->
+                <div class="bgrid feature" data-aos="fade-up">  
+                    <span class="icon"><i class="icon-calendar"></i></span>                          
+                    <div class="service-content">   
+                        <h3>Horaires et dates de ramassage des déchets</h3>  
+                        <p>Sur demande, les services publics sont ajoutés à la gestion locale.</p>
+                    </div>                            
+                </div> <!-- /bgrid -->
+                <div class="bgrid feature" data-aos="fade-up">
+                    <span class="icon"><i class="icon-recycle"></i></span>                  
+                    <div class="service-content">
+                        <h3>Indiquer ce qui va où</h3>
+                        <p>Les utilisateurs peuvent scanner le code-barres de leur emballage alimentaire pour trouver la bonne poubelle.</p>
+                    </div>                                 
+                </div> <!-- /bgrid -->
+                <div class="bgrid feature" data-aos="fade-up">
+                    <span class="icon"><i class="icon-mail"></i></span>               
+                    <div class="service-content">
+                        <h3>Signaler les déversements illégaux de déchets</h3>
+                        <p>Envoyez l'emplacement aux services publics locaux par e-mail.</p>
+                    </div>                
+                </div> <!-- /bgrid -->
+                <div class="bgrid feature" data-aos="fade-up">
+                    <span class="icon"><i class="icon-filter"></i></span>               
+                    <div class="service-content">   
+                        <h3>Filtrer</h3>
+                        <p>Choisissez le type de déchet pour une meilleure lisibilité sur la carte.</p>                            
+                    </div>                 
+                </div> <!-- /bgrid -->
+                <div class="bgrid feature" data-aos="fade-up">
+                    <span class="icon"><i class="icon-gift"></i></span>                
+                    <div class="service-content">
+                        <h3>Gratuit</h3>
+                        <p>Pour tout le monde.</p>
+                    </div>                 
+                </div> <!-- /bgrid -->
+            </div> <!-- end features-list -->
+        </div> <!-- end about-features -->
+        <div class="row about-how">
+            <h1 class="intro-header" data-aos="fade-up">Comment fonctionne l'application ?</h1>           
+            <div class="about-how-content" data-aos="fade-up">
+                <div class="about-how-steps block-1-2 block-tab-full group">
+                    <div class="bgrid step" data-item="1">
+                        <h3>Demande d'emplacements locaux de déchetteries</h3>
+                        <p>Après approbation manuelle, l'application récupère les données locales (d'abord via OSM, puis l'API locale) en filtrant les bots avec un Captcha.</p>
+                    </div>
+                    <div class="bgrid step" data-item="2">
+                        <h3>Utilisation de l'API de données OSM</h3>
+                        <p>Appels API globaux spécifiant : ville, état et pays. Collecte de données pour tout type de déchet.</p>
+                    </div>               
+                    <div class="bgrid step" data-item="2">
+                        <h3>Utilisation de l'API locale/fichier en ligne</h3>
+                        <p>Adapté à tout type d'API ou de fichiers (CSV, JSON, KML) avec des options disponibles : pagination, temps de pause.</p>
+                        <p><b>Pas besoin de parcourir la documentation API.</b></b></p>
+                    </div>
+                    <div class="bgrid step" data-item="3">
+                        <h3>Données clés</h3>
+                        <p>TrashIt renvoie automatiquement un ensemble de colonnes de données avec des exemples pour que les administrateurs puissent choisir.</p>
+                    </div>  
+                    <div class="bgrid step" data-item="4">
+                        <h3>Itération des données</h3>
+                        <p>Une fois sélectionnées, l'application Web enregistre les points de données correspondants.</p>
+                    </div>  
+                    <div class="bgrid step" data-item="5">
+                        <h3>Itération des données</h3>
+                        <p>Itération des lignes de données pour enregistrer les points de données correspondants.</p>
+                    </div>  
+                </div>           
+           </div> <!-- end about-how-content -->
+        </div> <!-- end about-how -->
+        <div class="row about-bottom-image">
+           <img src="{% static 'images/app-screens-1200.png' %}"
+srcset="{% static 'images/app-screens-600.png' %} 600w,
+                        {% static 'images/app-screens-1200.png' %} 1200w,
+                        {% static 'images/app-screens-2800.png' %} 2800w"
+sizes="(max-width: 2800px) 100vw, 2800px"
+alt="Captures d'écran de l'application" data-aos="fade-up">
+        </div>  <!-- end about-bottom-image -->       
+    </section> <!-- end about -->  
+<!-- pricing
+    ================================================== -->
+    <section id="pricing">
+        <div class="row pricing-content">
+            <div class="col-four pricing-intro">
+                <h1 class="intro-header" data-aos="fade-up">Nos options de tarification</h1>
+                <p data-aos="fade-up">Le plan Basique est gratuit et disponible à la demande des résidents pour accéder aux données API OSM ainsi qu'aux données ouvertes de l'API locale. Pour les villes ou les agglomérations souhaitant accéder aux fonctionnalités administratives, les tarifs sont fixés en fonction de la population. <a href="#" class="email-link">Contactez-nous</a> pour toute question ou pour obtenir un devis personnalisé.</p>
+            </div>
+            <div class="col-eight pricing-table">
+                <div class="row">
+                    <div class="col-six plan-wrap">
+                        <div class="plan-block" data-aos="fade-up">
+                            <div class="plan-top-part">
+                                <h3 class="plan-block-title">Plan Basique</h3>
+                                <p class="plan-block-price"><sup></sup>GRATUIT</p>
+                            </div>
+                            <div class="plan-bottom-part">
+                                <ul class="plan-block-features">
+                                    <li>API Locales & OpenStreetMap</li>
+                                    <li>Contact par E-mail uniquement</li>
+                                </ul>
+                                <a class="button button-primary large" href="">Commencer</a>
+                            </div>  
+                        </div>
+                    </div> <!-- end plan-wrap -->
+                    <div class="col-six plan-wrap">
+                        <div class="plan-block primary" data-aos="fade-up">
+                            <div class="plan-top-part">
+                                <h3 class="plan-block-title">Plan Pro</h3>
+                                <p class="plan-block-price"><sup>$</sup>50</p>
+                                <p class="plan-block-per">Par mois</p>
+                            </div>
+                            <div class="plan-bottom-part">
+                                <ul class="plan-block-features">
+                                    <li>API Locales & OpenStreetMap</li>
+                                    <li>Site Administrateur</li>
+                                    <li>Gestion des rapports sur site</li>
+                                    <li>Rapport incluant photo</li>
+                                    <li>Support en ligne</li>
+                                </ul>
+                                <a class="button button-primary large" href="">Commencer</a>
+                            </div>
+                        </div>
+                    </div> <!-- end plan-wrap -->
+                </div>               
+            </div> <!-- end pricing-table -->
+        </div> <!-- end pricing-content -->
+    </section> <!-- end pricing -->
+<!-- download
+    ================================================== -->
+    <section id="download">
+        <div class="row">
+            <div class="col-full">
+                <h1 class="intro-header" data-aos="fade-up">Essayez notre application Web maintenant !</h1>
+                <p class="lead" data-aos="fade-up"></p>
+                <ul class="download-badges">
+                    <li><a href="https://trashit.click/" title="" class="badge-app-logo" data-aos="fade-up">Application Web</a></li>
+                </ul>
+            </div>
+        </div>
+    </section> <!-- end download -->    
+<!-- footer
+    ================================================== -->
+    <footer style="background: #112d3d !important; color: white !important">
+        <div class="footer-main">
+            <div class="row">  
+                <div class="col-three md-1-3 tab-full footer-info">            
+                    <div class="footer-logo"></div>
+                    <p>
+                    TrashIt aide à connecter les gens avec leurs services locaux pour une meilleure gestion des déchets. Avec TrashIt, tout le monde peut localiser le bon endroit pour jeter ses déchets, savoir quand ils seront ramassés et signaler tout problème à son service public local.
+                    </p>
+                    <ul class="footer-social-list">
+                        <li>
+                            <a href="https://mapstodon.space/@trashit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16,790066389mm" height="18mm" viewBox="0 0 216.4144 232.00976">
+                                    <path fill="#2b90d9" d="M211.80734 139.0875c-3.18125 16.36625-28.4925 34.2775-57.5625 37.74875-15.15875 1.80875-30.08375 3.47125-45.99875 2.74125-26.0275-1.1925-46.565-6.2125-46.565-6.2125 0 2.53375.15625 4.94625.46875 7.2025 3.38375 25.68625 25.47 27.225 46.39125 27.9425 21.11625.7225 39.91875-5.20625 39.91875-5.20625l.8675 19.09s-14.77 7.93125-41.08125 9.39c-14.50875.7975-32.52375-.365-53.50625-5.91875C9.23234 213.82 1.40609 165.31125.20859 116.09125c-.365-14.61375-.14-28.39375-.14-39.91875 0-50.33 32.97625-65.0825 32.97625-65.0825C49.67234 3.45375 78.20359.2425 107.86484 0h.72875c29.66125.2425 58.21125 3.45375 74.8375 11.09 0 0 32.975 14.7525 32.975 65.0825 0 0 .41375 37.13375-4.59875 62.915"/>
+                                    <path fill="#fff" d="M177.50984 80.077v60.94125h-24.14375v-59.15c0-12.46875-5.24625-18.7975-15.74-18.7975-11.6025 0-17.4175 7.5075-17.4175 22.3525v32.37625H96.20734V85.42325c0-14.845-5.81625-22.3525-17.41875-22.3525-10.49375 0-15.74 6.32875-15.74 18.7975v59.15H38.90484V80.077c0-12.455 3.17125-22.3525 9.54125-29.675 6.56875-7.3225 15.17125-11.07625 25.85-11.07625 12.355 0 21.71125 4.74875 27.8975 14.2475l6.01375 10.08125 6.015-10.08125c6.185-9.49875 15.54125-14.2475 27.8975-14.2475 10.6775 0 19.28 3.75375 25.85 11.07625 6.36875 7.3225 9.54 17.22 9.54 29.675"/>
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div> <!-- end footer-info -->
+                <div class="col-three md-1-3 tab-1-2 mob-full footer-contact">
+                    <h4>Contact</h4>
+                    <p><b><a href="#" class="email-link">Contactez-nous</a></b><br></p>                    
+                </div> <!-- end footer-contact -->  
+                <div class="col-two md-1-3 tab-1-2 mob-full footer-site-links">
+                    <h4>Liens du site</h4>
+                    <ul class="list-links">
+                        <li><a href="/">Accueil</a></li>
+                        <li><a href="{% url 'about' %}">À propos de nous</a></li>
+                        <li><a href="{% url 'privacy-policy' %}">Politique de confidentialité</a></li>
+                    </ul>               
+                </div> <!-- end footer-site-links -->
+            </div> <!-- /row -->
+        </div> <!-- end footer-main -->
+        <div class="footer-bottom">
+            <div class="row">
+                <div class="col-twelve">
+                    <div class="copyright">
+                        <span>© Copyright TrashIt.click {% now "Y" as current_year %}.</span>
+                        <span>Conçu par <a href="http://www.styleshout.com/">styleshout</a></span>
+                    </div>
+                    <div id="go-top">
+                        <a class="smoothscroll" title="Retour en haut" href="#top"><i class="icon-arrow-up"></i></a>
+                    </div>         
+                </div>
+            </div>    
+        </div> <!-- end footer-bottom -->    
+    </footer>
+
+    <div id="preloader">
+        <div id="loader"></div>
+    </div>  
+
+<!-- Java Script
+    ================================================== -->
+    <script src="{% static 'js/jquery-2.1.3.min.js' %}"></script>
+    <script src="{% static 'js/plugins.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
+    <script>
+        const encodedEmail = "Y29udGFjdC50cmFzaGl0QHRyYXNoaXQuY2xpY2s=";
+        const targets = document.querySelectorAll('.email-link');
+        const decodedEmail = atob(encodedEmail);
+        targets.forEach(target => {
+            target.href = "mailto:" + decodedEmail;
+        });
+    </script>
+
+</body
+</html>
+                    
