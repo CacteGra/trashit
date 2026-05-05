@@ -1,0 +1,132 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+
+#: trash/templates/trash/request-local.html:2
+msgid "No local data"
+msgstr "Sin datos locales"
+
+#: trash/templates/trash/request-local.html:6
+msgid "Request to add local waste disposal data"
+msgstr "Solicitar agregar datos locales de eliminación de residuos"
+
+#: trash/templates/trash/request-local-no-data.html:3
+msgid "No local data available"
+msgstr "No hay datos locales disponibles"
+
+#: trash/templates/trash/request-local-no-data.html:7
+msgid "No local data is available at the moment"
+msgstr "No hay datos locales disponibles en este momento"
+
+#: trash/templates/trash/trash-presentation.html:14
+msgid "Report issue"
+msgstr "Informar de un problema"
+
+#: trash/templates/trash/trash-presentation.html:17
+msgid "Video stream not available"
+msgstr "Transmisión de video no disponible"
+
+#: trash/templates/trash/trash-presentation.html:19
+msgid "Take photo"
+msgstr "Tomar foto"
+
+#: trash/templates/trash/trash-presentation.html:26
+msgid "Retake Photo"
+msgstr "Volver a tomar la foto"
+
+#: trash/templates/trash/trash-presentation.html:27
+msgid "Report Trash"
+msgstr "Reportar basura"
+
+#: trash/templates/trash/request-local.html:15
+msgid "Request"
+msgstr "Solicitar"
+
+#: trash/templates/trash/packaging-bin.html:4
+msgid "Component"
+msgstr "Componente"
+
+#: trash/templates/trash/packaging-bin.html:19
+msgid "No info on packaging"
+msgstr "Sin información sobre el embalaje"
+
+#: trash/templates/trash/packaging-bin.html:24
+msgid "Unknown product"
+msgstr "Producto desconocido"
+
+#: trash/templates/trash/packaging-bin.html:29
+msgid "Service unavailable"
+msgstr "Servicio no disponible"
+
+#: trash/templates/trash/collection-days.html:7
+msgid "Garbage collection days"
+msgstr "Días de recogida de basura"
+
+#: trash/templates/trash/collection-days.html:15
+msgid "Close"
+msgstr "Cerrar"
+
+#: mapping/templates/mapping/home.html:1
+msgid "Hello"
+msgstr "Hola"
+
+#: mapping/templates/mapping/home.html:42
+msgid "Zoom in"
+msgstr "Ampliar"
+
+#: mapping/templates/mapping/home.html:43
+msgid "Zoom out"
+msgstr "Reducir"
+
+#: mapping/templates/mapping/home.html:43
+msgid "Recenter view"
+msgstr "Recentrar la vista"
+
+#: mapping/templates/mapping/home.html:63 110 127
+msgid "Not available"
+msgstr "No disponible"
+
+#: mapping/templates/mapping/home.html:313 314
+msgid "All"
+msgstr "Todos"
+
+#: mapping/templates/mapping/home.html:661
+msgid "Scan wrapper"
+msgstr "Escanear envoltorio"
+
+#: mapping/templates/mapping/home.html:686
+msgid "Garbage collection"
+msgstr "Recogida de basura"
+
+#: mapping/templates/mapping/home.html:120
+msgid "Unauthorized waste dumping notification"
+msgstr "Notificación de vertido de residuos no autorizado"
+
+#: mapping/templates/mapping/home.html:616
+msgid "Reporting not available in your location"
+msgstr "La función de reporte no está disponible en tu ubicación"
+
+#: mapping/templates/mapping/home.html:619
+msgid "Trash diposal issue"
+msgstr "Problema de disposición de basura"
+
+#: mapping/templates/mapping/home.html:619
+msgid "Hi, there is a trash disposal issue at this location."
+msgstr "Hola, hay un problema con la disposición de basura en esta ubicación."
+
+#: mapping/templates/mapping/home.html:620
+msgid "Write an email to notify of a diposal issue."
+msgstr "Escribe un correo electrónico para informar de un problema de disposición."
+
+#: mapping/templates/mapping/home.html:622
+msgid "Unauthorized dump"
+msgstr "Vertido no autorizado"
+
+#: mapping/templates/mapping/home.html:622
+msgid "Hi, I found this unauthorized dumping at"
+msgstr "Hola, encontré este vertido no autorizado en"
+
+#: mapping/templates/mapping/home.html:623
+msgid "Write an email to notify of an unauthorized dumping."
+msgstr "Escribe un correo electrónico para informar de un vertido no autorizado."
