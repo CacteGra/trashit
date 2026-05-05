@@ -3,6 +3,7 @@
 
 #Docker with NGINX and Postgresql
 data/
+backups/
 
 certbot/ 
 

@@ -62,6 +62,24 @@ services:
       - private:/app/private
     depends_on:
       - db 
+  pg-backup:
+    image: postgis/postgis:latest
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER}
+      PGDATABASE: ${POSTGRES_DB}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    entrypoint: >
+      bash -c 'while true; do
+        pg_dump -h "$PGHOST" -U "$PGUSER" "$PGDATABASE" > /backups/db-$(date +%F-%H-%M-%S).sql;
+        sleep 86400;
+      done'
+    networks:
+      - trashit-backend
+    volumes:
+      - ./backups:/backups
+    depends_on:
+      - db
   db:
     restart: always
     image: postgis/postgis:latest
