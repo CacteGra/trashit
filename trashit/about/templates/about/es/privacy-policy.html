@@ -1,0 +1,178 @@
+<html lang="es">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Política de Privacidad de TrashIt</title>  
+    <style>  
+        /* Tipografía y ajustes (derivado de base.css) [3] */  
+        *, *::before, *::after { box-sizing: border-box; }  
+        body {  
+            font-family: sans-serif;  
+            font-weight: normal;  
+            line-height: 1.6;  
+            text-rendering: optimizeLegibility;  
+            word-wrap: break-word;  
+            margin: 0;  
+            padding: 20px;  
+            background-color: #f4f4f4;  
+            color: #333;  
+        }  
+        div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, th, td {  
+            margin: 0;  
+            padding: 0;  
+        }  
+          
+        /* Encabezados y colores (derivado de main.css) [2] */  
+        h1, h2, h3, h4, h5, h6 {  
+            font-family: "montserrat-medium", sans-serif;  
+            line-height: 1.3;  
+            margin-bottom: 1rem;  
+        }  
+        h1 { font-size: 2.5rem; color: #151515; }  
+        h2 { font-size: 2rem; color: #4a95cc; margin-top: 2.5rem; }  
+        h3 { font-size: 1.5rem; color: #758c36; margin-top: 1.5rem; }  
+          
+        a { color: #4a95cc; text-decoration: none; }  
+        a:hover { text-decoration: underline; }  
+          
+        /* Clases de utilidad (derivado de base.css) [3] */  
+        .text-center { text-align: center; }  
+        .half-bottom { margin-bottom: 1.5rem !important; }  
+        .add-bottom { margin-bottom: 3rem !important; }  
+        .full-width { width: 100%; }  
+          
+        /* Contenedor de diseño */  
+        .container {  
+            max-width: 900px;  
+            margin: 0 auto;  
+            background: #fff;  
+            padding: 40px;  
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);  
+            border-radius: 6px;  
+        }  
+          
+        /* Listas y párrafos */  
+        p { margin-bottom: 1rem; }  
+        ul, ol { margin-bottom: 1rem; padding-left: 20px; }  
+        li { margin-bottom: 0.5rem; }  
+          
+        /* Pie de página */  
+        footer {  
+            margin-top: 3rem;  
+            text-align: center;  
+            font-size: 0.9rem;  
+            color: #666;  
+            border-top: 1px solid #eee;  
+            padding-top: 1rem;  
+        }  
+          
+        @media (max-width: 600px) {  
+            .container { padding: 20px; }  
+            h1 { font-size: 2rem; }  
+            h2 { font-size: 1.6rem; }  
+        }  
+    </style>  
+</head>  
+<body>  
+    <div class="container">  
+        <h1 class="text-center half-bottom">Política de Privacidad de TrashIt</h1>  
+        <p class="text-center"><strong>Fecha de vigencia:</strong> 28/04/2026 &nbsp;|&nbsp; <strong>Última actualización:</strong> 04/2026</p>  
+  
+        <p class="add-bottom">En <strong>TrashIt</strong> (accessible en https://trashit.click/), una de nuestras principales prioridades es la privacidad de nuestros visitantes. Este documento de Política de Privacidad contiene los tipos de información que son recopilados y registrados por TrashIt y cómo los utilizamos.</p>  
+  
+        <p>Si tienes preguntas adicionales o necesitas más información sobre nuestra Política de Privacidad, no dudes en contactarnos en <strong><a href="#" class="email-link"></a></strong>.</p>  
+  
+        <h2>1. Información que Recopilamos</h2>  
+        <p>Para brindar nuestros servicios de mapeo, reciclaje e informes, recopilamos varios tipos de información.</p>  
+  
+        <h3>A. Datos de Ubicación Precisa</h3>  
+        <p>La funcionalidad principal de la aplicación web TrashIt depende de tu ubicación geográfica.</p>  
+        <ul>  
+            <li><strong>Cómo la recopilamos:</strong> Utilizamos la API de Geolocalización de tu navegador para solicitar tu latitud y longitud actual.</li>  
+            <li><strong>Cómo la utilizamos:</strong> Usamos estos datos para centrar el mapa en tu posición, mostrarte puntos de disposición de residuos cercanos, proporcionar horarios locales de recolección de basura y permitirte denunciar vertidos ilegales en tu ubicación específica.</li>  
+            <li><strong>Rastreo continuo:</strong> Ten en cuenta que, para ofrecer la mejor experiencia de usuario, nuestra aplicación puede volver a ubicar tu posición periódicamente para actualizar el mapa a medida que te mueves.</li>  
+        </ul>  
+  
+        <h3>B. Información Visual (Acceso a la Cámara)</h3>  
+        <p>TrashIt incluye funciones que requieren acceso a la cámara de tu dispositivo.</p>  
+        <ul>  
+            <li><strong>Escaneo de códigos de barras:</strong> Usamos tu cámara para escanear el empaque de productos y proporcionar instrucciones de reciclaje.</li>  
+            <li><strong>Reporte de incidencias:</strong> Al denunciar vertidos ilegales de residuos, puedes optar por tomar una fotografía para proporcionar evidencia a las autoridades locales.</li>  
+            <li><strong>Procesamiento:</strong> Solo accedemos a tu cámara cuando activas explícitamente estas funciones (por ejemplo, haciendo clic en «Escanear envoltorio» o «Denunciar basura»). Las fotos se procesan para ser enviadas a través del cliente de correo electrónico de tu dispositivo o cargadas en nuestro sistema de informes, según se indique en la interfaz.</li>  
+        </ul>  
+  
+        <h3>C. Datos de Uso y Analítica</h3>  
+        <p>Recopilamos datos para comprender cómo está funcionando nuestro servicio y mejorar la experiencia del usuario.</p>  
+        <ul>  
+            <li><strong>Duración de la sesión:</strong> Utilizamos la API <code>navigator.sendBeacon</code> para registrar cuánto tiempo pasa un usuario en páginas específicas (por ejemplo, la página de inicio). Esto se utiliza con fines analíticos anónimos para comprender la participación.</li>  
+            <li><strong>Información del navegador:</strong> Podemos recopilar información sobre el idioma de tu navegador, el tipo de dispositivo y la versión del navegador para garantizar que la aplicación se muestre correctamente en tu idioma y formato locales.</li>  
+        </ul>  
+  
+        <h2>2. Cómo Utilizamos tu Información</h2>  
+        <p>Utilizamos la información que recopilamos de diversas maneras, incluyendo:</p>  
+        <ul>  
+            <li>Proporcionar, operar y mantener nuestra aplicación web.</li>  
+            <li>Mejorar, personalizar y ampliar nuestros servicios.</li>  
+            <li>Comprender y analizar cómo utilizas nuestra aplicación web.</li>  
+            <li>Desarrollar nuevas funciones y funcionalidades.</li>  
+            <li>Comunicarnos contigo, ya sea directamente o a través de uno de nuestros socios, para brindar atención al cliente o proporcionar actualizaciones relacionadas con nuestro servicio.</li>  
+            <li>Facilitar el reporte de problemas ambientales a los servicios públicos locales.</li>  
+        </ul>  
+  
+        <h2>3. Servicios de Terceros y Datos Abiertos</h2>  
+        <p>TrashIt utiliza tecnologías de terceros para brindar sus servicios. Estos terceros pueden recopilar información según sus propias políticas de privacidad:</p>  
+        <ul>  
+            <li><strong>OpenStreetMap (OSM):</strong> Utilizamos OpenStreetMap para nuestros mosaicos de mapa y datos. Tus solicitudes de mosaicos de mapa incluyen tu dirección IP y datos de ubicación como parte de la solicitud HTTP estándar a sus servidores.</li>  
+            <li><strong>Leaflet:</strong> Utilizamos la biblioteca JavaScript Leaflet para representar mapas interactivos.</li>  
+            <li><strong>Quagga2:</strong> Utilizamos esta biblioteca para el escaneo de códigos de barras a través de tu cámara.</li>  
+            <li><strong>APIs del Gobierno Local / Públicas:</strong> Cuando solicitas datos locales o reportas un problema, la información (como tu ubicación y potencialmente tu correo electrónico) puede transmitirse a las APIs de servicios públicos locales o a través de tu cliente de correo electrónico a las autoridades locales.</li>  
+        </ul>  
+  
+        <h2>4. Conservación de Datos</h2>  
+        <p>Conservamos la información recopilada solo durante el tiempo necesario para los fines establecidos en esta Política de Privacidad.</p>  
+        <ul>  
+            <li><strong>Datos de ubicación:</strong> La ubicación en tiempo real se procesa en la sesión para brindar servicios de mapa y no se almacena de forma permanente a menos que presentes específicamente un reporte.</li>  
+            <li><strong>Analítica de uso:</strong> Los datos de uso anónimos se conservan para ayudarnos a mejorar nuestras métricas de servicio.</li>  
+        </ul>  
+  
+        <h2>5. Seguridad de tus Datos</h2>  
+        <p>Valoramos tu confianza al proporcionarnos tu información. Utilizamos métodos estándar de la industria (como cifrado HTTPS/TLS) para proteger tus datos durante la transmisión. Sin embargo, recuerda que ningún método de transmisión por internet, ni método de almacenamiento electrónico, es 100 % seguro.</p>  
+  
+        <h2>6. Información de Menores</h2>  
+        <p>Otra parte de nuestra prioridad es añadir protección para los menores de edad al usar internet. TrashIt no recopila intencionalmente ninguna Información Personal Identificable de menores de 13 años (o la edad aplicable en tu jurisdicción). Si crees que tu hijo proporcionó este tipo de información en nuestro sitio web, te animamos encarecidamente a contactarnos de inmediato y haremos todo lo posible para eliminar dicha información de nuestros registros de manera oportuna.</p>  
+  
+        <h2>7. Tus Derechos de Protección de Datos (GDPR/CCPA)</h2>  
+        <p>Dependiendo de tu ubicación, podrías tener los siguientes derechos:</p>  
+        <ul>  
+            <li><strong>Derecho de acceso:</strong> Tienes derecho a solicitar copias de tus datos personales.</li>  
+            <li><strong>Derecho de rectificación:</strong> Tienes derecho a solicitar que corrijamos cualquier información que consideres inexacta.</li>  
+            <li><strong>Derecho al olvido:</strong> Tienes derecho a solicitar que eliminemos tus datos personales, bajo ciertas condiciones.</li>  
+            <li><strong>Derecho a oponerte al procesamiento:</strong> Tienes derecho a oponerte al procesamiento de tus datos personales.</li>  
+        </ul>  
+  
+        <h2>8. Cambios en esta Política de Privacidad</h2>  
+        <p>Podemos actualizar nuestra Política de Privacidad de vez en cuando. Por lo tanto, te recomendamos revisar esta página periódicamente para detectar cualquier cambio. Te notificaremos sobre cualquier cambio publicando la nueva Política de Privacidad en esta página.</p>  
+  
+        <h2>9. Contáctanos</h2>  
+        <p>Si tienes alguna pregunta o sugerencia sobre nuestra Política de Privacidad, no dudes en contactarnos en:</p>  
+        <ul>  
+            <li><strong>Correo electrónico:</strong> <a href="#" class="email-link"></a></li>  
+            <li><strong>Sitio web:</strong> <a href="https://trashit.click/">https://trashit.click/</a></li>  
+        </ul>  
+  
+        <footer>  
+            <span>&copy; Derechos de autor TrashIt.click {% now "Y" as current_year %}.</span>  
+        </footer>  
+    </div>  
+  
+    <script>  
+        const encodedEmail = "Y29udGFjdC50cmFzaGl0QHRyYXNoaXQuY2xpY2s=";  
+        const targets = document.querySelectorAll('.email-link');  
+        const decodedEmail = atob(encodedEmail);  
+        targets.forEach(target => {  
+            target.innerHTML = decodedEmail;  
+            target.href = "mailto:" + decodedEmail;  
+        });  
+    </script>  
+</body>  
+</html>
