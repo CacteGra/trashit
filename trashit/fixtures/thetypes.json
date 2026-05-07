@@ -1,0 +1,156 @@
+[
+  {
+    "model": "trash.thetype",
+    "pk": 1,
+    "fields": {
+      "the_type": "recycling"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 2,
+    "fields": {
+      "the_type": "oil"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 3,
+    "fields": {
+      "the_type": "glass bottles"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 4,
+    "fields": {
+      "the_type": "plastic"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 5,
+    "fields": {
+      "the_type": "glass"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 6,
+    "fields": {
+      "the_type": "paper"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 7,
+    "fields": {
+      "the_type": "clothes"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 8,
+    "fields": {
+      "the_type": "shoes"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 9,
+    "fields": {
+      "the_type": "magazines"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 10,
+    "fields": {
+      "the_type": "newspaper"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 11,
+    "fields": {
+      "the_type": "paper packaging"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 12,
+    "fields": {
+      "the_type": "cans"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 13,
+    "fields": {
+      "the_type": "cardboard"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 14,
+    "fields": {
+      "the_type": "plastic bottles"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 15,
+    "fields": {
+      "the_type": "plastic packaging"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 16,
+    "fields": {
+      "the_type": "waste"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 17,
+    "fields": {
+      "the_type": "recycle"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 18,
+    "fields": {
+      "the_type": "green waste"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 19,
+    "fields": {
+      "the_type": "engine oil"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 20,
+    "fields": {
+      "the_type": "bac à marée"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 21,
+    "fields": {
+      "the_type": "food waste"
+    }
+  },
+  {
+    "model": "trash.thetype",
+    "pk": 22,
+    "fields": {
+      "the_type": "trash"
+    }
+  }
+]
