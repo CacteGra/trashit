@@ -19,6 +19,9 @@
   <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="{% static 'node_modules/@ericblade/quagga2/dist/quagga.js' %}"></script>
+
+  <!-- Load modular scripts -->
+  <script src="{% static 'js/scanner.js' %}"></script>
   {% endblock %}
 
 {% block content %}
@@ -571,55 +574,6 @@
 
         // Init
         getMedia();
-      }
-
-      // Scan Wrapper
-      function scanWrapper() {
-        const modal = document.getElementById('wrapperModal');
-        $(modal).modal('toggle');
-
-        Quagga.init({
-          inputStream: {
-            name: 'Live',
-            type: 'LiveStream',
-            target: document.querySelector('#scan-viewport')
-          },
-          decoder: { readers: ['ean_reader'] }
-        }, function (err) {
-          if (err) return console.error(err);
-          console.log('Quagga initialized');
-          Quagga.start();
-        });
-
-        let codes = [];
-
-        Quagga.onDetected(function (result) {
-          const code = result.codeResult.code;
-          codes.push(code);
-
-          const getRecurringValues = (arr) => {
-            const counts = arr.reduce((acc, curr) => {
-              acc[curr] = (acc[curr] || 0) + 1;
-              return acc;
-            }, {});
-            return Object.entries(counts)
-              .filter(([_, count]) => count > 1)
-              .sort((a, b) => b[1] - a[1]);
-          };
-
-          const recurring = getRecurringValues(codes);
-
-          const itemNumber = recurring.length === 0 ? 1 : recurring[0][1];
-
-          if (itemNumber >= 5 && !scanning) {
-            scanning = true;
-            $.get("{% url 'scan_wrapper' %}", { code: recurring[0][0] })
-              .done(function (response) {
-                $scanResult.innerHTML = response.map(r => r.html).join('');
-                scanning = false;
-              });
-          }
-        });
       }
 
       // Garbage Collection
