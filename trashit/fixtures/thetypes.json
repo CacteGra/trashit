@@ -136,7 +136,7 @@
     "model": "trash.thetype",
     "pk": 20,
     "fields": {
-      "the_type": "bac à marée"
+      "the_type": "bac \u00e0 mar\u00e9e"
     }
   },
   {

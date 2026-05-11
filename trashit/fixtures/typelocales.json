@@ -1,596 +1,596 @@
 [
-    {
-      "model": "trash.typelocale",
-      "pk": 1,
-      "fields": {
-        "locale": "Recyclage",
-        "language": "FR",
-        "the_type": 1
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 2,
-      "fields": {
-        "locale": "Reciclaje",
-        "language": "ES",
-        "the_type": 1
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 3,
-      "fields": {
-        "locale": "Recycling",
-        "language": "EN",
-        "the_type": 1
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 4,
-      "fields": {
-        "locale": "Oil",
-        "language": "FR",
-        "the_type": 2
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 5,
-      "fields": {
-        "locale": "Aceite",
-        "language": "ES",
-        "the_type": 2
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 6,
-      "fields": {
-        "locale": "Oil",
-        "language": "EN",
-        "the_type": 2
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 7,
-      "fields": {
-        "locale": "Bouteilles en verre",
-        "language": "FR",
-        "the_type": 3
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 8,
-      "fields": {
-        "locale": "Botellas de vidrio",
-        "language": "ES",
-        "the_type": 3
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 9,
-      "fields": {
-        "locale": "Glass bottles",
-        "language": "EN",
-        "the_type": 3
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 10,
-      "fields": {
-        "locale": "Plastique",
-        "language": "FR",
-        "the_type": 4
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 11,
-      "fields": {
-        "locale": "Plástico",
-        "language": "ES",
-        "the_type": 4
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 12,
-      "fields": {
-        "locale": "Plastic",
-        "language": "EN",
-        "the_type": 4
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 13,
-      "fields": {
-        "locale": "Verre",
-        "language": "FR",
-        "the_type": 5
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 14,
-      "fields": {
-        "locale": "Vidrio",
-        "language": "ES",
-        "the_type": 5
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 15,
-      "fields": {
-        "locale": "Glass",
-        "language": "EN",
-        "the_type": 5
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 16,
-      "fields": {
-        "locale": "Papier",
-        "language": "FR",
-        "the_type": 6
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 17,
-      "fields": {
-        "locale": "Papel",
-        "language": "ES",
-        "the_type": 6
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 18,
-      "fields": {
-        "locale": "Paper",
-        "language": "EN",
-        "the_type": 6
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 19,
-      "fields": {
-        "locale": "Vêtements",
-        "language": "FR",
-        "the_type": 7
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 20,
-      "fields": {
-        "locale": "Ropa",
-        "language": "ES",
-        "the_type": 7
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 21,
-      "fields": {
-        "locale": "Clothes",
-        "language": "EN",
-        "the_type": 7
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 22,
-      "fields": {
-        "locale": "Chaussures",
-        "language": "FR",
-        "the_type": 8
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 23,
-      "fields": {
-        "locale": "Zapatos",
-        "language": "ES",
-        "the_type": 8
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 24,
-      "fields": {
-        "locale": "Shoes",
-        "language": "EN",
-        "the_type": 8
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 25,
-      "fields": {
-        "locale": "Magazines",
-        "language": "FR",
-        "the_type": 9
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 26,
-      "fields": {
-        "locale": "Revistas",
-        "language": "ES",
-        "the_type": 9
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 27,
-      "fields": {
-        "locale": "Magazines",
-        "language": "EN",
-        "the_type": 9
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 28,
-      "fields": {
-        "locale": "Journaux",
-        "language": "FR",
-        "the_type": 10
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 29,
-      "fields": {
-        "locale": "Periódico",
-        "language": "ES",
-        "the_type": 10
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 30,
-      "fields": {
-        "locale": "Newspaper",
-        "language": "EN",
-        "the_type": 10
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 31,
-      "fields": {
-        "locale": "Emballage en papier",
-        "language": "FR",
-        "the_type": 11
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 32,
-      "fields": {
-        "locale": "Envase de papel",
-        "language": "ES",
-        "the_type": 11
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 33,
-      "fields": {
-        "locale": "Paper packaging",
-        "language": "EN",
-        "the_type": 11
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 34,
-      "fields": {
-        "locale": "Boîtes",
-        "language": "FR",
-        "the_type": 12
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 35,
-      "fields": {
-        "locale": "Latas",
-        "language": "ES",
-        "the_type": 12
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 36,
-      "fields": {
-        "locale": "Cans",
-        "language": "EN",
-        "the_type": 12
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 37,
-      "fields": {
-        "locale": "Carton",
-        "language": "FR",
-        "the_type": 13
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 38,
-      "fields": {
-        "locale": "Cartón",
-        "language": "ES",
-        "the_type": 13
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 39,
-      "fields": {
-        "locale": "Cardboard",
-        "language": "EN",
-        "the_type": 13
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 40,
-      "fields": {
-        "locale": "Bouteilles en plastique",
-        "language": "FR",
-        "the_type": 14
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 41,
-      "fields": {
-        "locale": "Botellas de plástico",
-        "language": "ES",
-        "the_type": 14
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 42,
-      "fields": {
-        "locale": "Plastic bottles",
-        "language": "EN",
-        "the_type": 14
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 43,
-      "fields": {
-        "locale": "Emballage plastique",
-        "language": "FR",
-        "the_type": 15
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 44,
-      "fields": {
-        "locale": "Envase de plástico",
-        "language": "ES",
-        "the_type": 15
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 45,
-      "fields": {
-        "locale": "Plastic packaging",
-        "language": "EN",
-        "the_type": 15
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 46,
-      "fields": {
-        "locale": "Déchets",
-        "language": "FR",
-        "the_type": 16
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 47,
-      "fields": {
-        "locale": "Residuos",
-        "language": "ES",
-        "the_type": 16
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 48,
-      "fields": {
-        "locale": "Waste",
-        "language": "EN",
-        "the_type": 16
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 49,
-      "fields": {
-        "locale": "Recycler",
-        "language": "FR",
-        "the_type": 17
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 50,
-      "fields": {
-        "locale": "Reciclar",
-        "language": "ES",
-        "the_type": 17
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 51,
-      "fields": {
-        "locale": "Recycle",
-        "language": "EN",
-        "the_type": 17
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 52,
-      "fields": {
-        "locale": "Déchets verts",
-        "language": "FR",
-        "the_type": 18
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 53,
-      "fields": {
-        "locale": "Residuos verdes",
-        "language": "ES",
-        "the_type": 18
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 54,
-      "fields": {
-        "locale": "Green waste",
-        "language": "EN",
-        "the_type": 18
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 55,
-      "fields": {
-        "locale": "Huile moteur",
-        "language": "FR",
-        "the_type": 19
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 56,
-      "fields": {
-        "locale": "Aceite de motor",
-        "language": "ES",
-        "the_type": 19
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 57,
-      "fields": {
-        "locale": "Engine oil",
-        "language": "EN",
-        "the_type": 19
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 58,
-      "fields": {
-        "locale": "Bac à marée",
-        "language": "FR",
-        "the_type": 20
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 59,
-      "fields": {
-        "locale": "Bac a maree",
-        "language": "ES",
-        "the_type": 20
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 60,
-      "fields": {
-        "locale": "Bac à marée",
-        "language": "EN",
-        "the_type": 20
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 61,
-      "fields": {
-        "locale": "Déchets alimentaires",
-        "language": "FR",
-        "the_type": 21
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 62,
-      "fields": {
-        "locale": "Residuos de comida",
-        "language": "ES",
-        "the_type": 21
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 63,
-      "fields": {
-        "locale": "Food waste",
-        "language": "EN",
-        "the_type": 21
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 64,
-      "fields": {
-        "locale": "Poubelle",
-        "language": "FR",
-        "the_type": 22
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 65,
-      "fields": {
-        "locale": "Basura",
-        "language": "ES",
-        "the_type": 22
-      }
-    },
-    {
-      "model": "trash.typelocale",
-      "pk": 66,
-      "fields": {
-        "locale": "Trash",
-        "language": "EN",
-        "the_type": 22
-      }
+  {
+    "model": "trash.typelocale",
+    "pk": 1,
+    "fields": {
+      "locale": "Recyclage",
+      "language": "FR",
+      "the_type": 1
     }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 2,
+    "fields": {
+      "locale": "Reciclaje",
+      "language": "ES",
+      "the_type": 1
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 3,
+    "fields": {
+      "locale": "Recycling",
+      "language": "EN",
+      "the_type": 1
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 4,
+    "fields": {
+      "locale": "Oil",
+      "language": "FR",
+      "the_type": 2
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 5,
+    "fields": {
+      "locale": "Aceite",
+      "language": "ES",
+      "the_type": 2
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 6,
+    "fields": {
+      "locale": "Oil",
+      "language": "EN",
+      "the_type": 2
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 7,
+    "fields": {
+      "locale": "Bouteilles en verre",
+      "language": "FR",
+      "the_type": 3
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 8,
+    "fields": {
+      "locale": "Botellas de vidrio",
+      "language": "ES",
+      "the_type": 3
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 9,
+    "fields": {
+      "locale": "Glass bottles",
+      "language": "EN",
+      "the_type": 3
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 10,
+    "fields": {
+      "locale": "Plastique",
+      "language": "FR",
+      "the_type": 4
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 11,
+    "fields": {
+      "locale": "Pl\u00e1stico",
+      "language": "ES",
+      "the_type": 4
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 12,
+    "fields": {
+      "locale": "Plastic",
+      "language": "EN",
+      "the_type": 4
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 13,
+    "fields": {
+      "locale": "Verre",
+      "language": "FR",
+      "the_type": 5
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 14,
+    "fields": {
+      "locale": "Vidrio",
+      "language": "ES",
+      "the_type": 5
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 15,
+    "fields": {
+      "locale": "Glass",
+      "language": "EN",
+      "the_type": 5
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 16,
+    "fields": {
+      "locale": "Papier",
+      "language": "FR",
+      "the_type": 6
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 17,
+    "fields": {
+      "locale": "Papel",
+      "language": "ES",
+      "the_type": 6
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 18,
+    "fields": {
+      "locale": "Paper",
+      "language": "EN",
+      "the_type": 6
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 19,
+    "fields": {
+      "locale": "V\u00eatements",
+      "language": "FR",
+      "the_type": 7
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 20,
+    "fields": {
+      "locale": "Ropa",
+      "language": "ES",
+      "the_type": 7
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 21,
+    "fields": {
+      "locale": "Clothes",
+      "language": "EN",
+      "the_type": 7
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 22,
+    "fields": {
+      "locale": "Chaussures",
+      "language": "FR",
+      "the_type": 8
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 23,
+    "fields": {
+      "locale": "Zapatos",
+      "language": "ES",
+      "the_type": 8
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 24,
+    "fields": {
+      "locale": "Shoes",
+      "language": "EN",
+      "the_type": 8
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 25,
+    "fields": {
+      "locale": "Magazines",
+      "language": "FR",
+      "the_type": 9
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 26,
+    "fields": {
+      "locale": "Revistas",
+      "language": "ES",
+      "the_type": 9
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 27,
+    "fields": {
+      "locale": "Magazines",
+      "language": "EN",
+      "the_type": 9
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 28,
+    "fields": {
+      "locale": "Journaux",
+      "language": "FR",
+      "the_type": 10
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 29,
+    "fields": {
+      "locale": "Peri\u00f3dico",
+      "language": "ES",
+      "the_type": 10
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 30,
+    "fields": {
+      "locale": "Newspaper",
+      "language": "EN",
+      "the_type": 10
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 31,
+    "fields": {
+      "locale": "Emballage en papier",
+      "language": "FR",
+      "the_type": 11
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 32,
+    "fields": {
+      "locale": "Envase de papel",
+      "language": "ES",
+      "the_type": 11
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 33,
+    "fields": {
+      "locale": "Paper packaging",
+      "language": "EN",
+      "the_type": 11
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 34,
+    "fields": {
+      "locale": "Bo\u00eetes",
+      "language": "FR",
+      "the_type": 12
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 35,
+    "fields": {
+      "locale": "Latas",
+      "language": "ES",
+      "the_type": 12
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 36,
+    "fields": {
+      "locale": "Cans",
+      "language": "EN",
+      "the_type": 12
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 37,
+    "fields": {
+      "locale": "Carton",
+      "language": "FR",
+      "the_type": 13
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 38,
+    "fields": {
+      "locale": "Cart\u00f3n",
+      "language": "ES",
+      "the_type": 13
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 39,
+    "fields": {
+      "locale": "Cardboard",
+      "language": "EN",
+      "the_type": 13
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 40,
+    "fields": {
+      "locale": "Bouteilles en plastique",
+      "language": "FR",
+      "the_type": 14
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 41,
+    "fields": {
+      "locale": "Botellas de pl\u00e1stico",
+      "language": "ES",
+      "the_type": 14
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 42,
+    "fields": {
+      "locale": "Plastic bottles",
+      "language": "EN",
+      "the_type": 14
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 43,
+    "fields": {
+      "locale": "Emballage plastique",
+      "language": "FR",
+      "the_type": 15
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 44,
+    "fields": {
+      "locale": "Envase de pl\u00e1stico",
+      "language": "ES",
+      "the_type": 15
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 45,
+    "fields": {
+      "locale": "Plastic packaging",
+      "language": "EN",
+      "the_type": 15
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 46,
+    "fields": {
+      "locale": "D\u00e9chets",
+      "language": "FR",
+      "the_type": 16
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 47,
+    "fields": {
+      "locale": "Residuos",
+      "language": "ES",
+      "the_type": 16
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 48,
+    "fields": {
+      "locale": "Waste",
+      "language": "EN",
+      "the_type": 16
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 49,
+    "fields": {
+      "locale": "Recycler",
+      "language": "FR",
+      "the_type": 17
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 50,
+    "fields": {
+      "locale": "Reciclar",
+      "language": "ES",
+      "the_type": 17
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 51,
+    "fields": {
+      "locale": "Recycle",
+      "language": "EN",
+      "the_type": 17
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 52,
+    "fields": {
+      "locale": "D\u00e9chets verts",
+      "language": "FR",
+      "the_type": 18
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 53,
+    "fields": {
+      "locale": "Residuos verdes",
+      "language": "ES",
+      "the_type": 18
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 54,
+    "fields": {
+      "locale": "Green waste",
+      "language": "EN",
+      "the_type": 18
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 55,
+    "fields": {
+      "locale": "Huile moteur",
+      "language": "FR",
+      "the_type": 19
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 56,
+    "fields": {
+      "locale": "Aceite de motor",
+      "language": "ES",
+      "the_type": 19
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 57,
+    "fields": {
+      "locale": "Engine oil",
+      "language": "EN",
+      "the_type": 19
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 58,
+    "fields": {
+      "locale": "Bac \u00e0 mar\u00e9e",
+      "language": "FR",
+      "the_type": 20
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 59,
+    "fields": {
+      "locale": "Bac a maree",
+      "language": "ES",
+      "the_type": 20
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 60,
+    "fields": {
+      "locale": "Bac \u00e0 mar\u00e9e",
+      "language": "EN",
+      "the_type": 20
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 61,
+    "fields": {
+      "locale": "D\u00e9chets alimentaires",
+      "language": "FR",
+      "the_type": 21
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 62,
+    "fields": {
+      "locale": "Residuos de comida",
+      "language": "ES",
+      "the_type": 21
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 63,
+    "fields": {
+      "locale": "Food waste",
+      "language": "EN",
+      "the_type": 21
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 64,
+    "fields": {
+      "locale": "Poubelle",
+      "language": "FR",
+      "the_type": 22
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 65,
+    "fields": {
+      "locale": "Basura",
+      "language": "ES",
+      "the_type": 22
+    }
+  },
+  {
+    "model": "trash.typelocale",
+    "pk": 66,
+    "fields": {
+      "locale": "Trash",
+      "language": "EN",
+      "the_type": 22
+    }
+  }
 ]
