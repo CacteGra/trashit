@@ -68,7 +68,7 @@ WORKDIR /app
 
 COPY . .
 
-ENTRYPOINT ["./docker-entrypoint.sh"]             # must be JSON-array syntax
+ENTRYPOINT ["./docker-entrypoint-dev.sh"]             # must be JSON-array syntax
 
 # Use user "wagtail" to run the build commands below and the server itself.
 # USER wagtail
