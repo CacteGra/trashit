@@ -93,7 +93,7 @@
     "model": "trash.typelocale",
     "pk": 11,
     "fields": {
-      "locale": "Pl\u00e1stico",
+      "locale": "Plástico",
       "language": "ES",
       "the_type": 4
     }
@@ -165,7 +165,7 @@
     "model": "trash.typelocale",
     "pk": 19,
     "fields": {
-      "locale": "V\u00eatements",
+      "locale": "Vêtements",
       "language": "FR",
       "the_type": 7
     }
@@ -255,7 +255,7 @@
     "model": "trash.typelocale",
     "pk": 29,
     "fields": {
-      "locale": "Peri\u00f3dico",
+      "locale": "Periódico",
       "language": "ES",
       "the_type": 10
     }
@@ -300,7 +300,7 @@
     "model": "trash.typelocale",
     "pk": 34,
     "fields": {
-      "locale": "Bo\u00eetes",
+      "locale": "Boîtes",
       "language": "FR",
       "the_type": 12
     }
@@ -336,7 +336,7 @@
     "model": "trash.typelocale",
     "pk": 38,
     "fields": {
-      "locale": "Cart\u00f3n",
+      "locale": "Cartón",
       "language": "ES",
       "the_type": 13
     }
@@ -363,7 +363,7 @@
     "model": "trash.typelocale",
     "pk": 41,
     "fields": {
-      "locale": "Botellas de pl\u00e1stico",
+      "locale": "Botellas de plástico",
       "language": "ES",
       "the_type": 14
     }
@@ -390,7 +390,7 @@
     "model": "trash.typelocale",
     "pk": 44,
     "fields": {
-      "locale": "Envase de pl\u00e1stico",
+      "locale": "Envase de plástico",
       "language": "ES",
       "the_type": 15
     }
@@ -408,7 +408,7 @@
     "model": "trash.typelocale",
     "pk": 46,
     "fields": {
-      "locale": "D\u00e9chets",
+      "locale": "Déchets",
       "language": "FR",
       "the_type": 16
     }
@@ -462,7 +462,7 @@
     "model": "trash.typelocale",
     "pk": 52,
     "fields": {
-      "locale": "D\u00e9chets verts",
+      "locale": "Déchets verts",
       "language": "FR",
       "the_type": 18
     }
@@ -516,7 +516,7 @@
     "model": "trash.typelocale",
     "pk": 58,
     "fields": {
-      "locale": "Bac \u00e0 mar\u00e9e",
+      "locale": "Bac à marée",
       "language": "FR",
       "the_type": 20
     }
@@ -525,7 +525,7 @@
     "model": "trash.typelocale",
     "pk": 59,
     "fields": {
-      "locale": "Bac a maree",
+      "locale": "Basura marina",
       "language": "ES",
       "the_type": 20
     }
@@ -534,7 +534,7 @@
     "model": "trash.typelocale",
     "pk": 60,
     "fields": {
-      "locale": "Bac \u00e0 mar\u00e9e",
+      "locale": "Marine debris",
       "language": "EN",
       "the_type": 20
     }
@@ -543,7 +543,7 @@
     "model": "trash.typelocale",
     "pk": 61,
     "fields": {
-      "locale": "D\u00e9chets alimentaires",
+      "locale": "Déchets alimentaires",
       "language": "FR",
       "the_type": 21
     }

@@ -3,154 +3,286 @@
     "model": "trash.thetype",
     "pk": 1,
     "fields": {
-      "the_type": "recycling"
+      "the_type": "recycling",
+      "the_type_en": "recycling",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "recycle",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 2,
     "fields": {
-      "the_type": "oil"
+      "the_type": "oil",
+      "the_type_en": "oil",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "specialbin",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 3,
     "fields": {
-      "the_type": "glass bottles"
+      "the_type": "glass bottles",
+      "the_type_en": "glass bottles",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "glassbottle",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 4,
     "fields": {
-      "the_type": "plastic"
+      "the_type": "plastic",
+      "the_type_en": "plastic",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "plasticbottle",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 5,
     "fields": {
-      "the_type": "glass"
+      "the_type": "glass",
+      "the_type_en": "glass",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "glassbottle",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 6,
     "fields": {
-      "the_type": "paper"
+      "the_type": "paper",
+      "the_type_en": "paper",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "paper",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 7,
     "fields": {
-      "the_type": "clothes"
+      "the_type": "clothes",
+      "the_type_en": "clothes",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "shirt",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 8,
     "fields": {
-      "the_type": "shoes"
+      "the_type": "shoes",
+      "the_type_en": "shoes",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "shirt",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 9,
     "fields": {
-      "the_type": "magazines"
+      "the_type": "magazines",
+      "the_type_en": "magazines",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "paper",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 10,
     "fields": {
-      "the_type": "newspaper"
+      "the_type": "newspaper",
+      "the_type_en": "newspaper",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "newspaper",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 11,
     "fields": {
-      "the_type": "paper packaging"
+      "the_type": "paper packaging",
+      "the_type_en": "paper packaging",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "paper",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 12,
     "fields": {
-      "the_type": "cans"
+      "the_type": "cans",
+      "the_type_en": "cans",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "can",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 13,
     "fields": {
-      "the_type": "cardboard"
+      "the_type": "cardboard",
+      "the_type_en": "cardboard",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "cardboard",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 14,
     "fields": {
-      "the_type": "plastic bottles"
+      "the_type": "plastic bottles",
+      "the_type_en": "plastic bottles",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "plasticbottle",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 15,
     "fields": {
-      "the_type": "plastic packaging"
+      "the_type": "plastic packaging",
+      "the_type_en": "plastic packaging",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "plasticbottle",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 16,
     "fields": {
-      "the_type": "waste"
+      "the_type": "waste",
+      "the_type_en": "waste",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "trashicon",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 17,
     "fields": {
-      "the_type": "recycle"
+      "the_type": "recycle",
+      "the_type_en": "recycle",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "recycle",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 18,
     "fields": {
-      "the_type": "green waste"
+      "the_type": "green waste",
+      "the_type_en": "green waste",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "organic",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 19,
     "fields": {
-      "the_type": "engine oil"
+      "the_type": "engine oil",
+      "the_type_en": "engine oil",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "specialbin",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 20,
     "fields": {
-      "the_type": "bac \u00e0 mar\u00e9e"
+      "the_type": "Bac à marée",
+      "the_type_en": "Bac à marée",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "specialbin",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 21,
     "fields": {
-      "the_type": "food waste"
+      "the_type": "food waste",
+      "the_type_en": "food waste",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "organic",
+      "osm_type": []
     }
   },
   {
     "model": "trash.thetype",
     "pk": 22,
     "fields": {
-      "the_type": "trash"
+      "the_type": "trash",
+      "the_type_en": "trash",
+      "the_type_fr": null,
+      "the_type_es": null,
+      "is_osm": true,
+      "icon": "trashicon",
+      "osm_type": []
     }
   }
 ]
