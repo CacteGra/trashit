@@ -16,6 +16,7 @@ class TrashSpecificities(models.Model):
     photo = models.ImageField(upload_to="media", null=True, blank=True)
     from_local_api = models.BooleanField(default=False)
     reported = models.BooleanField(default=False)
+    to_validate = models.BooleanField(default=False)
 
 class Weekday(models.Model):
     day = models.CharField(max_length=15, null=True, blank=True)

@@ -24,7 +24,8 @@
   <script src="{% static 'js/map.js' %}"></script>
   <script src="{% static 'js/scanner.js' %}"></script>
   <script src="{% static 'js/ui_handlers.js' %}"></script>
-  {% endblock %}
+  <script src="{% static 'js/create_node.js' %}"></script>
+{% endblock %}
 
 {% block content %}
   {% leaflet_map "map" callback="mapInit" %}
@@ -156,6 +157,36 @@
         {% endfor %}
       {% endif %}
       <div class="modal-content" id="request-local-form"></div>
+    </div>
+  </div>
+  
+  <!-- Create Mode Panel -->
+  <div id="create-mode-panel" class="create-mode-panel d-none">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h6 class="card-title fw-bold mb-1">📍 Place New Trash Bin</h6>
+        <p class="card-text small text-muted mb-3">Drag the marker on the map to set location.</p>
+        
+        <div class="mb-3">
+          <label for="bin-type-select" class="form-label fw-semibold">Select Bin Type:</label>
+          <select id="bin-type-select" class="form-select">
+            <option value="" disabled selected>Choose type...</option>
+            <option value="organic">Organic</option>
+            <option value="recyclable">Recyclable</option>
+            <option value="general">General Waste</option>
+            <option value="hazardous">Hazardous</option>
+          </select>
+        </div>
+        
+        <div class="d-grid gap-2">
+          <button id="validate-bin-btn" class="btn btn-success">
+            <i class="bi bi-check-circle me-1"></i> Validate
+          </button>
+          <button id="cancel-create-btn" class="btn btn-outline-secondary">
+            <i class="bi bi-x-circle me-1"></i> Cancel
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 

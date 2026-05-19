@@ -20,6 +20,24 @@ html, body, #container /*, and all other map parent selectors*/ {
     z-index:1;
 }
 
+.create-mode-panel {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 300px;
+  pointer-events: auto;
+  transition: opacity 0.2s ease;
+}
+
+/* Visual feedback for active create mode */
+#add-menu.active-mode {
+  background-color: #dc3545 !important;
+  color: white !important;
+  border-color: #dc3545 !important;
+}
+
 .top-buttons {
     position: absolute;
     margin-top: 10px;

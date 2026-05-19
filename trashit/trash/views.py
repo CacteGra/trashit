@@ -143,6 +143,40 @@ class ScanWrapper(ListView):
         html = render_to_string('trash/packaging-bin.html', {'wrapper': wrapper, 'available': available}, request=request)
         return JsonResponse([{'html': html, }], safe=False)
 
+class CreateTrash(generic.DetailView):
+    import json
+    model = TrashSpecificities
+    def post(self, request, *arg, **kwargs):
+        from django.contrib.gis.measure import D
+        from django.contrib.gis.db.models.functions import Distance
+        if request.method != 'POST':
+            return JsonResponse({'success': False, 'error': 'Invalid request'}, status=405)
+        
+        try:
+            data = json.loads(request.body)
+            lat = float(data['lat'])
+            lng = float(data['lng'])
+            point = Point(lng, lat, srid=4326)
+            bin_type = data['type']
+            m = 1
+
+            locale_type = TypeLocale.objects.get(locale=bin_type)
+            spec_types = TrashType.objects.filter(the_type=locale_type.the_type)
+            trash = TrashSpecificities.objects.filter(trash_type__in=spec_types, point_field__o_field__distance_lte=(point, D(m=m))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
+            if trash:
+                is_valid = True
+            else:
+                is_valid = False
+            
+            if is_valid:
+                trash = TrashSpecificities.objects.get_or_create(trash_type__in=spec_types, point_field=point, to_validate=True)
+                return JsonResponse({'success': True, 'message': 'Bin registered.'})
+            else:
+                return JsonResponse({'success': False, 'error': 'Location or type invalid.'})
+                
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
 class IssueChooseView(ChooseView):
     model = "trash.TrashSpecificities"
     per_page = 50
