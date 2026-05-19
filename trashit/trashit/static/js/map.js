@@ -15,6 +15,7 @@ const $reload = document.querySelector('.reload');
 const $scanResult = document.getElementById('scan-result');
 const $replaceCollection = document.getElementById('replaceCollection');
 const $requestLocalForm = document.getElementById('request-local-form');
+const iconCache = new Map();
 
 // --- Utility Functions ---
 
