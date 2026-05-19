@@ -76,7 +76,7 @@ class ReportTrash(generic.DetailView):
             point = Pointfield.objects.get(id=point_id)
             try:
                 locale_type = TypeLocale.objects.get(locale=trash_type)
-                spec_type = TrashType.objects.get(the_type=locale_trash.the_type, trashspecificities__point_field=point)
+                spec_type = TrashType.objects.get(the_type=locale_type.the_type, trashspecificities__point_field=point)
                 trash = TrashSpecificities.objects.get(trash_type=spec_type, point_field=point)
             except TypeLocale.DoesNotExist:
                 the_type = TheType.objects.get(the_type=trash_type)
