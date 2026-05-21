@@ -14,34 +14,6 @@
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap/dist/css/bootstrap.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'node_modules/bootstrap-icons/font/bootstrap-icons.min.css' %}" />
-
-  {% leaflet_js %}
-  <script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="{% static 'node_modules/@ericblade/quagga2/dist/quagga.js' %}"></script>
-
-  <!-- Load modular scripts -->
-  <script>
-    // js/map.js
-    iconUrl = "{% static 'icons/dot-circle.png' %}";
-    shadowUrl = "{% static 'icons/dot-circle-shadow.png' %}";
-    defaultIconUrl = "{% static 'leaflet/images/marker-icon.png' %}";
-    circleIconUrl = "{% static 'icons/dot-circle.png' %}";
-    iconFolderUrl = "{% static 'icons/' %}";
-    firstLoadUrl = "{% url 'get_first_load' %}";
-    filterUrl = "{% url 'filter_type' %}";
-
-    // js/scanner.js
-    scanUrl = "{% url 'scan_wrapper' %}";
-
-    // js/ui_handlers.js
-    garbageUrl = "{% url 'garbage_collection' %}";
-    patch = "{% url 'report_trash' %}";
-  </script>
-  <script src="{% static 'js/map.js' %}"></script>
-  <script src="{% static 'js/scanner.js' %}"></script>
-  <script src="{% static 'js/ui_handlers.js' %}"></script>
-  <script src="{% static 'js/create_node.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -212,3 +184,31 @@
     <div class="reload"></div>
   </div>
 {% endblock %}
+
+{% leaflet_js %}
+<script src="{% static 'node_modules/bootstrap/dist/js/bootstrap.bundle.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="{% static 'node_modules/@ericblade/quagga2/dist/quagga.js' %}"></script>
+
+<!-- Load modular scripts -->
+<script>
+  // js/map.js
+  iconUrl = "{% static 'icons/dot-circle.png' %}";
+  shadowUrl = "{% static 'icons/dot-circle-shadow.png' %}";
+  defaultIconUrl = "{% static 'leaflet/images/marker-icon.png' %}";
+  circleIconUrl = "{% static 'icons/dot-circle.png' %}";
+  iconFolderUrl = "{% static 'icons/' %}";
+  firstLoadUrl = "{% url 'get_first_load' %}";
+  filterUrl = "{% url 'filter_type' %}";
+
+  // js/scanner.js
+  scanUrl = "{% url 'scan_wrapper' %}";
+
+  // js/ui_handlers.js
+  garbageUrl = "{% url 'garbage_collection' %}";
+  patch = "{% url 'report_trash' %}";
+</script>
+<script src="{% static 'js/map.js' %}"></script>
+<script src="{% static 'js/scanner.js' %}"></script>
+<script src="{% static 'js/ui_handlers.js' %}"></script>
+<script src="{% static 'js/create_node.js' %}"></script>
