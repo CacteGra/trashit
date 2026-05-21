@@ -41,7 +41,7 @@ function scanWrapper() {
 
         if (itemNumber >= 5 && !window.scanning) {
             window.scanning = true;
-            $.get("{% url 'scan_wrapper' %}", { code: recurring[0][0] })
+            $.get(scanUrl, { code: recurring[0][0] })
                 .done(function (response) {
                     $scanResult.innerHTML = response.map(r => r.html).join('');
                     window.scanning = false;

@@ -39,7 +39,7 @@ function garbageCollect() {
     const lat = window.oldLatLng.lat;
     const lng = window.oldLatLng.lng;
   
-    $.get("{% url 'garbage_collection' %}", { lat, lng })
+    $.get(garbageUrl, { lat, lng })
             .done(function (response) {
                 $replaceCollection.innerHTML = response.map(r => r.html).join('');
                 $('#collectionModal').modal('toggle');
@@ -123,7 +123,6 @@ function sendPicture() {
     
     if (!canvas) return;
 
-    const patch = "{% url 'report_trash' %}";
     const data = canvas.toDataURL('image/png');
 
     $.ajax({

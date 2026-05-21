@@ -10,11 +10,11 @@ let href;
 let notifInfo;
 
 // Cached DOM elements
-const $trashList = document.querySelector('.trashList');
-const $reload = document.querySelector('.reload');
-const $scanResult = document.getElementById('scan-result');
-const $replaceCollection = document.getElementById('replaceCollection');
-const $requestLocalForm = document.getElementById('request-local-form');
+const trashList = document.querySelector('.trashList');
+const reload = document.querySelector('.reload');
+const scanResult = document.getElementById('scan-result');
+const replaceCollection = document.getElementById('replaceCollection');
+var requestLocalForm = document.getElementById('request-local-form');
 const iconCache = new Map();
 
 // --- Utility Functions ---
@@ -92,13 +92,13 @@ function mapInit(mapInstance, options) {
 
     // Define icons
     const userIcon = L.icon({
-        iconUrl: "{% static 'icons/dot-circle.png' %}",
+        iconUrl: circleIconUrl,
         iconSize: [40, 40],
-        shadowUrl: "{% static 'icons/dot-circle-shadow.png' %}",
+        shadowUrl: shadowUrl,
         shadowSize: [45, 45],
         shadowAnchor: [20, 20]
     });
-    const defaultIcon = createIcon("{% static 'leaflet/images/marker-icon.png' %}", [25, 41]);
+    const defaultIcon = createIcon(defaultIconUrl, [25, 41]);
 
     // Attach listeners
     map.addLayer(tileLayer);
@@ -139,7 +139,7 @@ function onLocationFound(e) {
 
     if (userMarker === null) {
         userMarker = L.marker(e.latlng, { icon: L.icon({
-            iconUrl: "{% static 'icons/dot-circle.png' %}",
+            iconUrl: iconUrl,
             iconSize: [40, 40],
             shadowSize: [45, 45],
             shadowAnchor: [20, 20]
@@ -160,13 +160,13 @@ function onLocationFound(e) {
 
         // AJAX call to determine initial state (local/unauthorized)
         $.ajax({
-            url: "{% url 'get_first_load' %}",
+            url: firstLoadUrl,
             data: { lat, lng, same_session: false, languageOnly: getBrowserLanguage().split('-')[0] },
             type: 'GET'
         }).done(function (response) {
             if (response.requestlocal) {
                 if (document.getElementById('noData')) {
-                    $requestLocalForm.innerHTML = response.requestlocal;
+                    requestLocalForm.innerHTML = response.requestlocal;
                     document.getElementById('noData').modal('toggle');
                 } else {
                     // Used for coordinate injection in other modules
@@ -276,7 +276,7 @@ function renderTrashMarkers(data) {
 
             const latlng = L.latLng(d.lat, d.lng);
             const iconName = d.trash_icon || 'trash-icon';
-            const iconUrl = `{% static 'icons/' %}${iconName}.svg`;
+            const iconUrl = `${iconFolderUrl}${iconName}.svg`;
             const trashIcon = new selectedIcon({ iconUrl });
 
             const marker = L.marker(latlng, {
@@ -308,7 +308,7 @@ window.filterTrash = function(e) {
     circlesLayer.clearLayers();
 
     $.ajax({
-        url: "{% url 'filter_type' %}",
+        url: filterUrl,
         data: { lat, lng, typeId, languageOnly: getBrowserLanguage().split('-')[0] },
         type: 'GET'
     }).done(function (response) {
