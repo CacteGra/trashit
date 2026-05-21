@@ -167,7 +167,7 @@ function onLocationFound(e) {
             if (response.requestlocal) {
                 if (document.getElementById('noData')) {
                     requestLocalForm.innerHTML = response.requestlocal;
-                    document.getElementById('noData').modal('toggle');
+                    $('#noData').modal('toggle');
                 } else {
                     // Used for coordinate injection in other modules
                     window.requestCoords = document.getElementById("coordinates");
@@ -177,7 +177,7 @@ function onLocationFound(e) {
                 }
             } else {
                 if (document.getElementById('noData')) {
-                    document.getElementById('noData').modal('hide');
+                    $('#noData').modal('hide');
                 }
                 localEmail = response.administration_email;
                 
