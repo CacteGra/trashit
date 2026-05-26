@@ -15,6 +15,8 @@ from wagtail.admin.panels import FieldPanel, MultipleChooserPanel
 
 from wagtail.snippets.models import register_snippet
 
+from wagtailgeowidget.panels import LeafletPanel
+
 from .widgets import ChosenChooserWidget, OperatedChooserWidget
 
 class Booleanfield(models.Model):
@@ -365,6 +367,10 @@ class RequestLocalWaste(models.Model):
     coordinates = models.PointField(null=True, blank=True)
     register_api = models.ForeignKey('RegisterAPI', on_delete=models.SET_NULL, null=True, blank=True)
     allow_requested = models.BooleanField(default=False)
+    panels = [
+        LeafletPanel("coordinates"),
+        FieldPanel("allow_requested"),
+    ]
 
 class RegisterAPI(ClusterableModel):
     id = models.AutoField(primary_key=True, editable=False)
