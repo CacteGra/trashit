@@ -41,7 +41,7 @@ function garbageCollect() {
   
     $.get(garbageUrl, { lat, lng })
             .done(function (response) {
-                $replaceCollection.innerHTML = response.map(r => r.html).join('');
+                replaceCollection.innerHTML = response.map(r => r.html).join('');
                 $('#collectionModal').modal('toggle');
             });
 }
