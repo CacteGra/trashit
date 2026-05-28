@@ -32,6 +32,10 @@
         <i class="bi bi-exclamation-triangle" style="font-size: 35px;"></i>
       </button>
 
+      <button type="button" class="btn btn-light shadow fw-bold rounded-circle buttons-wrap" id="record">
+        <i class="bi bi-plus-circle" style="font-size: 35px;"></i> Record trash
+      </button>
+
       <!-- Zoom Controls -->
       <div class="leaflet-control-zoom leaflet-bar leaflet-control control">
         <a class="leaflet-control-zoom-in" id="in" href="#" title="{% trans 'Zoom in' %}">+</a>
@@ -210,5 +214,5 @@
 </script>
 <script src="{% static 'js/map.js' %}"></script>
 <script src="{% static 'js/scanner.js' %}"></script>
-<script src="{% static 'js/ui_handlers.js' %}"></script>
 <script src="{% static 'js/create_node.js' %}"></script>
+<script src="{% static 'js/ui_handlers.js' %}"></script>

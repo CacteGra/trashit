@@ -35,9 +35,9 @@ function getBrowserLanguage() {
 // --- Garbage Collection ---
 
 function garbageCollect() {
-    if (!window.oldLatLng) return;
-    const lat = window.oldLatLng.lat;
-    const lng = window.oldLatLng.lng;
+    if (!oldLatLng) return;
+    const lat = oldLatLng.lat;
+    const lng = oldLatLng.lng;
   
     $.get(garbageUrl, { lat, lng })
             .done(function (response) {

@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  const addMenuBtn = document.getElementById('add-menu');
+  const addMenuBtn = document.getElementById('record');
   const createPanel = document.getElementById('create-mode-panel');
   const validateBtn = document.getElementById('validate-bin-btn');
   const cancelBtn = document.getElementById('cancel-create-btn');
@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function enterCreateMode() {
-    const map = getMap();
     if (!map) return;
 
     isCreateMode = true;
@@ -40,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function exitCreateMode() {
-    const map = getMap();
     isCreateMode = false;
     if (createMarker) {
       map.removeLayer(createMarker);
