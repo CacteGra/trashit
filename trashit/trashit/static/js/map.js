@@ -9,13 +9,28 @@ let localEmail;
 let href;
 let notifInfo;
 
+// Initialize Layers
+let markersLayer = L.layerGroup();
+let circlesLayer = L.layerGroup();
+let polygonsLayer = L.layerGroup();
+
+let selectedIcon = L.Icon.extend({
+    options: {
+        iconSize: [25, 41],
+        shadowSize: [50, 64],
+        iconAnchor: [13, 20],
+        shadowAnchor: [14, 65],
+        popupAnchor: [-3, -76]
+    }
+});
+
 // Cached DOM elements
-const trashList = document.querySelector('.trashList');
-const reload = document.querySelector('.reload');
-const scanResult = document.getElementById('scan-result');
-const replaceCollection = document.getElementById('replaceCollection');
-var requestLocalForm = document.getElementById('request-local-form');
-const iconCache = new Map();
+let trashList = document.querySelector('.trashList');
+let reload = document.querySelector('.reload');
+let scanResult = document.getElementById('scan-result');
+let replaceCollection = document.getElementById('replaceCollection');
+let requestLocalForm = document.getElementById('request-local-form');
+let iconCache = new Map();
 
 // --- Utility Functions ---
 
@@ -63,21 +78,6 @@ function mapInit(mapInstance, options) {
             }
         }
     );
-
-    const selectedIcon = L.Icon.extend({
-        options: {
-            iconSize: [25, 41],
-            shadowSize: [50, 64],
-            iconAnchor: [13, 20],
-            shadowAnchor: [14, 65],
-            popupAnchor: [-3, -76]
-        }
-    });
-
-    // Initialize Layers
-    const markersLayer = L.layerGroup();
-    const circlesLayer = L.layerGroup();
-    const polygonsLayer = L.layerGroup();
 
     markersLayer.addTo(map);
     circlesLayer.addTo(map);
@@ -262,7 +262,7 @@ function renderTrashMarkers(data) {
     
     // Update the HTML list view (using existing HTML from the data)
     const html = data.map(listItem => listItem.data_list.map(item => item.html).join('')).join('');
-    $trashList.innerHTML += html;
+    trashList.innerHTML += html;
 
     data.forEach(item => {
         const latlng = L.latLng(item.lat, item.lng);
@@ -271,7 +271,7 @@ function renderTrashMarkers(data) {
 
         item.data_list.forEach(d => {
             if (d.reload) {
-                $reload.innerHTML = d.reload;
+                reload.innerHTML = d.reload;
             }
 
             const latlng = L.latLng(d.lat, d.lng);
