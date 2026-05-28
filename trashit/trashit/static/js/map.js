@@ -313,7 +313,7 @@ window.filterTrash = function(e) {
         type: 'GET'
     }).done(function (response) {
         const html = response.map(item => item.html).join('');
-        $trashList.innerHTML += html;
+        trashList.innerHTML += html;
         renderTrashMarkers(response);
     });
 }
