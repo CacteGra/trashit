@@ -20,6 +20,10 @@ html, body, #container /*, and all other map parent selectors*/ {
     z-index:1;
 }
 
+#record {
+    display: inline-grid;
+}
+
 .create-mode-panel {
   position: absolute;
   bottom: 100px;

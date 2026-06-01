@@ -32,11 +32,21 @@ document.addEventListener('DOMContentLoaded', function() {
         popupAnchor: [1, -34]
       })
     }).addTo(map);
+    var popup = L.popup()
+    .setContent("Record trash location")
+    popup.options.closeOnClick = false;
+    createMarker.bindPopup(popup).openPopup();
+        createMarker.on('dragend', () => {
+      console.log("hello");
+      createMarker.openPopup(); // ensure it remains open after move
+    });
 
     createPanel.classList.remove('d-none');
     addMenuBtn.classList.add('active-mode');
     addMenuBtn.title = 'Exit Create Mode';
   }
+
+
 
   function exitCreateMode() {
     isCreateMode = false;
