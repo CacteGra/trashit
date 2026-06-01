@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
   const addMenuBtn = document.getElementById('record');
+  const lockLocBtn = null;
   const createPanel = document.getElementById('create-mode-panel');
   const validateBtn = document.getElementById('validate-bin-btn');
   const cancelBtn = document.getElementById('cancel-create-btn');
@@ -33,20 +34,24 @@ document.addEventListener('DOMContentLoaded', function() {
       })
     }).addTo(map);
     var popup = L.popup()
-    .setContent("Record trash location")
+    .setContent("<b>Click to record trash location</b>");
     popup.options.closeOnClick = false;
     createMarker.bindPopup(popup).openPopup();
-        createMarker.on('dragend', () => {
-      console.log("hello");
-      createMarker.openPopup(); // ensure it remains open after move
-    });
-
-    createPanel.classList.remove('d-none');
+      createMarker.on('dragend', () => {
+        createMarker.openPopup(); // ensure it remains open after move
+      });
     addMenuBtn.classList.add('active-mode');
     addMenuBtn.title = 'Exit Create Mode';
+    popupWrapper = document.getElementsByClassName("leaflet-popup-content-wrapper")[0];
+    popupWrapper.addEventListener('click', function(e) {
+      e.preventDefault();
+      lockLoc();
+    });
   }
 
-
+  function lockLoc() {
+    createPanel.classList.remove('d-none');
+  }
 
   function exitCreateMode() {
     isCreateMode = false;
@@ -66,6 +71,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isCreateMode) enterCreateMode();
     else exitCreateMode();
   });
+
+  if (lockLocBtn) {
+  }
 
   cancelBtn.addEventListener('click', exitCreateMode);
 
