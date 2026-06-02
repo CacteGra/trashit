@@ -184,6 +184,8 @@ function onLocationFound(e) {
                 // Populate filter dropdown
                 const menu = document.querySelector('.filtering.dropdown-menu');
                 menu.innerHTML = '';
+                const select = document.querySelector('.form-select');
+                select.innerHTML = "";
                 
                 // All filter button
                 const liAll = document.createElement('li');
@@ -208,6 +210,10 @@ function onLocationFound(e) {
                     btn.onclick = (e) => window.filterTrash(e); 
                     li.appendChild(btn);
                     menu.appendChild(li);
+                    const option = document.createElement('option');
+                    option.value = `${type[0]}`;
+                    option.innerHTML = type[3];
+                    select.appendChild(option);
                 }
 
                 // Render markers
