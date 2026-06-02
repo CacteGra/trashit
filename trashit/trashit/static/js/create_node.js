@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     addMenuBtn.classList.add('active-mode');
     addMenuBtn.title = 'Exit Create Mode';
+    addMenuBtn.innerHTML = `<i class="bi bi-x-circle" style="font-size: 35px;"></i> Exit record trash`;
     popupWrapper = document.getElementsByClassName("leaflet-popup-content-wrapper")[0];
     popupWrapper.addEventListener('click', function(e) {
       e.preventDefault();
@@ -62,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
     createPanel.classList.add('d-none');
     addMenuBtn.classList.remove('active-mode');
     addMenuBtn.title = '';
+    addMenuBtn.innerHTML = `<i class="bi bi-plus-circle" style="font-size: 35px;"></i> Record trash`;
     typeSelect.value = '';
   }
 
@@ -71,9 +73,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isCreateMode) enterCreateMode();
     else exitCreateMode();
   });
-
-  if (lockLocBtn) {
-  }
 
   cancelBtn.addEventListener('click', exitCreateMode);
 
