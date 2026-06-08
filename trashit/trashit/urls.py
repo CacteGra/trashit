@@ -12,20 +12,23 @@ from mapping import views
 from management.views import record_time_spent
 from about import views as about_views
 
-urlpatterns = i18n_patterns(
+urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     # path("search/", search_views.search, name="search"),
-    re_path(r'^$', views.MainPageView.as_view(), name='home'),
     path('get_first_load/', views.FirstLoad.as_view(), name='get_first_load'),
     path('filter_type/', views.FilterType.as_view(), name='filter_type'),
     path('request_local/', views.RequestLocal.as_view(), name='request_local'),
     path('trash/', include('trash.urls')),
+    path('captcha/', include('captcha.urls')),
+    path('api/record-time/', record_time_spent, name='record_time_spent')
+]
+
+urlpatterns += i18n_patterns(
+    re_path(r'^$', views.MainPageView.as_view(), name='home'),
     path("about/", about_views.About.as_view(), name="about"),
     path('privacy-policy/', about_views.PrivacyPolicy.as_view(), name='privacy-policy'),
-    path('captcha/', include('captcha.urls')),
-    path('api/record-time/', record_time_spent, name='record_time_spent'),
     prefix_default_language=False
 )
 
