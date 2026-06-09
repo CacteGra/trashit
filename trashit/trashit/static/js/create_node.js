@@ -93,35 +93,22 @@ document.addEventListener('DOMContentLoaded', function() {
       lng: coords.lng,
       type: selectedType
     };
-
-    // 🔧 REPLACE WITH YOUR ACTUAL DJANGO URL NAME/PATH
-    const endpoint = 'create-trash/';
-
-    fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCsrfToken()
-      },
-      body: JSON.stringify(payload)
-    })
-    .then(response => {
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      if (data.success) {
-        alert('✅ Trash bin location validated successfully!');
-        exitCreateMode();
-        // Optional: Reload map markers or fetch updated data
-        // location.reload();
-      } else {
-        alert('❌ Validation failed: ' + (data.error || 'Unknown error'));
-      }
-    })
-    .catch(error => {
-      console.error('Validation error:', error);
-      alert('Network or server error. Please try again.');
+    $.ajax({
+        type: 'POST',
+        url: createNodeUrl,
+        data: payload,
+        headers: {
+            'X-CSRFToken': getCsrfToken(),
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        success: function (res) {
+          if (data.success) {
+            alert('✅ Trash bin location validated successfully!');
+            exitCreateMode();
+            // Optional: Reload map markers or fetch updated data
+            // location.reload();
+          }
+        }
     });
   });
 });

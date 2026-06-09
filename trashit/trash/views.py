@@ -4,7 +4,7 @@ import base64
 from django.shortcuts import render
 from django.template.loader import render_to_string
 
-from django.views import generic
+from django.views import generic, View
 from django.views.generic import TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
@@ -143,9 +143,9 @@ class ScanWrapper(ListView):
         html = render_to_string('trash/packaging-bin.html', {'wrapper': wrapper, 'available': available}, request=request)
         return JsonResponse([{'html': html, }], safe=False)
 
-class CreateTrash(generic.DetailView):
+@csrf_exempt
+class CreateTrash(View):
     import json
-    model = TrashSpecificities
     def post(self, request, *arg, **kwargs):
         from django.contrib.gis.measure import D
         from django.contrib.gis.db.models.functions import Distance
