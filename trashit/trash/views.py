@@ -10,7 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
 
 from wagtail.admin.views.generic.chooser import  ChooseView, ChooseResultsView, ChooseResultsViewMixin, CreationFormMixin, BaseChooseView
 from wagtail.admin.viewsets.chooser import ChooserViewSet
@@ -143,39 +144,63 @@ class ScanWrapper(ListView):
         html = render_to_string('trash/packaging-bin.html', {'wrapper': wrapper, 'available': available}, request=request)
         return JsonResponse([{'html': html, }], safe=False)
 
-@csrf_exempt
-class CreateTrash(View):
-    import json
+@method_decorator(csrf_protect, name='dispatch')
+class CreateTrash(TemplateView):
     def post(self, request, *arg, **kwargs):
         from django.contrib.gis.measure import D
         from django.contrib.gis.db.models.functions import Distance
+        from django.contrib.gis.geos import Point
         if request.method != 'POST':
             return JsonResponse({'success': False, 'error': 'Invalid request'}, status=405)
-        
-        try:
-            data = json.loads(request.body)
-            lat = float(data['lat'])
-            lng = float(data['lng'])
-            point = Point(lng, lat, srid=4326)
-            bin_type = data['type']
-            m = 1
+        print(request.POST)
+        # try:
+        #     data = dict(request.POST)
+        #     print(data)
+        #     lat = float(data['lat'])
+        #     lng = float(data['lng'])
+        #     point = Point(lng, lat, srid=4326)
+        #     bin_type = data['type']
+        #     m = 1
 
-            locale_type = TypeLocale.objects.get(locale=bin_type)
-            spec_types = TrashType.objects.filter(the_type=locale_type.the_type)
-            trash = TrashSpecificities.objects.filter(trash_type__in=spec_types, point_field__o_field__distance_lte=(point, D(m=m))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
-            if trash:
-                is_valid = True
-            else:
-                is_valid = False
+        #     locale_type = TypeLocale.objects.get(locale=bin_type)
+        #     spec_types = TrashType.objects.filter(the_type=locale_type.the_type)
+        #     trash = TrashSpecificities.objects.filter(trash_type__in=spec_types, point_field__o_field__distance_lte=(point, D(m=m))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
+        #     if trash:
+        #         is_valid = True
+        #     else:
+        #         is_valid = False
             
-            if is_valid:
-                trash = TrashSpecificities.objects.get_or_create(trash_type__in=spec_types, point_field=point, to_validate=True)
-                return JsonResponse({'success': True, 'message': 'Bin registered.'})
-            else:
-                return JsonResponse({'success': False, 'error': 'Location or type invalid.'})
+        #     if is_valid:
+        #         trash = TrashSpecificities.objects.get_or_create(trash_type__in=spec_types, point_field=point, to_validate=True)
+        #         return JsonResponse({'success': True, 'message': 'Bin registered.'})
+        #     else:
+        #         return JsonResponse({'success': False, 'error': 'Location or type invalid.'})
                 
-        except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        # except Exception as e:
+        #     return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+        data = dict(request.POST)
+        print(data)
+        lat = float(data['lat'][0])
+        lng = float(data['lng'][0])
+        point = Point(lng, lat, srid=4326)
+        bin_type = int(data['type'][0])
+        m = 1
+
+        locale_type = TypeLocale.objects.get(id=bin_type)
+        spec_types = TrashType.objects.filter(the_type=locale_type.the_type)
+        trash = TrashSpecificities.objects.filter(trash_type__in=spec_types, point_field__o_field__distance_lte=(point, D(m=m))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
+        if trash:
+            is_valid = True
+        else:
+            is_valid = False
+        
+        if is_valid:
+            trash = TrashSpecificities.objects.get_or_create(trash_type__in=spec_types, point_field=point, to_validate=True)
+            return JsonResponse({'success': True, 'message': 'Bin registered.'})
+        else:
+            return JsonResponse({'success': False, 'error': 'Location or type invalid.'})
+
 
 class IssueChooseView(ChooseView):
     model = "trash.TrashSpecificities"

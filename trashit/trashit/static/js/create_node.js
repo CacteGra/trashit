@@ -12,9 +12,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // Safely retrieve Leaflet map instance
   const getMap = () => window.map;
 
-  function getCsrfToken() {
-    const input = document.querySelector('[name=csrfmiddlewaretoken]');
-    return input ? input.value : '';
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
   }
 
   function enterCreateMode() {
@@ -98,11 +108,12 @@ document.addEventListener('DOMContentLoaded', function() {
         url: createNodeUrl,
         data: payload,
         headers: {
-            'X-CSRFToken': getCsrfToken(),
+            'X-CSRFToken': getCookie('csrftoken'),
             'X-Requested-With': 'XMLHttpRequest'
         },
         success: function (res) {
-          if (data.success) {
+          console.log(res);
+          if (res.success) {
             alert('✅ Trash bin location validated successfully!');
             exitCreateMode();
             // Optional: Reload map markers or fetch updated data
