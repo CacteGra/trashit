@@ -190,16 +190,11 @@ class CreateTrash(TemplateView):
         locale_type = TypeLocale.objects.get(id=bin_type)
         spec_types = TrashType.objects.filter(the_type=locale_type.the_type)
         trash = TrashSpecificities.objects.filter(trash_type__in=spec_types, point_field__o_field__distance_lte=(point, D(m=m))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
-        if trash:
-            is_valid = True
-        else:
-            is_valid = False
-        
-        if is_valid:
+        if not trash:
             trash = TrashSpecificities.objects.get_or_create(trash_type__in=spec_types, point_field=point, to_validate=True)
             return JsonResponse({'success': True, 'message': 'Bin registered.'})
         else:
-            return JsonResponse({'success': False, 'error': 'Location or type invalid.'})
+            return JsonResponse({'success': False, 'error': 'Trash with same type already recorded.'})
 
 
 class IssueChooseView(ChooseView):

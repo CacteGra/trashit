@@ -119,6 +119,9 @@ document.addEventListener('DOMContentLoaded', function() {
             // Optional: Reload map markers or fetch updated data
             // location.reload();
           }
+          else {
+            alert(res.error);
+          }
         }
     });
   });
