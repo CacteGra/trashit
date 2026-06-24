@@ -171,6 +171,7 @@ def main(api_pk):
 
         # Process each amenity type with error handling
         for amenity_name, selector in queries:
+            time.sleep(5)
             success = process_amenity_type(amenity_name, selector, areaId, icon_mapping)
             if not success:
                 logger.error(f"Failed to process {amenity_name}, but continuing...")
