@@ -188,10 +188,16 @@ class CreateTrash(TemplateView):
         m = 1
 
         locale_type = TypeLocale.objects.get(id=bin_type)
+        print(locale_type.the_type)
         spec_types = TrashType.objects.filter(the_type=locale_type.the_type)
         trash = TrashSpecificities.objects.filter(trash_type__in=spec_types, point_field__o_field__distance_lte=(point, D(m=m))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
         if not trash:
-            trash = TrashSpecificities.objects.get_or_create(trash_type__in=spec_types, point_field=point, to_validate=True)
+            point_object, created = Pointfield.objects.get_or_create(o_field=point)
+            trash, created = TrashSpecificities.objects.get_or_create(point_field=point_object)
+            trash.to_validate = True
+            trash.save()
+            for spec_type in spec_types:
+                trash.trash_type.add(spec_type)
             return JsonResponse({'success': True, 'message': 'Bin registered.'})
         else:
             return JsonResponse({'success': False, 'error': 'Trash with same type already recorded.'})
