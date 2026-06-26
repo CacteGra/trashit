@@ -200,7 +200,10 @@ class CreateTrash(TemplateView):
                 trash.trash_type.add(spec_type)
             return JsonResponse({'success': True, 'message': 'Bin registered.'})
         else:
-            return JsonResponse({'success': False, 'error': 'Trash with same type already recorded.'})
+            if trash.filter(to_validate=True):
+                return JsonResponse({'success': False, 'error': 'Trash record is being reviewed.'})
+            else:
+                return JsonResponse({'success': False, 'error': 'Trash with same type already recorded.'})
 
 
 class IssueChooseView(ChooseView):
