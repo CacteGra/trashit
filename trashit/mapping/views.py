@@ -169,7 +169,7 @@ class FirstLoad(BaseLoadView):
         # Get trashes from local api
         ts = TrashSpecificities.objects.filter(
             point_field__o_field__distance_lte=(point, D(m=m)), 
-            from_local_api=True
+            from_local_api=True, to_validate=False
         ).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
 
         if ts:
@@ -185,12 +185,14 @@ class FirstLoad(BaseLoadView):
         osm_linked_trashes = TrashSpecificities.objects.filter(
             point_field__o_field__distance_lte=(point, D(m=m)), 
             osm_trash_spec__isnull=False, 
-            from_local_api=True
+            from_local_api=True,
+            to_validate=False
         )
         ts = TrashSpecificities.objects.filter(
             point_field__o_field__distance_lte=(point, D(m=m)), 
             osm_trash_spec__isnull=True, 
-            from_local_api=False
+            from_local_api=False,
+            to_validate=False
         ).exclude(pk__in=list(osm_linked_trashes.values_list('osm_trash_spec__pk', flat=True))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
         
         response, types, not_local_type = self.iterate_points(ts, all_types, not_local_type, request)
@@ -232,7 +234,8 @@ class FilterType(BaseLoadView):
         trash_types = TrashType.objects.filter(the_type__in=[the_type])
         ts = TrashSpecificities.objects.filter(
             point_field__o_field__distance_lte=(point, D(m=2000)), 
-            trash_type__in=trash_types
+            trash_type__in=trash_types,
+            to_validate=False
         ).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
         whole_response, _, _ = self.iterate_points(ts, [get_type], not_local_type, request)
         
