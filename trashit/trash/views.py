@@ -201,6 +201,9 @@ class CreateTrash(TemplateView):
             return JsonResponse({'success': True, 'message': 'Bin registered.'})
         else:
             if trash.filter(to_validate=True):
+                if trash.point_field__o_field != point:
+                    trash.recording_count += 1
+                    trash.save()
                 return JsonResponse({'success': False, 'error': 'Trash record is being reviewed.'})
             else:
                 return JsonResponse({'success': False, 'error': 'Trash with same type already recorded.'})
