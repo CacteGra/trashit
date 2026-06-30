@@ -161,7 +161,13 @@ def first_connection(request, instance):
                     try:
                         city = d['town']
                     except KeyError:
-                        city = None
+                        try:
+                            city = d['municipality']
+                        except KeyError:
+                            try:
+                                city = d['city']
+                            except KeyError:
+                                city = None
                 register_api, created = RegisterAPI.objects.get_or_create(api_title="{}, {}, {}, OSM".format(city, d['state'], d['country']),city=city,state=d['state'],country=d['country'],api_type='OSM',pagination='none',rows_name='none',rows_per_page=0)
                 r.register_api = register_api
                 r.save()
