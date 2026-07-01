@@ -180,7 +180,6 @@ class CreateTrash(TemplateView):
         #     return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
         data = dict(request.POST)
-        print(data)
         lat = float(data['lat'][0])
         lng = float(data['lng'][0])
         point = Point(lng, lat, srid=4326)
@@ -188,23 +187,24 @@ class CreateTrash(TemplateView):
         m = 1
 
         locale_type = TypeLocale.objects.get(id=bin_type)
-        print(locale_type.the_type)
         spec_types = TrashType.objects.filter(the_type=locale_type.the_type)
-        trash = TrashSpecificities.objects.filter(trash_type__in=spec_types, point_field__o_field__distance_lte=(point, D(m=m))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
-        if not trash:
+        trashes = TrashSpecificities.objects.filter(trash_type__in=spec_types, point_field__o_field__distance_lte=(point, D(m=m))).annotate(distance=Distance("point_field__o_field", point)).order_by("distance")
+        if not trashes:
             point_object, created = Pointfield.objects.get_or_create(o_field=point)
             trash, created = TrashSpecificities.objects.get_or_create(point_field=point_object)
             trash.to_validate = True
+            trash.same_session = request.session.session_key
             trash.save()
             for spec_type in spec_types:
                 trash.trash_type.add(spec_type)
             return JsonResponse({'success': True, 'message': 'Bin registered.'})
         else:
-            if trash.filter(to_validate=True):
-                if trash.point_field__o_field != point:
-                    trash.recording_count += 1
-                    trash.save()
-                return JsonResponse({'success': False, 'error': 'Trash record is being reviewed.'})
+            if trashes.filter(to_validate=True):
+                for trash in trashes:
+                        if trash.point_field.o_field != point and request.session.session_key != trash.same_session:
+                            trash.recording_count += 1
+                            trash.save()
+                        return JsonResponse({'success': False, 'error': 'Trash record is being reviewed.'})
             else:
                 return JsonResponse({'success': False, 'error': 'Trash with same type already recorded.'})
 

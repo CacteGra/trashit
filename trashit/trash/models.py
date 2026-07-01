@@ -18,6 +18,7 @@ class TrashSpecificities(models.Model):
     reported = models.BooleanField(default=False)
     to_validate = models.BooleanField(default=False)
     recording_count = models.PositiveIntegerField(default=0)
+    same_session = models.CharField(max_length=500,default='')
 
 class Weekday(models.Model):
     day = models.CharField(max_length=15, null=True, blank=True)
