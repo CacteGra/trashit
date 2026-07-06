@@ -184,7 +184,7 @@ class CreateTrash(TemplateView):
         lng = float(data['lng'][0])
         point = Point(lng, lat, srid=4326)
         bin_type = int(data['type'][0])
-        m = 1
+        m = 5
 
         locale_type = TypeLocale.objects.get(id=bin_type)
         spec_types = TrashType.objects.filter(the_type=locale_type.the_type)
