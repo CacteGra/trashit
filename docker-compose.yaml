@@ -43,6 +43,7 @@ services:
     depends_on:
       - porkcron
   porkcron:
+    restart: always
     build: 
       context: porkcron/
     image: trashit/porkcron
