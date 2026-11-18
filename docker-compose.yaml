@@ -16,47 +16,23 @@ services:
     shm_size: "2g"
     networks:
       - trashit-backend 
-  ingress:
-    restart: always
-    image: trashit/backend-ingress
-    build: 
-      context: nginx/
-    ports: 
+  caddy:
+    container_name: trashit_caddy
+    image: caddy
+    restart: unless-stopped
+    ports:
       - "80:80"
       - "443:443"
-    networks:
-      - trashit-backend
+      - "443:443/udp"
     environment:
       - DOMAIN
-      - DOMAINWWW
-      - API_KEY
-      - SECRET_KEY
-      - API_URL
-      - CERTIFICATE_PATH
-      - PRIVATE_KEY_PATH
-    volumes: 
-      - static:/app/static
-      - media:/app/media
-      - private:/app/private
-      - ssl:/etc/porkcron:ro
-    depends_on:
-      - porkcron
-  porkcron:
-    restart: always
-    build: 
-      context: porkcron/
-    image: trashit/porkcron
-    environment:
-      - DOMAIN
-      - API_KEY
-      - SECRET_KEY
-      - API_URL
-      - CERTIFICATE_PATH
-      - PRIVATE_KEY_PATH
     volumes:
-      - ssl:/etc/porkcron
-    depends_on:
-      - backend
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/static:/srv
+      - ./caddy/config:/config
+      - ./caddy/data:/data
+    networks:
+      websites:
   getdata:
     build:
       context: trashit/

@@ -1,0 +1,6 @@
+{$DOMAIN} {
+    reverse_proxy backend:8000
+}
+www.{$DOMAIN} {
+    redir https://{$DOMAIN}{uri}
+}
